@@ -190,7 +190,9 @@ OpenAI Agents SDK
   ▼
 Model Provider Layer
   │
-  ├── Gemini (Primary)
+  ├── OpenAI (Primary)
+  │
+  ├── Gemini (Secondary / Failover)
   │
   └── Groq (Final Backup)
   │
