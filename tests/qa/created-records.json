@@ -1,0 +1,26 @@
+{
+    "business_id": "ae44d4de-e4e5-4854-8e5d-b5428f8797aa",
+    "baseline": {
+        "products": ["511f7892-593a-4576-80b7-f023ad68f7bd"],
+        "customers": ["e64cfff1-03f6-4cd9-bce2-450cbc532b6e"],
+        "orders": ["57a90655-57de-41e8-a6ba-8446d4f4f4be", "f8f7b4b6-b57e-462d-a920-2ba5e8381bf4", "d8bafc37-71ed-40b5-bff8-b39f8490c5e9"],
+        "expenses": ["7886bb0f-20df-4938-8ed4-ebef7bfaef4e", "7bad611d-7a4c-4acd-8ea9-a5dc15f5024a"],
+        "ai_conversations": []
+    },
+    "cleaned": {
+        "products": ["6a9d600b-52dd-4075-b843-b5263c557993", "219d66a8-c224-4f65-b0de-5743c817ac62", "c4f133d7-56e5-4c64-a6e2-26f804d6f561", "0a3db4b0-8523-4150-a2b9-a9eab84758f6", "15e3caa5-584d-4660-82ab-7d69aadf65e6", "d4618389-5b86-4938-88dc-572f765483eb"],
+        "customers": ["4cf02a57-de4b-4c3b-92e2-ec1278cd58bf", "5ff77a79-2035-4601-865c-8040cb127f01", "e9f58064-7b26-4fab-9930-17c7c7647b32", "52501762-12ec-4cd5-9ab5-fcdb45fa7105"],
+        "expenses": ["af55ec5c-c2b7-492d-bc4c-35da436faa40", "370cc791-eb45-43b1-b2a2-8c72019e07af", "18865991-cd4d-4343-87bd-c62178d61c8e"],
+        "ai_conversations": ["165ee83f-bc20-4806-8858-2d32d23a8e48", "ba1e1306-0ef0-49cc-a433-feb1d6799028", "d9ea97b2-1c6d-442f-901f-a0eddb1b07be", "a58c7e75-de94-40a1-a992-f582ed186b86", "7beeb77c-3d54-4fe8-939f-7256e775849e", "3ce92e88-3bf6-4610-93c2-e4a00a5a15ce", "e62fe494-67ca-4db0-b449-44e3d7bd4cae", "54771c31-c404-4753-970a-ea567bd5b986", "c7549659-460b-4a64-bff1-776679f4a4b9", "6c4b18b6-ee33-48bb-8201-72900dcb1c0f", "3051da3a-7fdc-4cf5-bac9-b81bd18c17e5", "8a5fa749-19ea-4d0e-8029-f8807e55ef26", "b0fb21bc-a0fb-40d1-89bb-b924d911ea85", "2039cc0e-be30-4b4a-9bc1-1f3269a33aa3", "50a64eb6-7a0c-489c-b96d-a16bae5a6259", "55e96e37-ad00-4d57-a12f-0cf57347c3ba", "6a90dbb5-3154-43d0-a92d-63d6b00a6a08", "33d4c179-cbb1-44a3-b992-3ff1545d9387", "c67b5ca3-554d-4ac2-a671-1e64b0b88574", "d0f601ef-f0b1-45af-974f-3b1e50e697c0", "c64a0581-9e4b-4cf8-8483-bd154ed7033f", "71a9c0ef-0b35-4943-9c55-fa1c82f034fa", "639424a9-babc-4e0a-a655-fe0adfc06168", "9ef0b55d-9f23-4c6b-a8ab-c32246628eff", "73acf93b-298c-4293-b3f8-ef518d4c464c", "130f83aa-d1f3-48c4-becd-fe60058f7b70", "745a4475-8ce9-42f1-bdfa-919bfef8a267", "cbc4302f-d02f-49cc-b7bb-071219fccc45", "673ad0ba-d7d7-4748-a6da-fd4927bcf2c5"]
+    },
+    "remaining_test_records": {
+        "note": "ORD-000008 is a COMPLETED test order the app intentionally refuses to delete (financial-record integrity) and no service-role key exists in this environment to override it. Retained by user choice. ORD-000009 removal was blocked because the `orders` table has no RLS DELETE policy (see migration 20260827090000_orders_delete_rls_policy.sql); once that migration is applied, delete it with: select delete_business_order('5c15c46b-f998-4226-9688-e2b9cfd032ac');",
+        "orders": ["2afe4147-7cce-47d7-b236-1e0a513c3353", "5c15c46b-f998-4226-9688-e2b9cfd032ac"],
+        "fix_order_completed_2026-08-28": {
+            "note": "docs/fix.txt live verification — ORD-000026/000027/000028 are COMPLETED test orders created by the exact failing phrase 'ayaz ka order 50 sheesha silk order complete krdo' (status completed, qty 50, product 'Sheesha Silk'). Completed orders are refused deletion (DELETE_NOT_ALLOWED) by design; stock was restored to its pre-test value (200) via adjust_product_stock. Fixtures kept so retained orders keep valid history: product 'Sheesha Silk' (fb450a16-09dd-49b9-9b40-4ae7079d3120, price 100, stock 200) and customer 'Ayaz' (8667bb33-0817-41f5-bc41-90979a58c993).",
+            "orders": ["ORD-000026", "ORD-000027", "ORD-000028"],
+            "product_id": "fb450a16-09dd-49b9-9b40-4ae7079d3120",
+            "customer_id": "8667bb33-0817-41f5-bc41-90979a58c993"
+        }
+    }
+}

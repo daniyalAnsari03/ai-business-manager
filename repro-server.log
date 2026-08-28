@@ -1,0 +1,151 @@
+   ▲ Next.js 15.5.23
+   - Local:        http://localhost:3002
+   - Network:      http://192.168.100.138:3002
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ✓ Ready in 4s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 515ms (172 modules)
+ ○ Compiling /api/ai/chat ...
+ ✓ Compiled /api/ai/chat in 3.7s (1027 modules)
+[ai-chat] created conversation: 015bfd9d-93eb-449d-a13d-8003a689772b
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"015bfd9d-93eb-449d-a13d-8003a689772b","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ayaz ka order 50 sheesha silk order complete krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= error raw= {"reason":"not_found","hint":"No such customer. Tell the user honestly; offer to add them.","status":"error"}
+[disambiguation] resolveProductTarget used NAME path query= "Sheesha Silk" => not_found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= error raw= {"reason":"not_found","hint":"No such product. Tell the user honestly and offer to add it.","status":"error"}
+[ai-chat] settleDone — conversationId: 015bfd9d-93eb-449d-a13d-8003a689772b
+ POST /api/ai/chat 200 in 16865ms
+ ✓ Compiled in 84ms
+ ○ Compiling /api/ai/chat ...
+ ✓ Compiled /api/ai/chat in 612ms (832 modules)
+[ai-chat] created conversation: 73d93de1-d884-4889-9856-84044eb4bea7
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"73d93de1-d884-4889-9856-84044eb4bea7","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Ek test product banao nam 'QA Silk Test', price 100, stock 200","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_product raw args: {
+  "name": "QA Silk Test",
+  "category": "other",
+  "price": 100,
+  "stockQuantity": 200,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_product id parameter present: NO | name/query present: NO
+[product-tools] createProduct input: {
+  "name": "QA Silk Test",
+  "category": "other",
+  "price": 100,
+  "stockQuantity": 200,
+  "lowStockThreshold": 5,
+  "description": null
+}
+[product-service] createProduct validated.imageUrl: null
+[route][tool_output] create_product rawOutputType= string parsedStatus= ok raw= {"created":true,"product":{"id":"d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4","name":"QA Silk Test","category":"other","price":100,"stock":200,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: 73d93de1-d884-4889-9856-84044eb4bea7
+ POST /api/ai/chat 200 in 7898ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"73d93de1-d884-4889-9856-84044eb4bea7","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Ek test customer banao nam 'QA Test Customer'","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_customer raw args: {
+  "name": "QA Test Customer",
+  "phone": null,
+  "email": null,
+  "address": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_customer id parameter present: NO | name/query present: NO
+[route][tool_output] create_customer rawOutputType= string parsedStatus= ok raw= {"created":true,"customer":{"id":"5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9","name":"QA Test Customer","phone":null,"email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: 73d93de1-d884-4889-9856-84044eb4bea7
+ POST /api/ai/chat 200 in 4687ms
+[ai-chat] created conversation: 694e16fc-0fd5-4b64-934e-f17ef93784d5
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"694e16fc-0fd5-4b64-934e-f17ef93784d5","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Test Customer ka order 50 QA Silk Test order complete krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Silk Test" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4","name":"QA Silk Test","category":"other","price":100,"stock":200,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9","name":"QA Test Customer","phone":null,"email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "QA Silk Test",
+      "productId": "d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4",
+      "quantity": 50
+    }
+  ],
+  "customerName": "QA Test Customer",
+  "customerId": "5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9",
+  "status": "completed",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: YES (5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9) | name/query present: NO
+[disambiguation] findById -> searched id: "d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4" | available ids (first 6): ["d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4)
+[disambiguation] findById -> searched id: "5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9" | available ids (first 6): ["5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9)
+[route][tool_output] create_order rawOutputType= string parsedStatus= error raw= {"reason":"database_error","hint":"Could not create the order. Do not claim success.","status":"error"}
+[ai-chat] settleDone — conversationId: 694e16fc-0fd5-4b64-934e-f17ef93784d5
+[disambiguation] turn end -> stash resolvedId {"tool":"create_order","id":"5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9"}
+ POST /api/ai/chat 200 in 9599ms
+ ✓ Compiled in 91ms
+ ○ Compiling /api/ai/chat ...
+ ✓ Compiled /api/ai/chat in 585ms (832 modules)
+[ai-chat] created conversation: 0ee31a43-33b4-4579-b40d-3fbb4dc3910a
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"0ee31a43-33b4-4579-b40d-3fbb4dc3910a","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Test Customer ka order 50 QA Silk Test order complete krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Silk Test" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4","name":"QA Silk Test","category":"other","price":100,"stock":200,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9","name":"QA Test Customer","phone":null,"email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "QA Silk Test",
+      "productId": "d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4",
+      "quantity": 50
+    }
+  ],
+  "customerName": "QA Test Customer",
+  "customerId": "5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9",
+  "status": "completed",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: YES (5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9) | name/query present: NO
+[disambiguation] findById -> searched id: "d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4" | available ids (first 6): ["d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4)
+[disambiguation] findById -> searched id: "5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9" | available ids (first 6): ["5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9)
+[order-service] create_business_order returned failure. error_code= DATABASE_ERROR data= {"ok":false,"error":"DATABASE_ERROR"}
+[route][tool_output] create_order rawOutputType= string parsedStatus= error raw= {"reason":"database_error","hint":"Could not create the order. Do not claim success.","status":"error"}
+[ai-chat] settleDone — conversationId: 0ee31a43-33b4-4579-b40d-3fbb4dc3910a
+[disambiguation] turn end -> stash resolvedId {"tool":"create_order","id":"5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9"}
+ POST /api/ai/chat 200 in 10659ms
+ ✓ Compiled in 39ms
+ ✓ Compiled /api/ai/chat in 483ms (832 modules)
+[ai-chat] created conversation: 8f8f17cd-8961-4344-9d65-d3fdaa796d1c
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"8f8f17cd-8961-4344-9d65-d3fdaa796d1c","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Test Customer ka order 50 QA Silk Test order complete krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Silk Test" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4","name":"QA Silk Test","category":"other","price":100,"stock":200,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9","name":"QA Test Customer","phone":null,"email":null,"address":null,"notes":null,"totalOrders":1,"totalSpent":0},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "QA Silk Test",
+      "productId": "d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4",
+      "quantity": 50
+    }
+  ],
+  "customerName": null,
+  "customerId": "5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9",
+  "status": "completed",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: YES (5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9) | name/query present: NO
+[disambiguation] findById -> searched id: "d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4" | available ids (first 6): ["d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=d8cf0d18-0bfe-4982-896b-b2bcc5ac84f4)
+[disambiguation] findById -> searched id: "5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9" | available ids (first 6): ["5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9)
+[order-service] create_business_order returned failure. error_code= DATABASE_ERROR detail= (none) data= {"ok":false,"error":"DATABASE_ERROR"}
+[route][tool_output] create_order rawOutputType= string parsedStatus= error raw= {"reason":"database_error","hint":"Could not create the order. Do not claim success.","status":"error"}
+[ai-chat] settleDone — conversationId: 8f8f17cd-8961-4344-9d65-d3fdaa796d1c
+[disambiguation] turn end -> stash resolvedId {"tool":"create_order","id":"5b9bfc7e-0a91-43ca-8dec-2c042a5c3ca9"}
+ POST /api/ai/chat 200 in 13960ms
+[?25h

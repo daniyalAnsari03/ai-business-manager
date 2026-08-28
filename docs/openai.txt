@@ -1,0 +1,43 @@
+TITLE: Fix OpenAI primary — reasoning_effort must be 'none' (not omitted, not 'low') when function tools are present for gpt-5.6-luna
+
+## Evidence
+
+Every OpenAI request is still failing (falling back to Gemini every time), now with a different, very specific error:
+
+```
+status=400 message="400 Function tools with reasoning_effort are not supported for gpt-5.6-luna in /v1/chat/completions. To use function tools, use /v1/responses or set reasoning_effort to 'none'."
+body={"message":"Function tools with reasoning_effort are not supported for gpt-5.6-luna in /v1/chat/completions. To use function tools, use /v1/responses or set reasoning_effort to 'none'.","type":"invalid_request_error","param":"reasoning_effort","code":null}
+```
+
+## Root cause
+
+The `withBoundedReasoning`-style shim added earlier (mirroring the Groq pattern) sets `reasoning_effort: "low"` on outgoing requests. OpenAI's error is explicit: for `gpt-5.6-luna` specifically, when the request includes function tools (which every request from this agent does — the 29-tool business registry is always attached), `reasoning_effort` must be exactly `'none'`, not `'low'`, not omitted-with-a-default, not any other value, when using the `/v1/chat/completions` endpoint. Any other value (or presumably certain non-none values) triggers this 400 for tool-calling requests on this model.
+
+This is a DIFFERENT constraint than the Groq/DeepSeek "reasoning burns the token budget" problem this shim was originally designed to solve — the earlier problem was about token budget exhaustion; this new problem is that gpt-5.6-luna's Chat Completions endpoint rejects the parameter outright when tools are present unless it's exactly `'none'`.
+
+## Fix
+
+In `lib/ai/openai-provider.ts`, change the reasoning-effort shim so that when the outgoing request contains function tools (check for a non-empty `tools` array in the parsed body, the same way `groqSafeTools`/`sanitizeSchemaNode` inspects the request), it sets `reasoning_effort: "none"` — not `"low"`. Confirm from OpenAI's own docs (fetch the actual docs page, don't assume) whether `"none"` is a valid literal value for `reasoning_effort` on GPT-5.x models, and whether the same constraint (must be 'none' with tools) applies uniformly across gpt-5.6-luna/terra/sol or is specific to luna — implement based on what's actually documented, not assumption.
+
+If no tools are present in a given request (verify whether this agent ever calls the model without tools attached — check `lib/ai/agent.ts` and the tool registry wiring; it's likely EVERY request includes the full 29-tool set, since the agent is always configured with `tools: [...businessTools]`), decide whether reasoning_effort should still be set to something else, or simply always send `'none'` since tools are apparently always present for this agent regardless. Don't leave the non-tools branch unhandled if it's actually unreachable — confirm and simplify if so.
+
+## Verify
+
+After the fix, restart and reproduce: send "customer add karo test ahmed" (or similar) and confirm in the logs that:
+1. No 400 `reasoning_effort` error occurs.
+2. The `[ai-provider] openai_direct: model served response directly (no fallback)` success log (added in the prior session) actually fires this time.
+3. The customer/order action actually completes in the database.
+
+Keep the live test minimal (a couple of messages) to conserve the user's limited $5 OpenAI credit. Report how much was consumed.
+
+## Constraints
+
+- Do not touch Gemini/Groq internals — they're the reason the app kept answering correctly through all of this.
+- Do not remove the reasoning-effort shim entirely — just correct the value/condition per OpenAI's actual documented requirement.
+- Do not fabricate success — pate real logs showing the `openai_direct` line actually firing.
+
+## Deliverable
+
+1. The corrected reasoning_effort handling in `openai-provider.ts`, confirmed against OpenAI's current docs for gpt-5.6-luna specifically.
+2. Real logs proving at least one successful, direct OpenAI response (the `openai_direct` log line) with a working tool call end-to-end.
+3. Remaining credit estimate after this test.

@@ -1,0 +1,1233 @@
+Read and follow `AGENTS.md` completely before doing anything.
+
+`AGENTS.md` is the project source of truth and is LOCKED.
+
+Also read the current project state carefully before making changes.
+
+Prompt 4 and Prompt 5 are already COMPLETE.
+
+Do NOT undo, redesign, replace, or break their work.
+
+---
+
+# CRITICAL RULES
+
+Do NOT modify, rewrite, replace, shorten, or restructure:
+
+`AGENTS.md`
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Do NOT move the project.
+
+Work ONLY inside the existing:
+
+`AI-Business-Manager/`
+
+Do NOT create unnecessary folders.
+
+Use the existing project architecture and conventions.
+
+Do NOT rebuild functionality that already works.
+
+If a feature is already implemented correctly, preserve it.
+
+---
+
+# OBJECTIVE
+
+Implement the CORE BUSINESS MANAGEMENT functionality of the AI Business Manager.
+
+The authenticated business owner must now be able to manage the main operational data of their business from the dashboard.
+
+The application should move from:
+
+"Authentication + basic product foundation"
+
+to:
+
+"Real Business Management System"
+
+The modules to implement in this phase are:
+
+1. Customers
+2. Orders
+3. Inventory
+4. Sales
+5. Expenses
+6. Business Dashboard Metrics
+7. Basic Business Settings
+
+The existing Products module is ALREADY implemented.
+
+DO NOT rebuild the Products module.
+
+Instead, integrate the new modules with the existing Products system where appropriate.
+
+---
+
+# STEP 1 — FULL CURRENT PROJECT AUDIT
+
+Before changing anything:
+
+Inspect:
+
+1. Existing dashboard.
+2. Existing Products module.
+3. Existing product database schema.
+4. Existing product CRUD operations.
+5. Existing Supabase client/server utilities.
+6. Existing authentication.
+7. Existing business/profile schema.
+8. Existing RLS policies.
+9. Existing navigation/sidebar.
+10. Existing Coming Soon modules.
+11. Existing UI components.
+12. Existing form components.
+13. Existing modal components.
+14. Existing table/list components.
+15. Existing language system.
+16. Existing theme system.
+17. Existing notification/toast system if present.
+18. Existing TypeScript types.
+19. Existing migrations.
+20. Existing API/server actions where present.
+
+Determine exactly what already exists.
+
+Do NOT assume a feature is missing simply because the UI says "Coming Soon".
+
+Verify the actual implementation.
+
+---
+
+# STEP 2 — PRESERVE EXISTING PRODUCTS
+
+The existing Products module is LOCKED as an existing working feature.
+
+It already provides the foundation for product management.
+
+Do NOT:
+
+- rebuild Products
+- replace Products UI
+- delete Products code
+- create duplicate Products tables
+- create duplicate Product CRUD
+- redesign the Products page unnecessarily
+
+Only modify Products when absolutely necessary to correctly integrate:
+
+- Inventory
+- Orders
+- Sales
+
+If integration requires a database change, make the smallest safe change.
+
+The existing Products experience should continue working exactly as before.
+
+---
+
+# STEP 3 — CUSTOMERS MODULE
+
+Replace the current:
+
+`Customers — Coming Soon`
+
+with a real Customers module.
+
+The business owner must be able to:
+
+### Add Customer
+
+Support:
+
+- name
+- phone
+- email
+- address
+- notes
+
+Use appropriate validation.
+
+Name should be required.
+
+Other fields can be optional where appropriate.
+
+### Customer List
+
+Show:
+
+- customer name
+- phone
+- email
+- total orders where available
+- total spending where available
+- created date
+
+### Customer Actions
+
+Allow:
+
+- view
+- edit
+- delete
+
+Use confirmation before destructive deletion.
+
+### Search
+
+User should be able to search customers by:
+
+- name
+- phone
+- email
+
+### Empty State
+
+If there are no customers:
+
+Show a useful empty state.
+
+Do not show fake customers.
+
+---
+
+# STEP 4 — CUSTOMER DATABASE
+
+Create an appropriate Supabase table for customers if one does not already exist.
+
+Each customer must belong to the authenticated business.
+
+Conceptually:
+
+User
+↓
+Business
+↓
+Customers
+
+Do NOT associate customers directly with arbitrary users if the application architecture already uses business ownership.
+
+Use the existing business ownership model.
+
+---
+
+# STEP 5 — CUSTOMER RLS
+
+Customers are private business data.
+
+Implement proper Row Level Security.
+
+A business owner must only be able to:
+
+- read their own customers
+- create their own customers
+- update their own customers
+- delete their own customers
+
+Do NOT create broad public policies.
+
+Do NOT use:
+
+USING (true)
+
+for private customer data.
+
+Verify that another authenticated user cannot access another business's customers.
+
+---
+
+# STEP 6 — ORDERS MODULE
+
+Replace:
+
+`Orders — Coming Soon`
+
+with a real Orders module.
+
+The business owner must be able to create and manage orders.
+
+An order should support:
+
+- customer
+- products/items
+- quantities
+- prices
+- subtotal
+- discount where appropriate
+- total
+- status
+- notes
+- order date
+
+Use proper relational data.
+
+Do NOT store an entire order only as an arbitrary JSON blob if relational tables are more appropriate.
+
+Use an order structure similar to:
+
+Order
+↓
+Order Items
+↓
+Products
+
+---
+
+# STEP 7 — ORDER STATUS
+
+Support simple understandable statuses such as:
+
+- Pending
+- Confirmed
+- Processing
+- Completed
+- Cancelled
+
+Do not introduce unnecessary complexity.
+
+The business owner should be able to update the order status.
+
+---
+
+# STEP 8 — ORDER CREATION
+
+Creating an order should be easy for a normal business owner.
+
+Example:
+
+Customer:
+Ahmed
+
+Products:
+
+Black Kurti × 2
+White Shalwar × 1
+
+Application calculates:
+
+Subtotal
+Discount
+Total
+
+The owner should not have to manually calculate totals.
+
+Use reliable server-side/database-safe calculations where appropriate.
+
+---
+
+# STEP 9 — ORDER LIST
+
+Show:
+
+- order number/reference
+- customer
+- total
+- status
+- date
+
+Provide:
+
+- search
+- filtering by status
+- view details
+- update status
+- delete/cancel where appropriate
+
+Do not permanently delete historical financial information without considering data integrity.
+
+If a safer cancellation/archive strategy fits the existing architecture, use it.
+
+---
+
+# STEP 10 — INVENTORY MODULE
+
+Replace:
+
+`Inventory — Coming Soon`
+
+with a real Inventory module.
+
+Inventory should be connected to the existing Products system.
+
+Do NOT create a completely separate duplicate product system.
+
+Inventory should allow the owner to see:
+
+- product
+- current stock
+- stock status
+- low stock indication
+- stock adjustment
+
+---
+
+# STEP 11 — STOCK MANAGEMENT
+
+Support:
+
+### Stock Increase
+
+Example:
+
+Black Kurti
+
+Current:
+10
+
+Add:
+5
+
+Result:
+15
+
+### Stock Decrease
+
+Current:
+15
+
+Remove:
+3
+
+Result:
+12
+
+### Manual Adjustment
+
+Allow the owner to correct stock when necessary.
+
+Require a reasonable adjustment amount and prevent invalid negative stock unless the existing business rules explicitly support it.
+
+---
+
+# STEP 12 — LOW STOCK
+
+Implement a simple low-stock system.
+
+A product should be identifiable as low stock based on an appropriate threshold.
+
+If the existing Product schema already has a stock threshold, use it.
+
+Otherwise introduce a simple field such as:
+
+`low_stock_threshold`
+
+Do not over-engineer inventory forecasting yet.
+
+---
+
+# STEP 13 — ORDER + INVENTORY INTEGRATION
+
+When an order is completed/confirmed according to the business rules:
+
+Inventory must be handled consistently.
+
+Do NOT silently create incorrect stock changes.
+
+Define clearly which order status triggers stock deduction.
+
+A sensible default is:
+
+Completed
+
+or another appropriate status based on the existing architecture.
+
+Avoid deducting stock repeatedly if an order status is changed multiple times.
+
+Example:
+
+Order:
+
+Black Kurti × 2
+
+Stock:
+
+20
+
+After the defined stock-trigger event:
+
+18
+
+Changing the same order status again must NOT deduct another 2.
+
+---
+
+# STEP 14 — SALES MODULE
+
+Replace:
+
+`Sales — Coming Soon`
+
+with a real Sales module.
+
+Sales should be based on actual completed/recognized sales data.
+
+Show:
+
+- total sales
+- number of sales/orders
+- revenue
+- recent sales
+- sales by date where practical
+
+Do NOT create fake analytics.
+
+Do NOT generate random numbers.
+
+Use real Supabase data.
+
+---
+
+# STEP 15 — BASIC SALES SUMMARY
+
+Provide useful summaries such as:
+
+Today
+
+This Week
+
+This Month
+
+All Time
+
+Use appropriate date calculations.
+
+Keep the interface understandable for non-technical business owners.
+
+Do not overbuild advanced analytics in this phase.
+
+---
+
+# STEP 16 — EXPENSES MODULE
+
+Replace:
+
+`Expenses — Coming Soon`
+
+with a real Expenses module.
+
+Business owner must be able to:
+
+### Add Expense
+
+Support:
+
+- title/name
+- amount
+- category
+- date
+- notes
+
+Example:
+
+Electricity
+Rs. 12,000
+Utilities
+
+### Expense List
+
+Show:
+
+- title
+- amount
+- category
+- date
+- notes where appropriate
+
+Allow:
+
+- add
+- edit
+- delete
+
+Require confirmation before deletion.
+
+---
+
+# STEP 17 — EXPENSE CATEGORIES
+
+Provide simple categories such as:
+
+- Rent
+- Utilities
+- Salaries
+- Marketing
+- Supplies
+- Transport
+- Other
+
+Allow `Other`.
+
+Do not make categories unnecessarily complicated.
+
+---
+
+# STEP 18 — EXPENSE SECURITY
+
+Expenses are private business data.
+
+Implement RLS so the business owner can only access their own expenses.
+
+No public access.
+
+No cross-business access.
+
+---
+
+# STEP 19 — BUSINESS DASHBOARD
+
+Upgrade the existing dashboard so it can show real business information.
+
+Do NOT completely redesign the dashboard.
+
+Use the existing Prompt 4 visual system.
+
+Replace fake/placeholder metrics with real data where applicable.
+
+Useful dashboard cards:
+
+- Products
+- Customers
+- Orders
+- Sales
+- Expenses
+- Low Stock
+
+Additional useful information:
+
+- recent orders
+- low-stock products
+- recent activity
+- basic revenue/expense summary
+
+---
+
+# STEP 20 — DASHBOARD EMPTY STATES
+
+The business may initially have no data.
+
+Do NOT show fake statistics.
+
+Example:
+
+If no orders exist:
+
+Show:
+
+`No orders yet`
+
+If no customers exist:
+
+Show:
+
+`No customers yet`
+
+If no sales exist:
+
+Show:
+
+`No sales yet`
+
+Empty states should guide the user toward the relevant action.
+
+---
+
+# STEP 21 — BASIC BUSINESS SETTINGS
+
+Replace:
+
+`Settings — Coming Soon`
+
+with useful basic business settings.
+
+At minimum support:
+
+- business name
+- business type
+- preferred language
+- basic business information
+
+Use the existing authenticated business profile.
+
+Do not implement advanced account settings yet.
+
+Do not duplicate authentication settings.
+
+---
+
+# STEP 22 — ENGLISH / ROMAN URDU
+
+All newly implemented modules must support the existing bilingual direction.
+
+English example:
+
+`Add Customer`
+
+Roman Urdu:
+
+`Customer add karein`
+
+English:
+
+`No customers yet`
+
+Roman Urdu:
+
+`Abhi koi customer nahi hai`
+
+English:
+
+`Add Expense`
+
+Roman Urdu:
+
+`Kharcha add karein`
+
+Do not mix languages randomly.
+
+Use the existing language architecture if already implemented.
+
+If the language system has a translation dictionary, extend it instead of creating separate hardcoded language logic.
+
+---
+
+# STEP 23 — SIMPLE LANGUAGE
+
+The application must remain understandable to non-technical users.
+
+Avoid technical language.
+
+Do not expose terms such as:
+
+- database
+- API
+- schema
+- endpoint
+- RLS
+- query
+- token
+
+The business owner should see normal business language.
+
+---
+
+# STEP 24 — UI CONSISTENCY
+
+All new modules must use the existing design system.
+
+Use:
+
+- existing colors
+- existing typography
+- existing buttons
+- existing cards
+- existing tables
+- existing modal patterns
+- existing inputs
+- existing empty states
+- existing motion system
+
+Do NOT introduce another UI library.
+
+Do NOT introduce random colors.
+
+Do NOT create a generic SaaS dashboard design.
+
+Do NOT break the premium visual language established in Prompt 4.
+
+---
+
+# STEP 25 — RESPONSIVE DESIGN
+
+Every new module must work on:
+
+- small mobile
+- large mobile
+- tablet
+- laptop
+- desktop
+- large desktop
+
+Pay particular attention to:
+
+- tables
+- forms
+- modals
+- filters
+- cards
+- action buttons
+- navigation
+
+No accidental horizontal overflow.
+
+On mobile, use appropriate responsive layouts instead of forcing large desktop tables.
+
+---
+
+# STEP 26 — ACCESSIBILITY
+
+Ensure:
+
+- semantic controls
+- proper labels
+- keyboard navigation
+- visible focus states
+- accessible dialogs
+- accessible error messages
+- sufficient contrast
+- minimum 44px touch targets where applicable
+
+Use existing accessible modal/dialog components where available.
+
+---
+
+# STEP 27 — VALIDATION
+
+Validate:
+
+- required fields
+- numeric fields
+- amounts
+- quantities
+- negative values
+- invalid email where applicable
+- duplicate/invalid data where appropriate
+
+Show clear user-friendly validation messages.
+
+Do not expose raw database errors.
+
+---
+
+# STEP 28 — DATA INTEGRITY
+
+This is a REAL business management system.
+
+Avoid operations that can create inconsistent data.
+
+Pay particular attention to:
+
+- order totals
+- order items
+- product prices
+- inventory quantities
+- sales
+- expenses
+- customer relationships
+
+Use server-side logic/database constraints where appropriate.
+
+Do not rely entirely on client-side calculations for important business data.
+
+---
+
+# STEP 29 — MULTI-BUSINESS SECURITY
+
+A user must only access data belonging to their authenticated business.
+
+Verify ownership for:
+
+- customers
+- orders
+- order items
+- inventory/product stock
+- sales
+- expenses
+- dashboard metrics
+
+Do not rely only on hiding UI elements.
+
+Database-level security must enforce ownership.
+
+---
+
+# STEP 30 — PRODUCT INTEGRATION
+
+Use the existing Products module as the source of product information.
+
+For example:
+
+Order Item
+↓
+Existing Product
+
+Do not create:
+
+`products_new`
+
+or another duplicate product table.
+
+If existing schema naming differs, inspect and reuse it.
+
+---
+
+# STEP 31 — DO NOT IMPLEMENT AI YET
+
+IMPORTANT:
+
+Do NOT implement:
+
+- OpenAI Agents SDK
+- Gemini
+- Gemini API keys
+- model router
+- Gemini failover
+- AI Business Manager
+- AI chatbot
+- AI tools
+- AI actions
+- voice AI
+
+The AI Manager should remain:
+
+`Coming Soon`
+
+for this phase.
+
+The reason is intentional:
+
+We first need reliable business data and business actions.
+
+The future AI Agent will use these systems as its tools.
+
+---
+
+# STEP 32 — FUTURE AI COMPATIBILITY
+
+While implementing these modules, structure the business operations so future AI tools can safely call them.
+
+For example, future agent tools may need operations equivalent to:
+
+- create_customer
+- update_customer
+- find_customer
+- create_order
+- update_order_status
+- get_inventory
+- adjust_stock
+- get_sales_summary
+- create_expense
+- get_business_summary
+
+DO NOT implement the AI tools now.
+
+Simply ensure the underlying business operations are clean, reusable, and logically separated so they can later be exposed to the OpenAI Agents SDK.
+
+---
+
+# STEP 33 — SUPABASE MIGRATIONS
+
+Create proper migrations for new tables/changes.
+
+Do not manually modify production data through arbitrary scripts when a migration is appropriate.
+
+Use proper relationships and constraints.
+
+Potential tables may include:
+
+- customers
+- orders
+- order_items
+- expenses
+
+Reuse existing product/business tables.
+
+Do not create unnecessary tables.
+
+---
+
+# STEP 34 — RLS
+
+Implement and verify RLS for every new private business table.
+
+Each policy must ensure that authenticated users can only access records belonging to their own business.
+
+Verify:
+
+User A
+↓
+Business A
+↓
+Customers/Orders/Expenses/etc.
+
+cannot access:
+
+Business B
+↓
+Customers/Orders/Expenses/etc.
+
+---
+
+# STEP 35 — DATABASE INDEXES
+
+Where appropriate, add useful indexes for fields commonly used for:
+
+- business ownership
+- customer search
+- order lookup
+- order status
+- dates
+- expense dates
+- product references
+
+Do not add indexes blindly.
+
+Use sensible indexes that support actual queries.
+
+---
+
+# STEP 36 — LOADING / ERROR STATES
+
+Every new module must handle:
+
+- loading
+- empty
+- success
+- error
+- submitting
+- deleting
+
+Do not leave blank screens.
+
+Do not let the user click submit repeatedly while an operation is processing.
+
+---
+
+# STEP 37 — TESTING
+
+After implementation run:
+
+npm run typecheck
+
+npm run lint
+
+npm run build
+
+Fix actual issues.
+
+Do not stop after the first successful command.
+
+---
+
+# STEP 38 — FUNCTIONAL QA
+
+Test the real application.
+
+### Customers
+
+- add
+- edit
+- search
+- delete
+- empty state
+
+### Orders
+
+- create order
+- select customer
+- select products
+- quantities
+- calculate totals
+- update status
+- view details
+
+### Inventory
+
+- view stock
+- increase stock
+- decrease stock
+- low-stock state
+- prevent invalid stock changes
+
+### Sales
+
+- verify real sales data
+- verify totals
+- verify date summaries
+
+### Expenses
+
+- add
+- edit
+- delete
+- totals
+- categories
+
+### Dashboard
+
+- verify metrics update when business data changes
+
+### Settings
+
+- update business information
+- update language
+- verify persistence
+
+---
+
+# STEP 39 — SECURITY QA
+
+Test that:
+
+- unauthenticated users cannot access private modules
+- User A cannot access User B's data
+- direct database/API requests cannot bypass ownership
+- deleted/invalid records do not break related views
+- inventory cannot accidentally be deducted multiple times
+- sensitive environment variables remain server-side
+
+---
+
+# STEP 40 — VISUAL QA
+
+Inspect all new modules visually.
+
+Check:
+
+- desktop
+- tablet
+- mobile
+- dark theme
+- light theme
+- English
+- Roman Urdu
+
+Check:
+
+- spacing
+- typography
+- buttons
+- forms
+- modals
+- tables
+- cards
+- empty states
+- loading states
+- errors
+- responsive behavior
+- overflow
+
+The existing premium design language must remain intact.
+
+---
+
+# STEP 41 — DO NOT GET STUCK
+
+If an external Supabase configuration issue prevents a specific test:
+
+1. Implement everything possible in the codebase.
+2. Test everything available locally.
+3. Clearly identify the external blocker.
+4. Continue all remaining work.
+5. Do NOT repeatedly retry the same blocked operation.
+
+Do not wait indefinitely for manual input for routine development decisions.
+
+---
+
+# FINAL ACCEPTANCE CRITERIA
+
+Prompt 6 is complete when:
+
+### Existing
+- Products continues working exactly as before.
+
+### New
+- Customers works.
+- Orders works.
+- Inventory works.
+- Sales works.
+- Expenses works.
+- Basic Settings works.
+- Dashboard shows real business data.
+
+### Security
+- RLS protects all private business data.
+- Cross-business access is prevented.
+
+### UX
+- English works.
+- Roman Urdu works.
+- Mobile works.
+- Desktop works.
+- Dark/light themes work.
+- Existing premium UI remains intact.
+
+### Quality
+- Typecheck passes.
+- Lint passes.
+- Production build passes.
+- Functional QA completed.
+- Security QA completed.
+- Visual QA completed.
+
+---
+
+# IMPORTANT — AI MANAGER REMAINS COMING SOON
+
+Do NOT implement AI Manager in Prompt 6.
+
+Keep:
+
+`AI Manager — Coming Soon`
+
+The next AI phase will build on the real business systems created here.
+
+The future architecture is already planned:
+
+Business Data
+↓
+Business Operations
+↓
+OpenAI Agents SDK
+↓
+Gemini
+↓
+AI Business Manager
+↓
+Real Business Actions
+
+The future Gemini architecture will also support the planned server-side model routing/failover approach using legitimately configured separate Gemini projects/keys.
+
+Do not implement that architecture in this phase.
+
+---
+
+# FINAL REPORT
+
+When finished, provide a concise report containing:
+
+1. Existing features preserved.
+2. Customers implementation.
+3. Orders implementation.
+4. Inventory implementation.
+5. Sales implementation.
+6. Expenses implementation.
+7. Dashboard updates.
+8. Settings implementation.
+9. Database migrations.
+10. RLS policies.
+11. English/Roman Urdu support.
+12. Responsive/UI QA.
+13. Security QA.
+14. Typecheck result.
+15. Lint result.
+16. Production build result.
+17. Any genuine external blockers.
+
+Do NOT modify `AGENTS.md`.
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Do NOT rebuild Products.
+
+Do NOT implement AI Manager.
+
+Continue only inside the existing:
+
+`AI-Business-Manager/`

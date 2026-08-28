@@ -1,0 +1,513 @@
+# PROMPT 1 — PROJECT AUDIT & PREMIUM PRODUCT FOUNDATION
+
+Read and follow `AGENTS.md` completely before doing anything.
+
+`AGENTS.md` is the project source of truth and is LOCKED.
+
+## CRITICAL
+
+Do NOT modify, rewrite, replace, shorten, or restructure `AGENTS.md`.
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Do NOT recreate the application.
+
+Work only inside the existing:
+
+`AI-Business-Manager/`
+
+Continue from the current project state.
+
+---
+
+## OBJECTIVE
+
+Begin the first development phase of the AI Business Manager by thoroughly auditing the existing project and establishing the production-ready foundation required for the product.
+
+This phase must prepare the application for the later AI agent, business management modules, authentication, Supabase data layer, bilingual experience, voice interaction, and premium public website.
+
+Do NOT prematurely implement unrelated future phases.
+
+Do NOT build fake AI functionality just to demonstrate the UI.
+
+Do NOT create placeholder functionality that pretends to work.
+
+---
+
+# STEP 1 — FULL PROJECT AUDIT
+
+Before changing anything:
+
+1. Inspect the complete project structure.
+2. Identify the existing framework and versions.
+3. Inspect `package.json`.
+4. Inspect existing source files.
+5. Inspect existing routes/pages.
+6. Inspect existing components.
+7. Inspect existing styling/Tailwind configuration.
+8. Inspect existing Supabase configuration if present.
+9. Inspect existing environment configuration without exposing secret values.
+10. Inspect existing animations and dependencies.
+11. Identify what is already working.
+12. Identify incomplete, duplicated, or conflicting implementation.
+13. Check whether any previous implementation conflicts with `AGENTS.md`.
+
+Do NOT delete working code simply because you would structure it differently.
+
+If something already satisfies the requirements, preserve and improve it only when necessary.
+
+---
+
+# STEP 2 — ESTABLISH THE PRODUCT FOUNDATION
+
+Ensure the project has a clean, maintainable foundation using the approved stack:
+
+* Next.js
+* TypeScript
+* React
+* Tailwind CSS
+* Framer Motion
+* Supabase where required
+
+Do not introduce unnecessary UI libraries.
+
+Do not introduce another frontend framework.
+
+Do not introduce another backend framework.
+
+Do not replace the approved architecture.
+
+Use reusable components and a clean folder structure appropriate for the existing project.
+
+---
+
+# STEP 3 — DESIGN SYSTEM
+
+Establish the visual foundation according to `AGENTS.md`.
+
+The design language must be:
+
+* premium
+* modern
+* minimal
+* accessible
+* business-focused
+* sophisticated
+* usable by non-technical users
+
+### Primary visual direction
+
+Use:
+
+* Obsidian / deep black
+* Deep charcoal
+* Deep emerald
+* Off-white
+
+Use emerald as the primary accent.
+
+Use subtle atmospheric emerald lighting that fades naturally into black.
+
+Avoid:
+
+* rainbow gradients
+* random colors
+* excessive neon
+* cyberpunk styling
+* excessive glassmorphism
+* generic SaaS dashboard styling
+
+Create reusable design tokens/utilities where appropriate rather than scattering arbitrary values throughout the codebase.
+
+---
+
+# STEP 4 — TYPOGRAPHY
+
+Implement the typography direction from `AGENTS.md`.
+
+### Display / Hero
+
+Use:
+
+`Ferly`
+
+The hero/display typography must feel:
+
+* elegant
+* thin/light
+* premium
+* editorial
+
+Do NOT make the main hero heading heavy or overly bold.
+
+### UI / Body
+
+Use:
+
+`Inter`
+
+Inter should be used for:
+
+* navigation
+* paragraphs
+* labels
+* buttons
+* forms
+* dashboard UI
+* tables
+* notifications
+* AI interface
+* Roman Urdu UI
+
+Avoid unnecessary font weights.
+
+If the selected font requires an appropriate loading mechanism, implement it properly for Next.js and avoid blocking performance.
+
+---
+
+# STEP 5 — DARK + LIGHT THEME FOUNDATION
+
+Prepare the application for both:
+
+* Dark mode
+* Light mode
+
+Dark mode is the primary visual expression.
+
+Light mode must NOT become a generic white/blue SaaS dashboard.
+
+Both themes must preserve:
+
+* emerald accent
+* premium surfaces
+* subtle depth
+* accessible contrast
+* readable typography
+
+Use a maintainable theme strategy so future dashboard components can use the same system.
+
+---
+
+# STEP 6 — MOTION FOUNDATION
+
+Prepare the application for Framer Motion.
+
+Motion should be:
+
+* smooth
+* subtle
+* purposeful
+* premium
+
+Prepare reusable animation patterns where appropriate for:
+
+* section reveals
+* card entrance
+* hover lift
+* page transitions
+* micro-interactions
+
+Respect reduced-motion preferences.
+
+Do NOT add unnecessary animation everywhere.
+
+Do NOT create distracting infinite animations.
+
+---
+
+# STEP 7 — RESPONSIVE FOUNDATION
+
+Ensure the global layout is prepared for:
+
+* small mobile
+* large mobile
+* tablet
+* laptop
+* desktop
+* large desktop
+
+Check:
+
+* viewport behavior
+* typography scaling
+* spacing
+* overflow
+* touch targets
+* responsive containers
+
+There must be no accidental horizontal overflow.
+
+---
+
+# STEP 8 — ACCESSIBILITY FOUNDATION
+
+Establish accessible defaults.
+
+Ensure:
+
+* readable contrast
+* keyboard navigation
+* visible focus states
+* semantic HTML
+* accessible buttons
+* accessible form controls
+* useful labels
+* appropriate ARIA only when needed
+* reduced-motion support
+* mobile-friendly touch targets
+
+Do not sacrifice accessibility for visual effects.
+
+---
+
+# STEP 9 — PUBLIC HOMEPAGE FOUNDATION
+
+The homepage is public.
+
+Begin implementing the premium public product experience according to `AGENTS.md`.
+
+The homepage should immediately communicate that this is an:
+
+AI-powered Business Management System
+
+and NOT simply an AI chatbot.
+
+The visual hierarchy should communicate:
+
+Business Management + AI Intelligence + Real Actions.
+
+Prepare the homepage structure for these major areas:
+
+1. Hero
+2. Product explanation
+3. AI capabilities
+4. Business management capabilities
+5. Agentic action explanation
+6. English + Roman Urdu support
+7. Voice capability
+8. Security/control
+9. CTA / getting started
+
+However, do not unnecessarily overbuild sections that belong to later phases.
+
+The homepage foundation should be clean and extensible.
+
+---
+
+# STEP 10 — HERO SECTION
+
+The hero structure is LOCKED by `AGENTS.md`.
+
+Implement the following structure:
+
+### LEFT SIDE
+
+Include:
+
+* small product label
+* main headline
+* supporting paragraph
+* primary CTA
+* secondary CTA where appropriate
+
+The messaging should clearly communicate that the AI Business Manager actually helps operate the business.
+
+Avoid generic AI marketing language.
+
+### RIGHT SIDE
+
+Create a large floating smartphone mockup.
+
+IMPORTANT:
+
+This must NOT be a generic stock phone image.
+
+The smartphone must contain a realistic preview of OUR own Business Manager application UI.
+
+The phone preview should visually communicate:
+
+* business dashboard
+* business metrics
+* products/inventory
+* AI Manager interaction
+
+The preview can use carefully designed static/mock data for visual presentation at this stage.
+
+Do NOT pretend that mock data is real backend data.
+
+The phone should feel like an actual product preview.
+
+---
+
+# STEP 11 — HERO VISUAL EFFECTS
+
+Implement premium visual depth using:
+
+* subtle floating animation
+* subtle tilt/perspective
+* realistic shadow
+* layered depth
+* emerald ambient glow
+* controlled motion
+
+The phone should feel slightly elevated from the page.
+
+Use atmospheric emerald lighting behind/around the phone.
+
+Do not turn the hero into a neon/cyberpunk scene.
+
+Do not overdo 3D effects.
+
+The visual result should feel like a premium modern SaaS product website.
+
+---
+
+# STEP 12 — COMPONENT ARCHITECTURE
+
+Create reusable components where appropriate.
+
+Avoid putting the entire homepage into one giant component.
+
+Prefer logical separation such as:
+
+* layout
+* navigation
+* hero
+* phone preview
+* buttons
+* cards
+* sections
+* theme handling
+* motion utilities
+
+Use the existing project's conventions if they are already good.
+
+Do not restructure the entire project unnecessarily.
+
+---
+
+# STEP 13 — PRODUCT LANGUAGE
+
+The product must feel understandable to a normal business owner.
+
+Use simple language.
+
+Avoid unnecessary technical terminology such as:
+
+* API
+* endpoint
+* database query
+* schema
+* token
+* tool call
+
+These are implementation concepts, not primary user-facing product language.
+
+The product should communicate the idea:
+
+"Business owner apna business manage karta hai, aur AI Business Manager uske saath actual kaam karta hai."
+
+---
+
+# STEP 14 — DO NOT IMPLEMENT YET
+
+Do NOT prematurely build the complete:
+
+* AI agent
+* OpenAI Agents SDK orchestration
+* Gemini integration
+* business tools
+* CRUD modules
+* authentication flows
+* onboarding
+* voice system
+* Supabase schema
+* RLS system
+* business reports
+* production AI actions
+
+Those will be implemented in their appropriate phases.
+
+For this phase, establish the foundation and premium product experience required for those later systems.
+
+If an existing implementation already contains some of these features, preserve it and do not break it, but do not expand them unnecessarily in this phase.
+
+---
+
+# STEP 15 — QUALITY CHECK
+
+After implementation:
+
+Run the appropriate project checks.
+
+At minimum, attempt:
+
+* typecheck
+* lint
+* production build
+
+If scripts differ, inspect `package.json` and use the correct available commands.
+
+Fix issues you discover.
+
+Do not merely report obvious errors without attempting to fix them.
+
+---
+
+# STEP 16 — VISUAL QA
+
+Start the development server if the environment allows it.
+
+Inspect the homepage visually.
+
+Check:
+
+* desktop
+* laptop
+* tablet
+* mobile
+* large desktop
+
+Pay particular attention to:
+
+* hero spacing
+* typography
+* phone positioning
+* phone responsiveness
+* shadows
+* emerald glow
+* CTA buttons
+* navigation
+* section spacing
+* overflow
+* animation
+* accessibility
+* dark/light theme
+
+Fix visual issues discovered during QA.
+
+---
+
+# FINAL REPORT
+
+When finished, provide a concise implementation report containing:
+
+1. What was already present.
+2. What was changed.
+3. Files/components created or updated.
+4. Tests/checks executed.
+5. Build result.
+6. Visual QA result.
+7. Any genuine blockers that could not be resolved.
+
+Do NOT modify `AGENTS.md`.
+
+Do NOT create another project.
+
+Do NOT move the project.
+
+Do NOT implement unrelated future phases.
+
+Continue from the existing `AI-Business-Manager/` project.

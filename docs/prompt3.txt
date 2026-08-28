@@ -1,0 +1,774 @@
+# PROMPT 3 — PRODUCTS + INVENTORY FOUNDATION
+
+Read AGENTS.md completely before doing anything.
+
+Also inspect the existing implementation from Phase 1 and Phase 2.
+
+IMPORTANT:
+- Do NOT modify AGENTS.md.
+- Continue inside the existing AI-Business-Manager project root.
+- Do NOT create another project.
+- Do NOT recreate the application.
+- Preserve all existing working functionality.
+- Do NOT implement future phases prematurely.
+- Do NOT add fake/demo business data.
+- Do NOT use placeholder CRUD where the requested functionality can be implemented properly.
+
+==================================================
+PHASE 3 OBJECTIVE
+==================================================
+
+Build the real Products and Inventory foundation of the AI Business Manager.
+
+The business owner must now be able to manage real products through the application.
+
+This is NOT just UI.
+
+Products must be stored in Supabase PostgreSQL and must be isolated by authenticated business ownership.
+
+The owner should be able to:
+
+- view products
+- add products
+- edit products
+- update stock
+- view stock levels
+- delete products where appropriate
+- search/filter products
+- see low-stock products
+- upload a product image when practical
+
+The implementation must work with the existing authentication and business setup from Phase 2.
+
+==================================================
+1. PRODUCT DATABASE
+==================================================
+
+Create the required Supabase migration(s).
+
+Create a products table with a production-minded structure.
+
+At minimum support:
+
+- id
+- business_id
+- name
+- description
+- category
+- price
+- stock_quantity
+- low_stock_threshold
+- sku (optional)
+- image_url (optional)
+- created_at
+- updated_at
+
+Use appropriate PostgreSQL types and constraints.
+
+Requirements:
+
+- price must not be negative
+- stock_quantity must not be negative
+- low_stock_threshold must not be negative
+- name must be required
+- business_id must be required
+- timestamps should be maintained automatically where appropriate
+
+Create useful indexes for:
+
+- business_id
+- category
+- name
+- stock/low-stock queries where appropriate
+
+Do not over-engineer the schema.
+
+==================================================
+2. BUSINESS OWNERSHIP
+==================================================
+
+Every product belongs to a business.
+
+The authenticated user's business must be determined from the server-side session.
+
+NEVER trust a client-provided business_id as an authorization mechanism.
+
+The application must verify:
+
+authenticated user
+→ owned business
+→ product belongs to that business
+
+A user must never be able to read, create, update or delete another business's products.
+
+Use Supabase RLS.
+
+Create appropriate policies for:
+
+- SELECT
+- INSERT
+- UPDATE
+- DELETE
+
+The DELETE policy is now allowed because product deletion is part of this phase.
+
+Do not create broad policies such as:
+
+"any authenticated user can access products."
+
+Also ensure the required API role/table privileges exist, similar to the businesses table permissions fixed in Phase 2.
+
+==================================================
+3. PRODUCT SERVICE LAYER
+==================================================
+
+Do not scatter Supabase queries throughout UI components.
+
+Create a focused product service layer.
+
+The service layer should handle:
+
+- getProducts
+- getProduct
+- createProduct
+- updateProduct
+- updateStock
+- deleteProduct
+- search/filter where appropriate
+
+All operations must derive ownership from the authenticated server-side session.
+
+Validate inputs before database operations.
+
+Return predictable typed results.
+
+Handle database errors safely.
+
+Never expose raw database errors to normal users.
+
+==================================================
+4. PRODUCTS PAGE
+==================================================
+
+Replace the current "Products — Soon" placeholder with a real Products page.
+
+Expected route:
+
+/dashboard/products
+
+The existing sidebar Products item should now navigate to this page.
+
+The page must follow the existing premium design system from AGENTS.md.
+
+Do NOT create a generic admin template.
+
+The page should feel like part of the existing AI Business Manager.
+
+==================================================
+5. PRODUCTS EMPTY STATE
+==================================================
+
+For a new business with no products:
+
+Show a helpful empty state.
+
+Example:
+
+Roman Urdu:
+
+"Abhi koi product nahi hai."
+
+"Apna pehla product add karein taake aapka stock aur sales record manage ho sake."
+
+English equivalent should also exist.
+
+Provide a clear:
+
+"Product add karein"
+
+button.
+
+Do NOT create fake products just to make the page look populated.
+
+==================================================
+6. PRODUCT LIST
+==================================================
+
+When products exist, show useful information such as:
+
+- product image
+- product name
+- category
+- price
+- stock
+- stock status
+- actions
+
+Stock status should be understandable.
+
+Examples:
+
+- In stock
+- Low stock
+- Out of stock
+
+Roman Urdu equivalents should be natural and simple.
+
+Do not rely only on color to communicate status.
+
+==================================================
+7. ADD PRODUCT
+==================================================
+
+Create a user-friendly Add Product experience.
+
+It can be a dedicated page, drawer, or modal depending on what fits the existing UI.
+
+Required fields:
+
+- Product name
+- Description
+- Category
+- Price
+- Stock quantity
+- Low-stock threshold
+
+Optional:
+
+- SKU
+- Product image
+
+The form must include:
+
+- validation
+- loading state
+- success state
+- error state
+- accessible labels
+- keyboard accessibility
+- mobile-friendly layout
+
+Use clear non-technical wording.
+
+Example Roman Urdu:
+
+Product ka naam
+
+Qeemat
+
+Stock
+
+Category
+
+Low stock alert
+
+==================================================
+8. PRODUCT IMAGE
+==================================================
+
+Use Supabase Storage for product images if the existing Supabase setup supports it cleanly.
+
+Create an appropriate storage strategy/bucket and policies.
+
+Images must remain isolated by business ownership.
+
+Do not expose private storage unnecessarily.
+
+If a public bucket is the safest practical approach for product images, document the reasoning and ensure uploaded paths are business-scoped.
+
+Support:
+
+- image selection
+- preview
+- upload state
+- upload failure handling
+
+Do not make image upload prevent a product from being created if the image itself fails, unless the architecture requires it.
+
+The product can exist without an image.
+
+==================================================
+9. EDIT PRODUCT
+==================================================
+
+Allow the owner to edit an existing product.
+
+Editable fields should include:
+
+- name
+- description
+- category
+- price
+- low-stock threshold
+- SKU
+- image
+
+The owner must also be able to update stock.
+
+Never allow negative stock.
+
+Show a clear success confirmation after a successful update.
+
+==================================================
+10. INVENTORY / STOCK
+==================================================
+
+Stock is part of the Products foundation.
+
+The owner must be able to see current stock.
+
+Example:
+
+Black Kurta
+50 pcs
+
+White Kurti
+8 pcs
+
+When stock is:
+
+0
+→ Out of stock
+
+When stock is at or below low_stock_threshold
+→ Low stock
+
+Otherwise
+→ In stock
+
+The low-stock threshold must be configurable per product.
+
+==================================================
+11. STOCK UPDATE EXPERIENCE
+==================================================
+
+Create a simple stock update interaction.
+
+Example:
+
+Current stock:
+
+50
+
+New stock:
+
+40
+
+Save
+
+or an appropriate adjustment UI if that is cleaner.
+
+Do NOT allow invalid negative values.
+
+For now, stock updates are manual.
+
+Do NOT implement automatic order-based stock deduction yet.
+
+Order integration will be handled in the Orders phase.
+
+==================================================
+12. DELETE PRODUCT
+==================================================
+
+Allow product deletion with a confirmation step.
+
+Example:
+
+"Ye product delete karna hai?"
+
+The user must explicitly confirm.
+
+Do not immediately delete after a single accidental click.
+
+Handle deletion failures safely.
+
+If a product later becomes referenced by orders/sales, future phases may require soft deletion or restrictions.
+
+For this phase, choose a production-safe approach that will not make future order relationships unnecessarily difficult.
+
+If needed, use an active/archive mechanism rather than destructive deletion.
+
+Document the choice briefly in the implementation report.
+
+==================================================
+13. SEARCH
+==================================================
+
+Add product search.
+
+The owner should be able to search by:
+
+- product name
+- SKU where available
+- category where appropriate
+
+Search should work on mobile and desktop.
+
+Do not add unnecessary advanced filtering yet.
+
+==================================================
+14. LOW STOCK
+==================================================
+
+The Products page should make low-stock products easy to identify.
+
+Also expose a small useful summary such as:
+
+Total products
+Low stock
+Out of stock
+
+These must be real database values.
+
+Never hardcode numbers.
+
+==================================================
+15. DASHBOARD INTEGRATION
+==================================================
+
+Update the existing dashboard only where required.
+
+The dashboard currently says:
+
+"Abhi products nahi hain"
+
+This should now become dynamic.
+
+If there are no products:
+
+Keep the honest empty state.
+
+If products exist:
+
+Show useful real product/stock information.
+
+For example:
+
+Products: 12
+
+Low stock: 3
+
+Out of stock: 1
+
+These values must come from Supabase.
+
+Do not implement full sales/order/profit metrics yet because those modules are future phases.
+
+==================================================
+16. LANGUAGE
+==================================================
+
+Support:
+
+English
+
+Roman Urdu
+
+The existing language selection from Business Setup must continue to control the UI.
+
+Product UI must respect the selected language.
+
+Examples:
+
+English:
+
+"Add product"
+
+"Product name"
+
+"Price"
+
+"Stock"
+
+"Low stock"
+
+"Out of stock"
+
+Roman Urdu:
+
+"Product add karein"
+
+"Product ka naam"
+
+"Qeemat"
+
+"Stock"
+
+"Stock kam hai"
+
+"Stock khatam hai"
+
+Keep Roman Urdu natural and simple.
+
+Do not translate user-entered product names.
+
+==================================================
+17. CURRENCY
+==================================================
+
+Use the business's saved currency.
+
+Do not hardcode PKR in product prices.
+
+If the business uses:
+
+PKR
+→ Rs.
+
+USD
+→ $
+
+EUR
+→ €
+
+etc.
+
+Use a centralized currency formatter rather than duplicating formatting logic.
+
+==================================================
+18. DARK + LIGHT MODE
+==================================================
+
+Products UI must work correctly in both:
+
+- dark mode
+- light mode
+
+Preserve the existing:
+
+- obsidian
+- charcoal
+- emerald
+- off-white
+- subtle glow
+- depth
+
+design language.
+
+Do not introduce unrelated colors.
+
+Do not turn the Products page into a generic white dashboard.
+
+==================================================
+19. RESPONSIVE DESIGN
+==================================================
+
+Test the Products experience across:
+
+- small mobile
+- large mobile
+- tablet
+- laptop
+- desktop
+- large desktop
+
+Pay particular attention to:
+
+- product cards/list
+- forms
+- image upload
+- action buttons
+- dialogs
+- sidebar
+- tables if used
+
+No accidental horizontal overflow.
+
+Touch targets must remain usable.
+
+==================================================
+20. ACCESSIBILITY
+==================================================
+
+Follow the accessibility rules in AGENTS.md.
+
+Ensure:
+
+- labels are associated with inputs
+- keyboard navigation works
+- focus states are visible
+- buttons have useful labels
+- dialogs are accessible
+- images have appropriate alt text
+- status is not communicated by color alone
+- reduced-motion behavior remains respected
+
+==================================================
+21. ANIMATION
+==================================================
+
+Use existing Framer Motion primitives where appropriate.
+
+Good examples:
+
+- product list reveal
+- card hover
+- modal/drawer transitions
+- image preview
+- success feedback
+
+Keep animations subtle.
+
+Do not introduce distracting animations.
+
+Respect reduced-motion preferences.
+
+==================================================
+22. SECURITY
+==================================================
+
+Critical:
+
+Never trust:
+
+- business_id from the browser
+- owner_id from the browser
+- arbitrary product ownership values
+
+The server must determine ownership from the authenticated session.
+
+Never expose:
+
+- service-role keys
+- private Supabase credentials
+- sensitive backend information
+
+Do not use arbitrary SQL generated from user/model input.
+
+==================================================
+23. NO AI IMPLEMENTATION YET
+==================================================
+
+Do NOT implement the AI Business Manager agent in this phase.
+
+Do NOT add:
+
+- OpenAI Agents SDK
+- Gemini calls
+- AI tools
+- agent prompts
+- AI product creation
+- AI stock manipulation
+
+Those belong to later phases.
+
+However, structure the product service layer cleanly so future AI controlled tools can safely call the same business services.
+
+The future architecture should be:
+
+AI Agent
+→ controlled tool
+→ product service
+→ Supabase
+
+Do not duplicate product logic for the future AI.
+
+==================================================
+24. NO ORDERS/SALES YET
+==================================================
+
+Do NOT implement:
+
+- Orders
+- Sales
+- automatic stock deduction from orders
+- Customers
+- Expenses
+- Reports
+
+unless a tiny prerequisite is absolutely required.
+
+Those will be implemented in their dedicated phases.
+
+==================================================
+25. TESTING
+==================================================
+
+After implementation run:
+
+- typecheck
+- lint
+- build
+
+Also verify manually where possible:
+
+1. Login
+2. Dashboard
+3. Products page
+4. Add product
+5. Product appears after refresh
+6. Edit product
+7. Update stock
+8. Low-stock status
+9. Out-of-stock status
+10. Search
+11. Delete/archive confirmation
+12. Empty state
+13. English
+14. Roman Urdu
+15. Dark mode
+16. Light mode
+17. Mobile layout
+18. RLS ownership isolation
+
+If Supabase credentials are available, perform real database tests.
+
+Do not merely claim RLS works without testing where practical.
+
+==================================================
+26. DATA INTEGRITY
+==================================================
+
+Verify:
+
+- product belongs to correct business
+- another business cannot read it
+- another business cannot update it
+- another business cannot delete it
+- invalid price is rejected
+- invalid stock is rejected
+- missing product name is rejected
+
+Never fabricate successful operations.
+
+==================================================
+27. FINAL QA
+==================================================
+
+Do not stop at "code written."
+
+Inspect the final implementation.
+
+If you find issues:
+
+1. reproduce
+2. identify root cause
+3. fix
+4. re-test
+
+The final Products module should feel production-ready within the scope of this phase.
+
+==================================================
+28. FINAL REPORT
+==================================================
+
+When finished, provide a concise report containing:
+
+1. What already existed
+2. What was implemented
+3. Database migrations created
+4. Products functionality
+5. Inventory functionality
+6. Storage/image implementation
+7. RLS/security
+8. Language/currency support
+9. Dashboard integration
+10. Tests executed
+11. Any genuine blockers
+12. Any manual Supabase steps required
+
+Do NOT modify AGENTS.md.
+
+Do NOT start Phase 4 automatically.
+
+Stop after Phase 3 is complete and report the result.

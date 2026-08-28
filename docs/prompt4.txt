@@ -1,0 +1,1151 @@
+# PROMPT 4 — PREMIUM UI VISUAL REBUILD & COMPLETE VISUAL QA
+
+Read and follow `AGENTS.md` completely before doing anything.
+
+Also inspect the existing implementation created by Prompt 1, Prompt 2, and Prompt 3.
+
+`AGENTS.md` is LOCKED and must NOT be modified.
+
+This phase is a VISUAL REBUILD, POLISH, AND QA PHASE.
+
+==================================================
+CRITICAL PROJECT RULE
+==================================================
+
+Work ONLY inside the existing:
+
+`AI-Business-Manager/`
+
+Do NOT:
+
+- create another project
+- create another root folder
+- recreate the application
+- migrate the application to another framework
+- replace Next.js
+- replace Tailwind CSS
+- replace Framer Motion
+- replace Supabase
+- create a second frontend
+- create a second backend
+
+Preserve the existing project architecture and working functionality.
+
+==================================================
+MOST IMPORTANT RULE
+==================================================
+
+THIS PHASE IS NOT A NEW BUSINESS-FUNCTIONALITY PHASE.
+
+Do NOT implement:
+
+- new business modules
+- new database schema
+- new AI agent
+- OpenAI Agents SDK orchestration
+- Gemini integration
+- AI tools
+- Customers functionality
+- Orders functionality
+- Sales functionality
+- Expenses functionality
+- Reports functionality
+- new authentication functionality
+- new onboarding functionality
+
+Do NOT change existing business logic unless a very small UI integration fix is absolutely required.
+
+The purpose of this phase is:
+
+> Take the frontend that already exists and visually rebuild/polish it so it matches our LOCKED premium product design exactly and feels like a real premium SaaS product.
+
+The current functionality must continue working after the visual rebuild.
+
+==================================================
+PHASE OBJECTIVE
+==================================================
+
+The current implementation contains the product foundation, authentication/business setup, dashboard foundation, Products, and Inventory foundation.
+
+The functionality exists.
+
+Now the visual quality must be brought to the level of the original product vision.
+
+Do NOT judge completion by whether components technically exist.
+
+Judge completion by what the user ACTUALLY SEES in the browser.
+
+A section is NOT considered visually complete merely because its component exists in the source code.
+
+The browser-rendered result must be visually inspected.
+
+If the UI looks:
+
+- basic
+- generic
+- unfinished
+- flat
+- empty
+- poorly spaced
+- inconsistent
+- like a default Tailwind template
+- like a generic admin dashboard
+- visually disconnected from the approved design
+
+then FIX IT.
+
+Do not simply report the problem.
+
+==================================================
+LOCKED PRODUCT VISUAL DIRECTION
+==================================================
+
+The product must feel:
+
+- premium
+- luxury
+- modern
+- elegant
+- sophisticated
+- minimal
+- powerful
+- approachable
+- business-focused
+
+It must NOT look like:
+
+- a generic admin template
+- a basic Tailwind starter
+- a developer dashboard
+- a cyberpunk interface
+- a neon gaming UI
+- a random SaaS template
+- excessive glassmorphism
+- excessive gradients
+- excessive rounded cards everywhere
+
+The design must feel intentional and cohesive.
+
+==================================================
+LOCKED COLOR SYSTEM
+==================================================
+
+Primary visual language:
+
+- Obsidian / deep black
+- Deep charcoal
+- Deep emerald
+- Off-white
+
+Emerald is the primary accent.
+
+The important visual effect is:
+
+DEEP EMERALD
+    ↓
+LIGHTER EMERALD
+    ↓
+SOFT EMERALD GLOW
+    ↓
+FADING INTO DEEP BLACK
+
+Use this as atmospheric lighting.
+
+Do NOT introduce unrelated accent colors.
+
+Do NOT randomly add:
+- blue
+- purple
+- orange
+- red
+- yellow
+- pink
+
+unless a semantic status genuinely requires it.
+
+Status colors must remain subtle and must not destroy the premium palette.
+
+==================================================
+LOCKED CARD DESIGN
+==================================================
+
+Cards must NOT look like flat rectangles placed on a background.
+
+Cards should feel visually lifted from the page.
+
+Use a combination of:
+
+- layered surface contrast
+- subtle border
+- realistic shadow
+- soft emerald ambient glow where appropriate
+- controlled depth
+- slight hover elevation
+- subtle gradient lighting
+- restrained perspective where appropriate
+
+A card may have an emerald glow originating from a corner and becoming softer as it travels across the surface.
+
+The effect must feel:
+
+premium
+soft
+controlled
+expensive
+
+Do NOT make every card glow strongly.
+
+Do NOT turn every card into a neon object.
+
+==================================================
+LOCKED TYPOGRAPHY
+==================================================
+
+Hero/display headings:
+
+`Ferly`
+
+The display heading must feel:
+
+- thin
+- elegant
+- premium
+- editorial
+- refined
+
+Do NOT use a heavy/bold display heading.
+
+Normal UI/body:
+
+`Inter`
+
+Use Inter for:
+
+- navbar
+- paragraphs
+- buttons
+- labels
+- dashboard
+- cards
+- forms
+- tables
+- notifications
+- AI UI
+- Roman Urdu UI
+
+Do NOT use unnecessary heavy font weights.
+
+IMPORTANT:
+
+If the actual Ferly font is unavailable in the current project, do NOT silently replace the approved design decision with a different visual identity.
+
+First inspect whether the font is already available locally or can be correctly used from the project's existing assets/configuration.
+
+If Ferly is genuinely unavailable because its font files have not been supplied/licensed, preserve the intended visual characteristics as closely as technically possible without inventing a new design direction.
+
+Do NOT change the approved heading style to a bold generic font.
+
+==================================================
+DARK + LIGHT MODE
+==================================================
+
+Both themes must remain functional.
+
+Dark mode is the primary visual expression.
+
+Dark mode must feel premium, deep, atmospheric, and luxurious.
+
+Light mode must remain premium and must NOT become a generic white/blue dashboard.
+
+Both themes must maintain:
+
+- emerald identity
+- strong typography
+- depth
+- hierarchy
+- readable contrast
+- consistent component design
+
+Check every major page in both themes.
+
+==================================================
+GLOBAL NAVBAR
+==================================================
+
+Rebuild/polish the public navbar if necessary.
+
+It must feel premium and intentional.
+
+Include the appropriate existing navigation items and authentication CTA.
+
+Requirements:
+
+- clean spacing
+- strong typography
+- clear hierarchy
+- responsive mobile behavior
+- proper hover states
+- visible focus states
+- smooth transitions
+- appropriate sticky/floating behavior if already intended
+- no layout jump
+
+Do NOT make the navbar oversized.
+
+Do NOT use generic template navigation styling.
+
+==================================================
+HOMEPAGE — THIS IS THE HIGHEST PRIORITY
+==================================================
+
+The homepage is the primary visual showcase of the entire product.
+
+Do NOT leave it as a basic "foundation".
+
+The homepage must visually communicate the complete product concept.
+
+The visitor should be able to understand the application by looking at and scrolling through the homepage.
+
+The homepage must feel complete.
+
+Required major areas:
+
+1. Navbar
+2. Hero
+3. Product explanation
+4. AI Business Manager explanation
+5. AI vs normal chatbot explanation
+6. Business management capabilities
+7. Agentic actions explanation
+8. English + Roman Urdu experience
+9. Voice capability
+10. Security and user control
+11. Final CTA
+12. Footer
+
+These sections must not feel like disconnected blocks.
+
+Use a consistent visual storytelling flow.
+
+==================================================
+HERO SECTION — LOCKED STRUCTURE
+==================================================
+
+The hero MUST use a two-column composition on desktop.
+
+LEFT:
+
+- small product label
+- main hero heading
+- supporting paragraph
+- primary CTA
+- secondary CTA where appropriate
+
+RIGHT:
+
+- large floating smartphone
+- realistic preview of OUR OWN APPLICATION UI
+
+The hero must NOT look like:
+
+text + random image
+
+It must look like:
+
+TEXT + PRODUCT EXPERIENCE
+
+==================================================
+HERO LEFT CONTENT
+==================================================
+
+The heading must communicate the core product value.
+
+It must NOT sound like generic AI marketing.
+
+The user should immediately understand:
+
+This is a Business Management System
++
+AI can actually help operate the business.
+
+Supporting paragraph should explain the idea in simple language.
+
+Avoid technical terminology.
+
+Do not write marketing copy that sounds exaggerated or vague.
+
+CTA buttons must use the same approved premium visual language as the rest of the application.
+
+==================================================
+HERO CTA BUTTON DESIGN
+==================================================
+
+Buttons must NOT look like default Tailwind buttons.
+
+They should feel like premium product controls.
+
+Use:
+
+- deep surface
+- subtle emerald lighting
+- refined border
+- controlled shadow
+- smooth hover elevation
+- subtle glow
+- clear typography
+
+Hover should feel responsive but not flashy.
+
+Focus state must remain accessible.
+
+==================================================
+HERO SMARTPHONE — EXTREMELY IMPORTANT
+==================================================
+
+The smartphone is a major part of the approved visual identity.
+
+Do NOT use a stock phone image.
+
+Do NOT use a simple rectangular div pretending to be a phone.
+
+Create a polished smartphone mockup using the application's own UI.
+
+The phone should have:
+
+- realistic outer device shape
+- screen area
+- subtle frame
+- realistic shadow
+- depth
+- controlled perspective
+- subtle reflection/highlight if appropriate
+- emerald ambient glow behind it
+
+The phone should visually appear slightly lifted from the background.
+
+==================================================
+SMARTPHONE INTERNAL UI
+==================================================
+
+The smartphone screen must contain a polished preview of OUR Business Manager application.
+
+It should visually resemble the real product.
+
+Include carefully designed mock/visual data such as:
+
+- business greeting/header
+- revenue/sales metric
+- orders/business metric
+- inventory/stock indicator
+- product preview
+- low-stock alert
+- AI Manager preview
+- appropriate mobile navigation
+
+The internal UI should look like an actual mobile application.
+
+It must NOT look like random placeholder text.
+
+It must NOT be a blank screen.
+
+It must NOT be a generic dashboard copied into a phone.
+
+Use static visual data only for the marketing preview.
+
+Do NOT pretend the mock data is live backend data.
+
+==================================================
+HERO PHONE ANIMATION
+==================================================
+
+Use Framer Motion.
+
+The phone should have subtle:
+
+- floating motion
+- entrance animation
+- controlled perspective
+- hover interaction where appropriate
+
+Animation must remain premium.
+
+Avoid:
+
+- aggressive rotation
+- excessive bouncing
+- infinite dramatic movement
+- distracting effects
+
+Respect reduced-motion preferences.
+
+==================================================
+HERO BACKGROUND
+==================================================
+
+The hero background should have subtle atmospheric depth.
+
+Use:
+
+- deep black
+- charcoal surfaces
+- emerald radial lighting
+- soft fading glow
+
+The emerald lighting can originate around/behind the phone and/or a hero corner.
+
+The result should feel cinematic and premium.
+
+Do NOT use a huge obvious gradient blob.
+
+Do NOT use rainbow gradients.
+
+==================================================
+HOMEPAGE PRODUCT EXPLANATION
+==================================================
+
+Create a visually strong section explaining:
+
+WHAT THE APPLICATION DOES.
+
+Show that the application manages real business operations such as:
+
+- products
+- inventory
+- customers
+- orders
+- sales
+- expenses
+- insights
+
+Do not imply unfinished modules are already fully functional.
+
+Use visual previews/cards to communicate the product structure.
+
+==================================================
+AI BUSINESS MANAGER SECTION
+==================================================
+
+The AI Business Manager must be presented as a core product capability.
+
+Explain visually:
+
+The AI does not only answer questions.
+
+It can understand business context and perform approved actions through the application.
+
+Use a premium visual interaction example.
+
+For example:
+
+User:
+"Black Kurta ka stock 50 kar do."
+
+Then visually communicate:
+
+Understand request
+→ Find product
+→ Validate
+→ Perform action
+→ Verify
+→ Confirm result
+
+Do NOT implement a real AI action in this phase.
+
+This is a marketing/visual explanation only.
+
+Do NOT connect this section to fake AI functionality.
+
+==================================================
+AI CHATBOT VS AGENTIC AI
+==================================================
+
+Create a visually understandable comparison.
+
+Explain:
+
+NORMAL CHATBOT:
+
+User asks
+→ chatbot answers
+
+AI BUSINESS MANAGER:
+
+User asks
+→ understands context
+→ checks business data
+→ performs approved action
+→ verifies result
+→ reports result
+
+The purpose is to make the difference understandable even to a non-technical user.
+
+Avoid technical terminology.
+
+==================================================
+BUSINESS MANAGEMENT SECTION
+==================================================
+
+Show the application as a complete business workspace.
+
+Use visual cards/previews for:
+
+- Products
+- Customers
+- Orders
+- Inventory
+- Sales
+- Expenses
+- Reports/Insights
+
+Do not create fake functionality.
+
+These are visual product explanations unless the corresponding module already exists.
+
+==================================================
+ENGLISH + ROMAN URDU SECTION
+==================================================
+
+Create a polished section explaining that the application supports:
+
+English
+and
+Roman Urdu
+
+Show a visual example.
+
+English:
+
+"Your stock is running low."
+
+Roman Urdu:
+
+"Apka stock kam ho raha hai."
+
+The section should communicate that the user can choose the language that is easiest for them.
+
+Do NOT use complicated Roman Urdu.
+
+==================================================
+VOICE SECTION
+==================================================
+
+Create a premium visual explanation of voice interaction.
+
+Show the conceptual flow:
+
+Speak
+→ AI understands
+→ AI works
+→ Result
+
+Example:
+
+User speaks:
+"Black Kurta ka stock kitna hai?"
+
+Then visually show the AI responding with the business result.
+
+This is a visual/product explanation only.
+
+Do NOT implement a new voice backend in this phase.
+
+==================================================
+SECURITY + CONTROL SECTION
+==================================================
+
+Create a visual section communicating:
+
+- user's data belongs to their business
+- authenticated access
+- controlled AI actions
+- user remains in control
+- sensitive actions can require confirmation
+
+Do not expose technical implementation details to normal users.
+
+The security section should feel trustworthy and premium, not fear-based.
+
+==================================================
+FINAL CTA
+==================================================
+
+Create a strong final call-to-action section.
+
+It should visually conclude the product story.
+
+Use:
+
+- premium dark surface
+- subtle emerald lighting
+- strong but elegant heading
+- concise supporting text
+- premium CTA button
+
+Do NOT make it look like a generic footer banner.
+
+==================================================
+FOOTER
+==================================================
+
+Create/polish a premium footer.
+
+Include appropriate:
+
+- product navigation
+- useful links
+- authentication/get-started CTA where appropriate
+- language/theme controls if already part of the design
+- copyright
+
+Keep it clean.
+
+==================================================
+DASHBOARD VISUAL REBUILD
+==================================================
+
+After the homepage, inspect the authenticated dashboard.
+
+The dashboard must NOT look like a generic admin template.
+
+Maintain the same product identity:
+
+- obsidian/deep black
+- emerald
+- charcoal
+- off-white
+- subtle depth
+- premium cards
+- consistent typography
+
+Improve:
+
+- sidebar
+- header
+- dashboard cards
+- empty states
+- metric cards
+- spacing
+- hierarchy
+- buttons
+- hover states
+- responsive behavior
+
+Do NOT add fake metrics.
+
+If data is unavailable, use honest empty states.
+
+==================================================
+PRODUCTS UI VISUAL REBUILD
+==================================================
+
+Inspect the existing Products page.
+
+Do NOT change its business functionality.
+
+Improve only its visual experience.
+
+Ensure:
+
+- premium page header
+- elegant Add Product CTA
+- polished search
+- polished filters
+- premium product cards/table
+- clean product imagery
+- stock indicators
+- price hierarchy
+- empty state
+- loading state
+- error state
+- forms/dialogs
+- responsive behavior
+
+It must feel like part of the same premium application.
+
+Do NOT turn it into a generic CRUD table.
+
+==================================================
+AUTH + ONBOARDING VISUAL POLISH
+==================================================
+
+Inspect:
+
+- login
+- signup/auth state
+- Google login
+- email login
+- business onboarding
+
+Do NOT change authentication logic.
+
+Improve only the presentation:
+
+- typography
+- spacing
+- buttons
+- form controls
+- error messages
+- loading states
+- theme
+- mobile layout
+- language presentation
+
+The authentication experience should feel like the same premium product.
+
+==================================================
+COMPONENT CONSISTENCY
+==================================================
+
+Create or improve reusable visual components where appropriate.
+
+Examples:
+
+- Button
+- Card
+- Section heading
+- Badge
+- Input
+- Select
+- Modal/Dialog
+- Empty state
+- Metric card
+- Navigation item
+- AI preview card
+
+Do NOT duplicate visual styles unnecessarily.
+
+If a component already exists and is good, reuse it.
+
+==================================================
+SPACING + LAYOUT QUALITY
+==================================================
+
+Perform a complete visual pass for:
+
+- inconsistent margins
+- inconsistent padding
+- inconsistent border radius
+- inconsistent shadows
+- inconsistent typography
+- inconsistent button sizes
+- misaligned elements
+- cramped sections
+- excessive empty space
+- mobile overflow
+- desktop stretching
+- broken grid behavior
+
+Create a coherent spacing rhythm.
+
+The interface should feel intentionally designed.
+
+==================================================
+RESPONSIVE VISUAL QA
+==================================================
+
+Inspect the actual rendered application at:
+
+- small mobile
+- large mobile
+- tablet
+- laptop
+- desktop
+- large desktop
+
+Check:
+
+- navbar
+- hero
+- smartphone
+- sections
+- cards
+- buttons
+- dashboard
+- products
+- dialogs
+- forms
+- footer
+
+Fix:
+
+- overflow
+- clipping
+- broken grids
+- text wrapping problems
+- phone scaling problems
+- button collisions
+- navigation problems
+- unreadable text
+- excessive spacing
+
+Do not merely report issues.
+
+Fix them.
+
+==================================================
+DARK/LIGHT VISUAL QA
+==================================================
+
+Test major pages in:
+
+- Dark mode
+- Light mode
+
+Check:
+
+- contrast
+- borders
+- shadows
+- cards
+- buttons
+- text
+- inputs
+- dialogs
+- empty states
+- navigation
+- phone preview
+
+Do not allow components to look unfinished in either theme.
+
+==================================================
+MOTION QA
+==================================================
+
+Check all Framer Motion animations.
+
+Ensure:
+
+- no janky transitions
+- no layout jumps
+- no excessive animation
+- no infinite distracting animation
+- hover states are smooth
+- entrance animations are subtle
+- reduced-motion preference is respected
+
+==================================================
+ACCESSIBILITY QA
+==================================================
+
+Check:
+
+- keyboard navigation
+- focus states
+- button labels
+- form labels
+- semantic structure
+- color contrast
+- touch targets
+- reduced motion
+
+Fix obvious accessibility problems discovered during the pass.
+
+==================================================
+BROWSER VISUAL QA — MANDATORY
+==================================================
+
+This is NOT optional.
+
+Start the development server.
+
+Open the actual application in the available browser/visual environment if available.
+
+Inspect the rendered UI rather than relying only on source code.
+
+The following pages MUST be visually inspected:
+
+1. Public homepage
+2. Login
+3. Business onboarding
+4. Dashboard
+5. Products
+6. Product create/edit UI
+
+For the homepage, specifically inspect:
+
+- navbar
+- hero
+- hero typography
+- hero buttons
+- smartphone
+- smartphone internal UI
+- phone depth
+- emerald glow
+- cards
+- product explanation
+- AI section
+- chatbot vs agent section
+- language section
+- voice section
+- security section
+- final CTA
+- footer
+
+If any required area is missing or visually weak:
+
+FIX IT.
+
+Do not write "implemented" merely because the component exists.
+
+==================================================
+NO PLACEHOLDER / NO FAKE COMPLETION
+==================================================
+
+Do NOT leave:
+
+- "Lorem ipsum"
+- generic placeholder sections
+- empty decorative blocks
+- blank phone screen
+- unfinished cards
+- "TODO"
+- obvious template content
+- fake live business metrics
+- fake AI execution
+
+Marketing preview data is allowed ONLY when clearly used as static visual product demonstration.
+
+==================================================
+DO NOT BREAK FUNCTIONALITY
+==================================================
+
+Before modifying any UI component, understand its current functionality.
+
+Preserve:
+
+- Supabase authentication
+- business setup
+- business ownership
+- RLS
+- products CRUD
+- inventory behavior
+- product images/storage
+- language selection
+- theme switching
+
+After visual changes, verify that these still work.
+
+==================================================
+QUALITY BAR
+==================================================
+
+Do not stop when the application merely:
+
+- compiles
+- renders
+- has the correct routes
+- contains the correct component names
+
+The quality bar is:
+
+Would a real user look at this homepage and think:
+
+"This is a premium business application."
+
+Would a business owner immediately understand:
+
+"This application helps me manage my business, and the AI can actually work with me."
+
+If the answer is no, continue refining.
+
+==================================================
+IMPLEMENTATION DISCIPLINE
+==================================================
+
+Before changing code:
+
+1. Inspect the existing implementation.
+2. Identify reusable components.
+3. Identify visual inconsistencies.
+4. Plan the visual improvements.
+5. Implement systematically.
+6. Run checks.
+7. Start the application.
+8. Perform browser visual QA.
+9. Fix issues.
+10. Re-test.
+
+Do not rewrite the whole application unnecessarily.
+
+Do not replace working functionality.
+
+==================================================
+REQUIRED CHECKS
+==================================================
+
+Run the available:
+
+- typecheck
+- lint
+- production build
+
+If scripts differ, inspect `package.json`.
+
+Also verify the application can start successfully.
+
+Fix errors discovered.
+
+==================================================
+FINAL REPORT
+==================================================
+
+When complete, provide:
+
+### 1. Visual Audit
+What visual problems were found.
+
+### 2. Homepage
+What was rebuilt/fixed.
+
+### 3. Hero
+What was improved, including smartphone preview.
+
+### 4. Dashboard
+What visual improvements were made.
+
+### 5. Products
+What visual improvements were made.
+
+### 6. Auth/Onboarding
+What visual improvements were made.
+
+### 7. Design System
+What reusable visual improvements were made.
+
+### 8. Responsive QA
+Which viewport sizes were checked.
+
+### 9. Dark/Light QA
+What was checked.
+
+### 10. Accessibility QA
+What was checked.
+
+### 11. Tests
+Typecheck/lint/build results.
+
+### 12. Browser Visual QA
+What was actually inspected in the browser.
+
+### 13. Remaining Issues
+Only genuine unresolved issues.
+
+IMPORTANT:
+
+Do NOT claim visual QA was completed if the browser/rendered application was not actually inspected.
+
+Do NOT claim a section is visually complete merely because its component exists.
+
+Do NOT modify `AGENTS.md`.
+
+Do NOT create another project.
+
+Do NOT add new business functionality.
+
+This phase is strictly:
+
+PREMIUM UI VISUAL REBUILD
++
+COMPLETE BROWSER VISUAL QA
+
+while preserving all existing functionality.

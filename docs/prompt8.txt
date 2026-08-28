@@ -1,0 +1,753 @@
+# PROMPT 8 — VOICE AI BUSINESS MANAGER
+
+Read and follow `AGENTS.md` completely before doing anything.
+
+`AGENTS.md` is the project source of truth and is LOCKED.
+
+Do NOT modify, rewrite, replace, shorten, or restructure `AGENTS.md`.
+
+Work ONLY inside the existing:
+
+`AI-Business-Manager/`
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Continue from the current project state.
+
+---
+
+# OBJECTIVE
+
+Implement the Voice AI Business Manager experience.
+
+The existing AI Business Manager from Prompt 7 must remain the core intelligence layer.
+
+Voice must NOT create a second AI system.
+
+The voice flow must be:
+
+User speaks
+    ↓
+Speech recognition
+    ↓
+Text
+    ↓
+Existing AI Business Manager Agent
+    ↓
+Business tools/actions
+    ↓
+AI text response
+    ↓
+Text-to-speech
+    ↓
+User hears response
+
+The user should be able to operate supported business tasks naturally by speaking.
+
+The experience must work for:
+
+* English
+* Roman Urdu
+
+The feature must remain simple enough for non-technical business owners.
+
+---
+
+# STEP 1 — FULL AUDIT
+
+Before changing anything:
+
+1. Read `AGENTS.md`.
+2. Inspect the current AI Business Manager implementation.
+3. Inspect Prompt 7's agent architecture.
+4. Inspect the model/provider layer.
+5. Inspect Gemini failover implementation.
+6. Inspect business tools.
+7. Inspect the current AI chat UI.
+8. Inspect authentication.
+9. Inspect the language system.
+10. Inspect existing Framer Motion components.
+11. Inspect existing responsive behavior.
+12. Inspect existing environment variables.
+
+Preserve all working functionality.
+
+Do NOT recreate the AI agent.
+
+Do NOT create a second model provider.
+
+Do NOT duplicate business tools.
+
+---
+
+# STEP 2 — VOICE ARCHITECTURE
+
+Voice must use the existing AI agent.
+
+The architecture should remain:
+
+Voice Input
+    ↓
+Speech-to-Text
+    ↓
+Existing AI Business Manager
+    ↓
+Existing Gemini Provider Router
+    ↓
+Existing Business Tools
+    ↓
+AI Response Text
+    ↓
+Text-to-Speech
+
+Do NOT send voice requests directly to Gemini while bypassing the existing agent.
+
+Do NOT create separate business logic for voice.
+
+The same business authorization and tools must be used.
+
+---
+
+# STEP 3 — SPEECH-TO-TEXT
+
+Implement speech recognition using a free browser/device-supported approach where practical.
+
+Do NOT introduce a paid speech API.
+
+The implementation should:
+
+* request microphone permission only when the user starts voice input
+* clearly communicate microphone permission state
+* start listening when activated
+* stop listening when requested
+* capture recognized text
+* send recognized text to the existing AI agent
+* handle unsupported browsers gracefully
+
+Do not activate the microphone automatically.
+
+The user must intentionally press the voice button.
+
+---
+
+# STEP 4 — TEXT-TO-SPEECH
+
+Implement free browser/device text-to-speech where practical.
+
+Do NOT introduce a paid voice API.
+
+The AI response should be speakable.
+
+The flow should be:
+
+AI response received
+    ↓
+Display response
+    ↓
+Speak response
+
+Provide controls to:
+
+* start speaking
+* stop speaking
+* replay response where appropriate
+
+Do not automatically speak unexpectedly if the user has disabled voice behavior.
+
+---
+
+# STEP 5 — LANGUAGE BEHAVIOR
+
+Voice must respect the application's selected language.
+
+### English mode
+
+User speaks English.
+
+AI understands English.
+
+AI responds in English.
+
+Text-to-speech uses an appropriate English voice when available.
+
+### Roman Urdu mode
+
+User speaks Roman Urdu where browser/device speech recognition supports it.
+
+AI receives the recognized text.
+
+AI responds in Roman Urdu.
+
+Text-to-speech should attempt an appropriate Urdu-compatible voice where available.
+
+IMPORTANT:
+
+Roman Urdu is written using Latin characters.
+
+Do NOT force the AI response into Urdu/Arabic script when the user has selected Roman Urdu.
+
+Example:
+
+User:
+
+"Mera stock check karo"
+
+AI:
+
+"Bilkul, aapke paas 12 products hain aur 3 products ka stock kam hai."
+
+---
+
+# STEP 6 — MIXED LANGUAGE
+
+The AI should understand natural mixed-language requests.
+
+Examples:
+
+"Mere low stock products show karo."
+
+"Blue Suit ka stock check karo."
+
+"New customer add karo, name Ali hai."
+
+"Today's sales kitni hui?"
+
+The existing AI agent should decide the correct business operation.
+
+Do NOT create hardcoded phrase matching for every example.
+
+Use the existing AI intelligence.
+
+---
+
+# STEP 7 — VOICE UI
+
+Create a premium voice interaction area inside the existing AI Business Manager interface.
+
+Do NOT make it look like a generic phone assistant.
+
+The design must follow the existing locked visual system:
+
+* Obsidian/deep black
+* Deep charcoal
+* Deep emerald
+* Off-white
+* Existing premium gradients
+* Existing card depth
+* Existing typography
+* Existing motion language
+
+Do NOT introduce new colors.
+
+---
+
+# STEP 8 — VOICE BUTTON
+
+Create a prominent but elegant microphone control.
+
+The button should clearly communicate:
+
+Idle:
+
+"Talk to AI"
+
+Listening:
+
+"Listening..."
+
+Processing:
+
+"Thinking..."
+
+Speaking:
+
+"Speaking..."
+
+The states must be visually distinct.
+
+Use subtle Framer Motion animation.
+
+Do NOT use distracting infinite animations.
+
+---
+
+# STEP 9 — VOICE STATE MACHINE
+
+Implement a clean voice state model.
+
+Recommended states:
+
+IDLE
+
+LISTENING
+
+PROCESSING
+
+SPEAKING
+
+ERROR
+
+The UI must always represent the correct state.
+
+Example:
+
+IDLE
+→ user presses microphone
+→ LISTENING
+→ speech captured
+→ PROCESSING
+→ AI response
+→ SPEAKING
+→ finished
+→ IDLE
+
+If an error occurs:
+
+→ ERROR
+→ show understandable message
+→ allow retry
+→ return to IDLE
+
+---
+
+# STEP 10 — VISUAL FEEDBACK
+
+While listening, provide subtle visual feedback.
+
+Examples:
+
+* soft emerald pulse
+* microphone state animation
+* small audio/listening indicator
+* waveform-style visual if appropriate
+
+Keep the animation premium and restrained.
+
+Do NOT create a loud neon waveform.
+
+The user should immediately understand:
+
+"AI meri baat sun raha hai."
+
+---
+
+# STEP 11 — TRANSCRIPT
+
+Show the recognized speech as text before/while processing where appropriate.
+
+Example:
+
+You:
+
+"Mera stock check karo"
+
+Then:
+
+AI:
+
+"Aapke 3 products low stock mein hain."
+
+This is important for accessibility and for users who want to verify what the application understood.
+
+---
+
+# STEP 12 — AI ACTION TRANSPARENCY
+
+Voice actions must behave exactly like typed AI actions.
+
+Example:
+
+User says:
+
+"Blue Suit ka stock 20 kar do."
+
+Flow:
+
+Listening...
+
+"Meri samajh mein aaya ke Blue Suit ka stock 20 karna hai."
+
+Processing...
+
+Updating stock...
+
+Stock updated ✓
+
+AI speaks:
+
+"Blue Suit ka stock 20 kar diya hai."
+
+Do NOT claim success unless the existing business tool actually succeeds.
+
+---
+
+# STEP 13 — CONFIRMATION
+
+Use the same confirmation rules established in Prompt 7.
+
+For destructive or important actions:
+
+User speaks request.
+
+AI asks for confirmation.
+
+Example:
+
+"Ye product delete karna hai?"
+
+User:
+
+"Haan"
+
+Then execute.
+
+If the user says:
+
+"Nahi"
+
+Cancel the action.
+
+Do NOT execute destructive actions based on ambiguous speech.
+
+---
+
+# STEP 14 — MICROPHONE PERMISSIONS
+
+Microphone permission must be handled responsibly.
+
+Requirements:
+
+* do not request microphone permission on page load
+* request only after explicit user interaction
+* show a clear explanation if permission is denied
+* provide retry
+* handle unavailable microphone
+* handle browser restrictions
+* stop microphone access when listening ends
+
+Do not continuously keep the microphone active.
+
+---
+
+# STEP 15 — ERROR HANDLING
+
+Handle:
+
+* microphone permission denied
+* microphone unavailable
+* browser speech recognition unavailable
+* speech recognition timeout
+* no speech detected
+* speech recognition error
+* AI request failure
+* Gemini provider failure
+* all Gemini providers unavailable
+* text-to-speech unavailable
+* unsupported language voice
+* network failure
+
+Messages must be simple.
+
+Do NOT expose technical errors such as:
+
+"HTTP 429"
+
+or:
+
+"Provider adapter exception"
+
+Instead show something understandable.
+
+Example:
+
+"AI abhi available nahi hai. Thori dair baad dobara try karein."
+
+---
+
+# STEP 16 — VOICE + EXISTING GEMINI FAILOVER
+
+Voice requests must use the same Gemini provider router created in Prompt 7.
+
+Do NOT create separate Gemini keys for voice.
+
+Do NOT bypass the existing failover layer.
+
+Architecture:
+
+Voice
+ ↓
+Existing AI Agent
+ ↓
+Existing Gemini Router
+ ↓
+Gemini Provider 1
+ ↓
+fallback if appropriate
+ ↓
+Gemini Provider 2
+ ↓
+etc.
+
+The existing multi-project Gemini configuration must remain intact.
+
+---
+
+# STEP 17 — SECURITY
+
+Voice must obey exactly the same security rules as typed AI.
+
+Every request must:
+
+* require authentication
+* identify the current business owner
+* use existing authorization
+* respect Supabase RLS
+* use existing business tools
+* validate tool arguments
+* never expose secrets
+
+Never trust recognized speech as authorization.
+
+Voice recognition is only user input.
+
+---
+
+# STEP 18 — CHAT + VOICE TOGETHER
+
+The user should be able to switch naturally between:
+
+Typing
+
+and
+
+Voice
+
+Example:
+
+User types:
+
+"Show me my products."
+
+AI responds.
+
+Then user presses microphone:
+
+"Ab low stock wale dikhao."
+
+The AI should use the same current conversation context where supported by Prompt 7.
+
+Do NOT create separate unrelated conversations for text and voice.
+
+---
+
+# STEP 19 — MOBILE EXPERIENCE
+
+Voice is especially important on mobile.
+
+Verify:
+
+* microphone button is easy to reach
+* touch target is at least 44px
+* no accidental activation
+* keyboard does not cover the input
+* voice state remains visible
+* transcript remains readable
+* no horizontal overflow
+* responsive spacing
+
+The voice experience should feel natural on a phone.
+
+---
+
+# STEP 20 — DESKTOP EXPERIENCE
+
+On desktop:
+
+* voice control should feel integrated into the AI Manager
+* transcript should remain readable
+* response should remain visible
+* microphone state should be obvious
+* no excessive empty space
+* no oversized controls
+
+Maintain the premium dashboard aesthetic.
+
+---
+
+# STEP 21 — ACCESSIBILITY
+
+Ensure:
+
+* microphone button has an accessible label
+* current state is announced appropriately
+* keyboard users can activate controls
+* visible focus state exists
+* reduced-motion preference is respected
+* color is not the only indicator of state
+* text labels communicate state
+* screen-reader users can understand errors
+
+Do not rely exclusively on animation.
+
+---
+
+# STEP 22 — REDUCED MOTION
+
+Respect:
+
+`prefers-reduced-motion`
+
+When reduced motion is enabled:
+
+* disable unnecessary pulsing
+* reduce transitions
+* remove large movement
+* keep state communication through text/icons
+* never hide content because of animation
+
+The hydration-safe Reveal implementation from Prompt 4 must remain intact.
+
+---
+
+# STEP 23 — DO NOT IMPLEMENT
+
+Do NOT implement:
+
+* WhatsApp voice automation
+* phone-call integration
+* external voice APIs that require payment
+* ElevenLabs
+* paid speech services
+* autonomous background voice agents
+* wake-word detection
+* always-listening microphone
+* long-term voice memory
+* voice cloning
+* external business integrations
+
+Those belong to later phases.
+
+---
+
+# STEP 24 — TESTING
+
+Run:
+
+* typecheck
+* lint
+* production build
+
+Then test:
+
+1. AI text chat still works.
+2. Voice button works.
+3. Microphone permission is requested only after interaction.
+4. Listening state appears correctly.
+5. Recognized text appears.
+6. AI receives recognized text.
+7. AI response appears.
+8. AI response can be spoken.
+9. Speech can be stopped.
+10. English mode works.
+11. Roman Urdu mode works where browser speech support allows it.
+12. Mixed-language requests are handled.
+13. Existing business tools still work.
+14. Confirmation flow works.
+15. Gemini failover remains connected.
+16. Unauthorized requests remain blocked.
+17. Microphone denial is handled gracefully.
+18. Unsupported browser is handled gracefully.
+19. Reduced-motion mode does not hide content.
+20. No console errors.
+21. No horizontal overflow.
+
+Do not fabricate successful speech recognition testing if the environment cannot provide a real microphone.
+
+If real microphone testing is unavailable, test the complete voice state machine and UI with a temporary QA harness.
+
+Remove the harness before completion.
+
+---
+
+# STEP 25 — VISUAL QA
+
+Inspect the voice experience at:
+
+* mobile
+* tablet
+* laptop
+* desktop
+* large desktop
+
+Check:
+
+* microphone button
+* listening animation
+* processing state
+* speaking state
+* transcript
+* AI response
+* confirmation UI
+* error UI
+* dark theme
+* light theme
+* reduced motion
+* responsive layout
+
+Fix all genuine visual problems found.
+
+Do NOT redesign unrelated dashboard sections.
+
+---
+
+# STEP 26 — CLEANUP
+
+Before finishing:
+
+* remove temporary QA routes
+* remove temporary test files
+* remove debug logging
+* remove unused imports
+* remove unused dependencies
+* ensure no secrets are exposed
+* ensure no fake production functionality remains
+* preserve Prompt 7 functionality
+
+---
+
+# FINAL REPORT
+
+Provide a concise implementation report containing:
+
+1. Voice architecture implemented.
+2. Speech-to-text status.
+3. Text-to-speech status.
+4. English mode status.
+5. Roman Urdu mode status.
+6. AI Agent integration status.
+7. Gemini failover integration status.
+8. Confirmation behavior.
+9. Authentication/security status.
+10. Responsive/mobile status.
+11. Accessibility status.
+12. Typecheck result.
+13. Lint result.
+14. Production build result.
+15. Voice/interaction QA result.
+16. Any genuine blockers.
+
+IMPORTANT:
+
+Do NOT modify `AGENTS.md`.
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Do NOT implement future-phase features.
+
+Continue from the existing `AI-Business-Manager/` project.
+
+Complete this phase fully before reporting completion.

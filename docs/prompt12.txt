@@ -1,0 +1,798 @@
+# PROMPT 12 — FIX SEAMLESS GEMINI FAILOVER + GROQ RUNTIME FALLBACK
+
+Read and follow `AGENTS.md` completely before doing anything.
+
+`AGENTS.md` is LOCKED and must NOT be modified.
+
+Work ONLY inside the existing:
+
+`AI-Business-Manager/`
+
+Do NOT create another project or root folder.
+
+---
+
+# OBJECTIVE
+
+The existing AI architecture already contains:
+
+* OpenAI Agents SDK
+* Gemini 3.6
+* 8 Gemini project/API-key slots
+* Gemini failover router
+* Groq backup provider
+* `openai/gpt-oss-120b`
+* `GROQ_API_KEY` already configured in `.env.local`
+
+Prompt 11 already implemented the Groq integration.
+
+**DO NOT reimplement Groq from scratch.**
+
+The task now is to **diagnose and FIX the runtime failover behavior**.
+
+The required final behavior is:
+
+```text
+User Request
+      ↓
+Gemini 1
+      ↓ 429 / retryable failure
+Gemini 2
+      ↓ 429 / retryable failure
+Gemini 3
+      ↓
+   SUCCESS
+      ↓
+Return response
+```
+
+The user must NOT see a quota error if Gemini 3 is available.
+
+If all Gemini projects fail:
+
+```text
+Gemini 1 ❌
+Gemini 2 ❌
+Gemini 3 ❌
+Gemini 4 ❌
+Gemini 5 ❌
+Gemini 6 ❌
+Gemini 7 ❌
+Gemini 8 ❌
+       ↓
+     GROQ
+       ↓
+   SUCCESS
+       ↓
+Return response
+```
+
+The user must NOT see a quota error if Groq successfully handles the request.
+
+Only when:
+
+```text
+Gemini 1–8 ❌
+      +
+Groq ❌
+```
+
+may the application return the final provider/quota error.
+
+---
+
+# CRITICAL REQUIREMENT
+
+## NEVER expose an intermediate Gemini quota error
+
+This is the most important requirement.
+
+If:
+
+```text
+Gemini 1 → 429
+Gemini 2 → 429
+Gemini 3 → SUCCESS
+```
+
+the frontend must receive:
+
+```text
+SUCCESS
+```
+
+NOT:
+
+```text
+AI Manager busy hai (quota limit)
+```
+
+The router must continue automatically until it finds a provider that can successfully handle the request.
+
+A single exhausted Gemini project must NEVER terminate the entire AI request.
+
+---
+
+# STEP 1 — AUDIT CURRENT IMPLEMENTATION
+
+Before changing code, inspect:
+
+* `lib/ai/gemini-router.ts`
+* `lib/ai/failover-model.ts`
+* `lib/ai/model-provider.ts`
+* AI chat route
+* Groq provider implementation
+* Gemini error classification
+* provider cooldown logic
+* environment loading
+* Agents SDK model binding
+* streaming path
+* non-streaming path
+* tool execution path
+* existing safe UI error mapping
+
+Do NOT assume the Prompt 11 implementation is correct.
+
+Find the actual reason why:
+
+```text
+GROQ_API_KEY configured
++
+server restarted
++
+Gemini quota exhausted
+=
+AI still shows quota error
+```
+
+Do not guess.
+
+---
+
+# STEP 2 — VERIFY GROQ ENVIRONMENT
+
+Verify server-side only that:
+
+```text
+GROQ_API_KEY
+GROQ_MODEL
+```
+
+are actually loaded.
+
+DO NOT print the actual API key.
+
+Safe verification may report:
+
+```text
+GROQ_API_KEY: configured
+GROQ_MODEL: openai/gpt-oss-120b
+```
+
+Never log:
+
+* the key
+* partial key
+* token
+* secret
+
+If the key is genuinely missing at runtime, clearly report that.
+
+But do not assume it is missing merely because the fallback failed.
+
+---
+
+# STEP 3 — REAL GROQ PROVIDER TEST
+
+Because the key is already configured, perform a harmless real Groq API/provider test.
+
+Use a minimal non-destructive request.
+
+Verify that:
+
+```text
+GROQ_API_KEY
++
+openai/gpt-oss-120b
++
+Groq OpenAI-compatible endpoint
+```
+
+actually produces a successful response.
+
+If it fails, identify the exact reason:
+
+* invalid key
+* unavailable model
+* incorrect endpoint
+* SDK incompatibility
+* request format
+* authentication
+* rate limit
+* timeout
+* network
+* response parsing
+* streaming incompatibility
+
+Do NOT fabricate success.
+
+Do NOT expose the secret in logs.
+
+---
+
+# STEP 4 — FIX GEMINI FAILOVER
+
+The Gemini router must treat retryable provider failures as **failover conditions**, not final user errors.
+
+At minimum correctly handle:
+
+* HTTP 429
+* quota exhaustion
+* retryable 5xx
+* network failures
+* timeout
+* temporary provider unavailable
+
+For example:
+
+```text
+Gemini 1 → 429
+```
+
+must mean:
+
+```text
+try Gemini 2
+```
+
+NOT:
+
+```text
+return quota error
+```
+
+Continue until:
+
+* a Gemini slot succeeds, OR
+* all Gemini slots fail.
+
+---
+
+# STEP 5 — GEMINI SLOT ORDER
+
+Preserve the existing order:
+
+```text
+Gemini 1
+Gemini 2
+Gemini 3
+Gemini 4
+Gemini 5
+Gemini 6
+Gemini 7
+Gemini 8
+```
+
+Do NOT randomly select keys.
+
+Do NOT remove slots.
+
+Do NOT change Gemini 3.6.
+
+Do NOT put Groq before Gemini.
+
+---
+
+# STEP 6 — COOLDOWN BEHAVIOR
+
+Preserve the existing cooldown system.
+
+Cooldown is an optimization and must NOT become a reason to return an error prematurely.
+
+Example:
+
+```text
+Gemini 1 cooling
+Gemini 2 cooling
+Gemini 3 available
+```
+
+The router should use Gemini 3.
+
+If all Gemini slots are cooling/unavailable:
+
+```text
+Gemini chain unavailable
+        ↓
+Groq
+```
+
+Do NOT return the final quota error merely because Gemini slots are cooling.
+
+---
+
+# STEP 7 — GROQ FALLBACK
+
+After all eligible Gemini slots have failed/unavailable:
+
+```text
+Gemini 1
+↓
+Gemini 2
+↓
+...
+↓
+Gemini 8
+↓
+Groq
+```
+
+Groq must actually be invoked.
+
+Do NOT merely classify the request as `rate_limited` and return it to the frontend.
+
+Do NOT stop after Gemini slot 1.
+
+Do NOT stop after the first 429.
+
+Do NOT stop because one Gemini slot is cooling.
+
+---
+
+# STEP 8 — GROQ MUST USE THE EXISTING AGENT
+
+Groq must remain part of the existing Agents SDK architecture.
+
+Do NOT create:
+
+* GroqAgent
+* GroqChatAgent
+* second agent
+* second chat endpoint
+* second tool registry
+* second conversation history
+
+The same agent must operate with the selected model/provider.
+
+---
+
+# STEP 9 — TOOL/ACTION REQUESTS
+
+Failover must work for agentic requests too.
+
+Example:
+
+```text
+"Jamawar ki price 300 kar do"
+```
+
+Expected behavior:
+
+```text
+Agent request
+↓
+Gemini 1 → 429
+↓
+Gemini 2 → 429
+↓
+Gemini 3 → success
+↓
+update_product tool
+↓
+database update
+↓
+final response
+```
+
+If all Gemini projects fail:
+
+```text
+Gemini 1–8
+↓
+Groq
+↓
+same agent
+↓
+update_product tool
+↓
+database update
+↓
+final response
+```
+
+Provider switching must NOT bypass:
+
+* confirmation rules
+* authentication
+* authorization
+* RLS
+* ownership
+* tool validation
+
+---
+
+# STEP 10 — STREAMING
+
+Verify both:
+
+### Streaming request
+
+```text
+Gemini fails
+↓
+next Gemini
+↓
+Groq if required
+↓
+SSE response
+```
+
+### Non-streaming request
+
+```text
+Gemini fails
+↓
+next Gemini
+↓
+Groq if required
+↓
+response
+```
+
+Do NOT expose intermediate provider errors to the frontend.
+
+---
+
+# STEP 11 — IMPORTANT MID-REQUEST RULE
+
+Handle provider failure correctly before a response has been successfully established.
+
+If the provider fails before useful response streaming begins:
+
+```text
+failover is allowed
+```
+
+If a provider has already begun sending a response and then fails mid-stream:
+
+Do NOT blindly replay the request and risk duplicate tool execution.
+
+Preserve the existing safety behavior from Prompt 11.
+
+Do not introduce duplicate business actions.
+
+---
+
+# STEP 12 — GROQ MODEL
+
+Use exactly:
+
+```text
+openai/gpt-oss-120b
+```
+
+unless `GROQ_MODEL` explicitly configures another valid model.
+
+Do NOT silently substitute another model.
+
+If the configured model is unavailable, report the real problem.
+
+---
+
+# STEP 13 — USER-FACING ERROR RULE
+
+The frontend should only receive the final AI error when **no provider can handle the request**.
+
+Correct:
+
+```text
+Gemini 1 ❌
+Gemini 2 ❌
+Gemini 3 ❌
+Gemini 4 ❌
+Gemini 5 ❌
+Gemini 6 ❌
+Gemini 7 ❌
+Gemini 8 ❌
+Groq ❌
+       ↓
+Final safe error
+```
+
+Incorrect:
+
+```text
+Gemini 1 ❌
+       ↓
+Frontend quota error
+```
+
+Incorrect:
+
+```text
+Gemini 1 ❌
+Gemini 2 ❌
+Gemini 3 ✅
+       ↓
+Frontend quota error
+```
+
+Incorrect:
+
+```text
+Gemini 1–8 ❌
+Groq ✅
+       ↓
+Frontend quota error
+```
+
+---
+
+# STEP 14 — NO FALSE SUCCESS
+
+Never claim:
+
+```text
+Groq handled the request
+```
+
+unless Groq actually returned a successful response.
+
+Never fabricate provider availability.
+
+---
+
+# STEP 15 — TEST MATRIX
+
+Create safe mocked/stubbed tests for the router.
+
+### TEST 1 — Gemini 1 fails, Gemini 2 succeeds
+
+```text
+Gemini 1 → 429
+Gemini 2 → SUCCESS
+```
+
+Expected:
+
+```text
+Gemini 2 response
+No frontend error
+```
+
+---
+
+### TEST 2 — First 2 fail, third succeeds
+
+```text
+Gemini 1 → 429
+Gemini 2 → 429
+Gemini 3 → SUCCESS
+```
+
+Expected:
+
+```text
+Gemini 3 response
+No frontend error
+```
+
+---
+
+### TEST 3 — All Gemini fail, Groq succeeds
+
+```text
+Gemini 1 → 429
+Gemini 2 → 429
+Gemini 3 → 429
+Gemini 4 → 429
+Gemini 5 → 429
+Gemini 6 → 429
+Gemini 7 → 429
+Gemini 8 → 429
+Groq → SUCCESS
+```
+
+Expected:
+
+```text
+Groq response
+No frontend quota error
+```
+
+---
+
+### TEST 4 — All Gemini fail, Groq fails
+
+```text
+Gemini 1–8 → FAIL
+Groq → 429
+```
+
+Expected:
+
+```text
+Final safe provider/quota error
+```
+
+---
+
+### TEST 5 — Gemini slot cooling
+
+```text
+Gemini 1 → cooling
+Gemini 2 → cooling
+Gemini 3 → SUCCESS
+```
+
+Expected:
+
+```text
+Gemini 3 response
+```
+
+---
+
+### TEST 6 — Real Groq request
+
+Since `GROQ_API_KEY` is configured:
+
+Perform one harmless real request using:
+
+```text
+openai/gpt-oss-120b
+```
+
+Confirm actual success or report the exact actual failure.
+
+Do NOT perform business mutations.
+
+---
+
+### TEST 7 — Real fallback if safely reproducible
+
+If possible without consuming unnecessary quota or modifying business data, verify the actual application path:
+
+```text
+AI chat
+↓
+Gemini unavailable
+↓
+Groq
+↓
+AI response
+```
+
+If forcing all Gemini slots offline would require destructive configuration changes, use a controlled test/stub for the router and separately verify the real Groq provider.
+
+Do not modify production credentials merely for testing.
+
+---
+
+# STEP 16 — TOOL SAFETY TEST
+
+Verify provider failover does not bypass confirmation.
+
+Use mocked/stubbed tool execution where necessary.
+
+Test that:
+
+```text
+Gemini → Groq
+```
+
+does not change:
+
+* confirmation requirements
+* authorization
+* ownership
+* RLS
+* tool permissions
+
+---
+
+# STEP 17 — VOICE
+
+Verify voice still uses:
+
+```text
+Speech
+↓
+AiChat
+↓
+Existing Agent
+↓
+Gemini / Groq failover
+↓
+SSE
+↓
+TTS
+```
+
+No separate Groq voice system.
+
+---
+
+# STEP 18 — DO NOT MODIFY UNRELATED FEATURES
+
+Do NOT modify:
+
+* Products UI
+* Customers
+* Orders
+* Sales
+* Inventory
+* Expenses
+* Settings
+* Dashboard
+* navigation performance
+* authentication
+* Google OAuth
+* Supabase/RLS
+* language system
+* themes
+* responsive design
+* existing voice architecture
+
+unless a minimal change is genuinely required for the failover bug.
+
+---
+
+# STEP 19 — VERIFICATION
+
+Run:
+
+```text
+npm run typecheck
+npm run lint
+npm run build
+```
+
+Then run all relevant failover tests.
+
+Do not fabricate tests.
+
+---
+
+# STEP 20 — FINAL REPORT
+
+Report:
+
+1. Exact root cause of the current failover problem.
+2. Whether `GROQ_API_KEY` was detected at runtime.
+3. Whether a real Groq request succeeded.
+4. Whether Gemini 1 → Gemini 2 → ... → Gemini 8 failover works.
+5. Whether a third available Gemini slot successfully handles a request after earlier slots return 429.
+6. Whether all 8 Gemini failures correctly trigger Groq.
+7. Whether Groq successfully returns the response.
+8. Whether all-provider failure correctly produces the final safe error.
+9. Streaming result.
+10. Non-streaming result.
+11. Tool-call result.
+12. Confirmation/security result.
+13. Voice result.
+14. Typecheck.
+15. Lint.
+16. Production build.
+17. Any genuine blockers.
+
+IMPORTANT:
+
+* Do NOT reimplement Prompt 11.
+* Do NOT create another AI system.
+* Do NOT create another agent.
+* Do NOT create another chat endpoint.
+* Do NOT remove Gemini.
+* Do NOT remove any Gemini project.
+* Do NOT change Gemini 3.6.
+* Do NOT put Groq before Gemini.
+* Do NOT expose API keys.
+* Do NOT print secrets.
+* Do NOT fabricate live tests.
+* Do NOT create fake business data.
+* Do NOT redo completed performance optimization.
+* Do NOT modify `AGENTS.md`.
+
+The final success condition is:
+
+> **As long as ANY Gemini project OR Groq can successfully handle the request, the user receives a successful AI response. The user receives a provider/quota error only when ALL available providers have genuinely failed.**

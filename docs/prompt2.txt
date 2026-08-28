@@ -1,0 +1,652 @@
+# PROMPT 2 — AUTHENTICATION & BUSINESS SETUP
+
+Read and follow `AGENTS.md` completely before doing anything.
+
+`AGENTS.md` is the master project specification and is READ-ONLY.
+
+## CRITICAL RULES
+
+* Do NOT modify `AGENTS.md`.
+* Do NOT rewrite or restructure `AGENTS.md`.
+* Do NOT create another project.
+* Do NOT create another root folder.
+* Do NOT recreate the application.
+* Work only inside the existing `AI-Business-Manager/` project.
+* Preserve all working Phase 1 functionality.
+* Do NOT rebuild the public homepage unnecessarily.
+* Do NOT implement unrelated future phases.
+
+Continue from the existing implementation.
+
+---
+
+# PHASE 2 OBJECTIVE
+
+Implement the secure authentication and first-time Business Setup foundation for the AI Business Manager.
+
+The user experience should be:
+
+Public Homepage
+↓
+Login / Continue
+↓
+Authentication
+↓
+First-time Business Setup
+↓
+Dashboard
+
+Returning users who have already completed Business Setup should be taken directly to the Dashboard.
+
+The experience must be extremely simple for non-technical business owners.
+
+Do not create a complicated enterprise-style signup process.
+
+---
+
+# STEP 1 — INSPECT EXISTING IMPLEMENTATION
+
+Before changing anything:
+
+1. Read `AGENTS.md`.
+2. Inspect the current project structure.
+3. Inspect the Phase 1 implementation.
+4. Inspect `package.json`.
+5. Inspect existing layout, navigation, theme, components, and homepage.
+6. Inspect any existing Supabase configuration.
+7. Inspect environment variable names without exposing secret values.
+8. Determine whether Supabase packages are already installed.
+9. Determine whether authentication infrastructure already exists.
+
+Preserve good existing code.
+
+Do not duplicate existing utilities/components.
+
+---
+
+# STEP 2 — SUPABASE AUTHENTICATION
+
+Implement authentication using Supabase Auth.
+
+Required methods:
+
+* Google
+* Email
+
+The authentication system must use secure server/client patterns appropriate for the current Next.js version and Supabase SSR architecture.
+
+Do NOT expose private Supabase keys.
+
+Never put service-role credentials into browser code.
+
+Use the appropriate public Supabase configuration only where permitted.
+
+Keep authentication server-aware and secure.
+
+---
+
+# STEP 3 — AUTH FLOW
+
+Implement this user flow:
+
+### New user
+
+Homepage
+↓
+Login / Continue
+↓
+Authentication
+↓
+Business Setup
+↓
+Dashboard
+
+### Returning user
+
+Homepage
+↓
+Login / Continue
+↓
+Authentication
+↓
+Dashboard
+
+If the user has not completed Business Setup, they must be redirected to Business Setup before accessing the main application.
+
+Do not allow an authenticated user with incomplete setup to bypass the required onboarding state through direct URLs.
+
+---
+
+# STEP 4 — LOGIN EXPERIENCE
+
+Create a premium but extremely simple authentication page.
+
+It must support:
+
+### Google
+
+A clear:
+
+"Continue with Google"
+
+action.
+
+### Email
+
+Support:
+
+* email
+* password
+* sign in
+* sign up
+* appropriate validation
+* useful errors
+* loading state
+* logout
+
+If email confirmation is required by the configured Supabase project, handle the resulting state gracefully.
+
+Do not expose raw Supabase errors directly to normal users.
+
+---
+
+# STEP 5 — AUTH CALLBACK / SESSION
+
+Implement the appropriate authentication callback/session handling for the current Next.js + Supabase architecture.
+
+Ensure:
+
+* secure session handling
+* protected routes
+* authenticated state detection
+* logout
+* loading states
+* auth errors
+* correct redirect behavior
+
+Do not rely only on client-side checks for protected application access.
+
+Use appropriate server-side protection.
+
+---
+
+# STEP 6 — DATABASE FOUNDATION
+
+Create the minimum database structure required for:
+
+1. User identity
+2. Business/account ownership
+3. Business setup/profile
+
+Do not prematurely create the complete database for every future module.
+
+The initial business profile should support at least:
+
+* business id
+* owner/user relationship
+* business name
+* business type
+* currency
+* preferred language
+* basic business information
+* setup completion state
+* created timestamp
+* updated timestamp
+
+Use proper migrations.
+
+Do not manually modify production-like database structure without a migration.
+
+---
+
+# STEP 7 — BUSINESS OWNERSHIP
+
+This is extremely important.
+
+Every business must belong to the authenticated user/account.
+
+Do NOT trust a client-provided `business_id` as sufficient authorization.
+
+The server must derive ownership from the authenticated session.
+
+Establish the foundation required for future modules such as:
+
+* products
+* customers
+* orders
+* inventory
+* sales
+* expenses
+* employees
+* documents
+* AI business context
+
+to remain isolated by business.
+
+---
+
+# STEP 8 — ROW LEVEL SECURITY
+
+Implement Supabase RLS for the business profile data created in this phase.
+
+Users must only be able to access their own business data.
+
+Test policies logically for:
+
+* SELECT
+* INSERT
+* UPDATE
+
+Do not create an insecure policy such as:
+
+"authenticated users can access all businesses."
+
+Never rely only on frontend filtering.
+
+---
+
+# STEP 9 — BUSINESS SETUP
+
+Create the first-time Business Setup experience.
+
+The form should be simple and friendly.
+
+Required information:
+
+### Business Name
+
+Example:
+
+`Dani Clothing`
+
+### Business Type
+
+Allow useful business types such as:
+
+* Clothing / Fashion
+* Restaurant / Food
+* Retail Shop
+* Grocery
+* Electronics
+* Services
+* Other
+
+Do not unnecessarily restrict the system to clothing businesses.
+
+The AI Business Manager must eventually support different business types.
+
+### Currency
+
+Allow the owner to select the business currency.
+
+For example:
+
+* PKR
+* USD
+* EUR
+* GBP
+* AED
+* SAR
+
+Use a clean searchable/selectable interface if appropriate.
+
+### Language
+
+Required choices:
+
+* English
+* Roman Urdu
+
+This is the user's preferred application language.
+
+### Basic Business Information
+
+Keep this minimal.
+
+Do not create a long form.
+
+Only collect information that is genuinely useful for the application.
+
+---
+
+# STEP 10 — LANGUAGE EXPERIENCE
+
+The Business Setup experience itself must support:
+
+* English
+* Roman Urdu
+
+The selected language should persist with the business/user preferences.
+
+Roman Urdu must be natural and simple.
+
+For example:
+
+English:
+
+"Tell us about your business"
+
+Roman Urdu:
+
+"Apne business ke bare mein batayein"
+
+Do not use complicated Urdu vocabulary.
+
+The language selection must be functional, not merely decorative.
+
+---
+
+# STEP 11 — ONBOARDING UX
+
+The onboarding experience should feel:
+
+* simple
+* premium
+* friendly
+* fast
+* non-technical
+
+Avoid asking for unnecessary information.
+
+The user should understand why each piece of information is being requested.
+
+Provide:
+
+* clear labels
+* helpful short descriptions
+* validation
+* loading state
+* success state
+* error state
+
+Do not overwhelm the user with a multi-page enterprise setup wizard unless genuinely required.
+
+---
+
+# STEP 12 — DASHBOARD ENTRY
+
+After successful Business Setup:
+
+redirect the user to the application Dashboard.
+
+The Dashboard in this phase should establish the application shell/foundation only.
+
+It should prepare the structure for future modules such as:
+
+* Dashboard
+* Products
+* Customers
+* Orders
+* Inventory
+* Sales
+* Expenses
+* Employees
+* Marketing
+* Documents
+* AI Manager
+* Settings
+
+Do NOT implement all of those modules in this phase.
+
+They belong to later phases.
+
+---
+
+# STEP 13 — APPLICATION SHELL
+
+Create or prepare the authenticated application shell.
+
+It should support:
+
+* responsive sidebar/navigation
+* mobile navigation
+* user/business identity
+* language awareness
+* theme toggle
+* logout
+* Dashboard entry
+
+Keep labels simple.
+
+Use:
+
+* Dashboard
+* Products
+* Customers
+* Orders
+* Inventory
+* Sales
+* Expenses
+* AI Manager
+* Settings
+
+Future sections may be disabled/marked appropriately if their implementation does not exist yet.
+
+Do not create fake functionality behind them.
+
+---
+
+# STEP 14 — DASHBOARD FOUNDATION
+
+Create a clean Dashboard foundation that uses the business information created during onboarding.
+
+Show useful welcome/context such as:
+
+Business name
+
+Example:
+
+"Welcome back, Dani Clothing"
+
+Do not fabricate sales, orders, profit, customers, or inventory numbers.
+
+If real business data does not exist yet, use honest empty states.
+
+For example:
+
+"Abhi sales data available nahi hai."
+
+or:
+
+"No sales data yet."
+
+The dashboard must never display fake metrics as if they were real.
+
+---
+
+# STEP 15 — DARK + LIGHT MODE
+
+Preserve the Phase 1 theme system.
+
+Authentication, Business Setup, and Dashboard must support:
+
+* Dark mode
+* Light mode
+
+Maintain the existing premium:
+
+* obsidian
+* charcoal
+* emerald
+* off-white
+
+visual language.
+
+Do not introduce blue/purple generic dashboard colors.
+
+---
+
+# STEP 16 — RESPONSIVE + ACCESSIBILITY
+
+Verify the complete authentication/onboarding/dashboard flow across:
+
+* mobile
+* tablet
+* laptop
+* desktop
+
+Ensure:
+
+* no horizontal overflow
+* usable touch targets
+* keyboard navigation
+* visible focus states
+* accessible labels
+* good contrast
+* loading feedback
+* error feedback
+
+Respect reduced-motion preferences.
+
+---
+
+# STEP 17 — SECURITY CHECK
+
+Before finishing, verify that:
+
+* private keys are server-side only
+* service-role key is never exposed to the client
+* authenticated routes are protected
+* unauthenticated users cannot access the Dashboard
+* incomplete onboarding cannot bypass Business Setup
+* business ownership is enforced server-side
+* RLS protects business records
+* client-provided business IDs are not treated as sufficient authorization
+* users cannot access another user's business
+
+Do not expose sensitive backend errors.
+
+---
+
+# STEP 18 — TESTING
+
+Run appropriate checks.
+
+At minimum:
+
+* typecheck
+* lint
+* production build
+
+If Supabase/local database testing is available, verify:
+
+### Authentication
+
+* signup
+* login
+* logout
+* authenticated session
+* invalid credentials
+* auth loading/error states
+
+### Business Setup
+
+* create business
+* validation
+* language selection
+* currency selection
+* setup completion
+
+### Access control
+
+* unauthenticated → blocked from Dashboard
+* authenticated + setup incomplete → Business Setup
+* authenticated + setup complete → Dashboard
+* user cannot access another user's business data
+
+### Responsive UI
+
+Check mobile, tablet, desktop.
+
+Fix issues discovered during testing.
+
+---
+
+# STEP 19 — PRESERVE PHASE 1
+
+Do NOT break or unnecessarily modify:
+
+* public homepage
+* locked hero
+* smartphone preview
+* design system
+* typography
+* theme system
+* Framer Motion foundation
+* accessibility foundation
+* responsive foundation
+
+If a small integration change is genuinely required, make the smallest safe change possible.
+
+---
+
+# DO NOT IMPLEMENT IN THIS PHASE
+
+Do NOT implement the complete:
+
+* Products CRUD
+* Customers CRUD
+* Orders CRUD
+* Inventory automation
+* Sales calculations
+* Expenses module
+* Employee management
+* Marketing system
+* Documents AI
+* AI Business Manager agent
+* OpenAI Agents SDK orchestration
+* Gemini integration
+* agent tools
+* agent confirmations
+* voice interaction
+
+These belong to later phases.
+
+Only build the authentication/business setup foundation required for those systems.
+
+---
+
+# FINAL QA
+
+After implementation:
+
+1. Run typecheck.
+2. Run lint.
+3. Run production build.
+4. Test the authentication flow where credentials/configuration are available.
+5. Test Business Setup.
+6. Test protected routes.
+7. Test RLS/business ownership where the Supabase environment is available.
+8. Inspect responsive UI.
+9. Fix discovered issues.
+
+If a real external configuration is required and unavailable, do not fake success.
+
+Clearly report the actual blocker.
+
+---
+
+# FINAL REPORT
+
+Return a concise implementation report containing:
+
+1. What was already present.
+2. What was implemented.
+3. Database migrations created.
+4. Authentication flow implemented.
+5. Business Setup implemented.
+6. RLS/security implementation.
+7. Files/components created or updated.
+8. Tests executed and results.
+9. Build result.
+10. Any genuine blockers.
+
+Remember:
+
+`AGENTS.md` MUST remain unchanged.
+
+Work only inside the existing `AI-Business-Manager/` project.
+
+Preserve Phase 1.
+
+Implement only Phase 2.

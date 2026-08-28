@@ -1,0 +1,763 @@
+# PROMPT 7 — AI BUSINESS MANAGER AGENT + GEMINI MULTI-PROJECT FAILOVER
+
+Read and follow `AGENTS.md` completely before doing anything.
+
+`AGENTS.md` is the project source of truth and is LOCKED.
+
+Do NOT modify, rewrite, replace, shorten, or restructure `AGENTS.md`.
+
+Work ONLY inside the existing:
+
+`AI-Business-Manager/`
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Continue from the current project state.
+
+---
+
+# OBJECTIVE
+
+Now implement the first real AI Business Manager system.
+
+The application must move beyond being a normal business dashboard.
+
+The AI Business Manager must be able to understand the business owner's natural-language requests and perform legitimate actions through controlled business tools.
+
+The AI must NOT be implemented as a fake chatbot.
+
+The goal is:
+
+> Business owner talks to the AI Business Manager naturally, and the AI understands the request, reads the relevant business data, performs allowed actions, and clearly explains the result.
+
+The AI must work with both:
+
+* English
+* Roman Urdu
+
+The AI must understand normal/simple language so that a technically inexperienced business owner can use it.
+
+---
+
+# STEP 1 — AUDIT CURRENT IMPLEMENTATION
+
+Before implementing anything:
+
+1. Inspect the complete current project.
+2. Read `AGENTS.md`.
+3. Inspect the existing dashboard.
+4. Inspect the Products module.
+5. Inspect the Customers module if already implemented.
+6. Inspect Orders if already implemented.
+7. Inspect Inventory if already implemented.
+8. Inspect Sales if already implemented.
+9. Inspect Expenses if already implemented.
+10. Inspect current Supabase service/data layer.
+11. Inspect authentication state.
+12. Inspect existing language system.
+13. Inspect existing UI components.
+14. Inspect existing theme system.
+15. Inspect existing Framer Motion patterns.
+16. Inspect existing environment configuration WITHOUT exposing secret values.
+17. Identify any existing AI-related code.
+
+Preserve good existing work.
+
+Do not recreate existing modules.
+
+Do not unnecessarily restructure the application.
+
+---
+
+# STEP 2 — OPENAI AGENTS SDK
+
+Implement the AI Business Manager using the approved:
+
+`OpenAI Agents SDK`
+
+IMPORTANT:
+
+The Agents SDK is being used as the AGENT/ORCHESTRATION framework.
+
+The model provider must be Gemini.
+
+Do NOT replace the application architecture with OpenAI models.
+
+Do NOT make OpenAI API calls the primary LLM dependency.
+
+Do NOT expose API keys to the browser.
+
+The AI agent must execute server-side.
+
+---
+
+# STEP 3 — GEMINI MODEL PROVIDER
+
+Configure Gemini as the model used by the AI Business Manager.
+
+The implementation must keep the Gemini integration isolated behind a clean model/provider layer.
+
+Do NOT scatter Gemini API calls throughout UI components.
+
+The UI must communicate with our server-side AI layer.
+
+Use environment variables for all secrets.
+
+Never expose Gemini API keys through:
+
+* client components
+* NEXT_PUBLIC_ variables
+* browser JavaScript
+* HTML
+* React props sent to the client
+
+---
+
+# STEP 4 — GEMINI MULTI-PROJECT FAILOVER
+
+IMPORTANT LOCKED REQUIREMENT:
+
+We want to support multiple Gemini API keys where each key belongs to a DIFFERENT Google AI Studio/Google Cloud project.
+
+Do NOT assume multiple keys from the same Google project create additional independent quotas.
+
+The architecture must treat each configured key as a separate provider configuration.
+
+Example:
+
+GEMINI_API_KEY_1
+GEMINI_API_KEY_2
+GEMINI_API_KEY_3
+GEMINI_API_KEY_4
+
+These may belong to separate legitimately configured Gemini projects.
+
+Implement a server-side Gemini provider/router capable of:
+
+1. Trying the primary Gemini configuration.
+2. Detecting appropriate rate-limit/quota failures.
+3. Automatically moving to the next configured Gemini configuration.
+4. Continuing until a valid response is obtained.
+5. Returning a clear error if all configured providers fail.
+
+Conceptually:
+
+Gemini Provider 1
+        ↓
+      429/quota
+        ↓
+Gemini Provider 2
+        ↓
+      429/quota
+        ↓
+Gemini Provider 3
+        ↓
+      success
+
+Do NOT implement this as a way to circumvent Google's policies or artificially bypass limits.
+
+This is a legitimate provider failover architecture.
+
+Do NOT create, register, or generate Google projects automatically.
+
+The application only consumes the configured credentials.
+
+---
+
+# STEP 5 — ENVIRONMENT CONFIGURATION
+
+Use server-only environment variables.
+
+Support a scalable structure such as:
+
+GEMINI_API_KEY_1
+GEMINI_API_KEY_2
+GEMINI_API_KEY_3
+GEMINI_API_KEY_4
+GEMINI_API_KEY_5
+
+Do not require all keys to exist.
+
+The application must work with:
+
+* 1 configured key
+* 2 configured keys
+* 3 configured keys
+* etc.
+
+Missing keys must simply be ignored.
+
+Do not expose actual secret values in logs.
+
+Do not commit secrets.
+
+Update `.env.example` with placeholder variable names if appropriate.
+
+---
+
+# STEP 6 — MODEL ROUTER
+
+Create a clean server-side model routing layer.
+
+Responsibilities:
+
+* provider configuration
+* Gemini client creation
+* provider selection
+* rate-limit detection
+* retry/failover
+* safe error handling
+* logging without secrets
+
+Do not put routing logic inside React components.
+
+Do not put routing logic inside individual business tools.
+
+The AI agent should communicate with a stable model interface.
+
+---
+
+# STEP 7 — BUSINESS MANAGER AGENT
+
+Create the real AI Business Manager agent.
+
+The agent should have a clear system identity:
+
+AI Business Manager
+
+Its role:
+
+> Help the business owner understand and operate their business through natural language.
+
+The agent must be business-focused.
+
+It should understand requests related to:
+
+* products
+* customers
+* orders
+* inventory
+* sales
+* expenses
+* business summaries
+
+Only expose tools that actually exist and are connected to real application data.
+
+Do NOT create fake tools.
+
+Do NOT return fake success messages.
+
+---
+
+# STEP 8 — BUSINESS TOOLS
+
+Implement controlled server-side tools for the business operations that are already supported by the application.
+
+Examples may include:
+
+### Products
+
+* list products
+* search products
+* create product
+* update product
+* update stock
+
+### Customers
+
+* list customers
+* search customers
+* create customer
+* update customer
+
+### Orders
+
+* list orders
+* search orders
+* create order where the current schema/UI supports it
+
+### Inventory
+
+* check stock
+* update stock
+* identify low-stock products
+
+### Sales
+
+* retrieve sales information
+* summarize sales
+
+### Expenses
+
+* list expenses
+* create expense where supported
+* summarize expenses
+
+Only implement tools that match the current database schema and completed modules.
+
+Do NOT invent unsupported database structures.
+
+---
+
+# STEP 9 — TOOL SAFETY
+
+Every tool must:
+
+1. Run server-side.
+2. Identify the authenticated business owner.
+3. Respect Supabase Row Level Security.
+4. Never allow one business owner to access another owner's data.
+5. Validate input.
+6. Return structured results.
+7. Handle errors safely.
+8. Never expose secrets.
+
+The AI must never be able to bypass authorization.
+
+Do not trust IDs supplied by the model without server-side validation.
+
+---
+
+# STEP 10 — READ VS WRITE ACTIONS
+
+Clearly separate:
+
+### Read actions
+
+Examples:
+
+"mere products kitne hain?"
+
+"stock mein kya pada hai?"
+
+"aaj ki sales kitni hain?"
+
+"mere kitne customers hain?"
+
+These can execute normally.
+
+### Write actions
+
+Examples:
+
+"ye product add karo"
+
+"stock 20 kar do"
+
+"new customer add karo"
+
+"expense add karo"
+
+For destructive or financially meaningful operations, introduce an appropriate confirmation step where necessary.
+
+The AI must NEVER claim that an action happened unless the underlying tool actually succeeded.
+
+---
+
+# STEP 11 — NATURAL LANGUAGE UNDERSTANDING
+
+The AI must understand simple business language.
+
+Examples:
+
+English:
+
+"Show me products with low stock."
+
+"How many customers do I have?"
+
+"Add a new product named Blue Suit for 5000."
+
+Roman Urdu:
+
+"Mera stock check karo."
+
+"Kon se products ka stock kam hai?"
+
+"Mere kitne customers hain?"
+
+"Blue Suit naam ka product add karo jiski price 5000 hai."
+
+"Aj ki sales kitni hui?"
+
+The agent should respond naturally in the language selected by the user.
+
+---
+
+# STEP 12 — ENGLISH / ROMAN URDU
+
+Respect the application's existing language preference.
+
+If the user selects:
+
+English
+
+→ AI responds in English.
+
+If the user selects:
+
+Roman Urdu
+
+→ AI responds in Roman Urdu.
+
+The agent should also understand mixed language.
+
+Example:
+
+"mere low stock products show karo"
+
+should work correctly in Roman Urdu mode.
+
+Do not translate technical implementation terms into user-facing language unnecessarily.
+
+Keep Roman Urdu simple and understandable.
+
+---
+
+# STEP 13 — AI CHAT UI
+
+Connect the existing/appropriate dashboard UI to the real AI Business Manager.
+
+The interface should feel like a premium business assistant.
+
+It should support:
+
+* user message
+* AI response
+* loading state
+* tool/action state
+* success state
+* error state
+* conversation history during the current session
+
+Do not create a generic ChatGPT clone.
+
+The UI must communicate:
+
+> This AI can actually operate my business.
+
+---
+
+# STEP 14 — ACTION TRANSPARENCY
+
+When the AI performs an action, the interface should clearly communicate what happened.
+
+Example:
+
+User:
+
+"Blue Suit ka stock 20 kar do."
+
+AI:
+
+"Done — Blue Suit ka stock 20 kar diya hai."
+
+The UI may also show a subtle action indicator such as:
+
+Updating stock...
+
+Stock updated ✓
+
+Do not expose internal tool names, API terminology, schemas, tokens, or technical implementation details to normal users.
+
+---
+
+# STEP 15 — CONFIRMATION UX
+
+For potentially destructive or important operations, use confirmation.
+
+Examples:
+
+* deleting a product
+* deleting a customer
+* destructive stock changes
+* cancelling an order
+* other irreversible actions
+
+The AI should ask for confirmation before executing such operations.
+
+Example:
+
+"Is product ko delete karna hai?"
+
+Buttons:
+
+Confirm
+
+Cancel
+
+Do not implement unsafe automatic destructive actions.
+
+---
+
+# STEP 16 — CONVERSATION CONTEXT
+
+The AI should maintain conversation context during the current conversation/session.
+
+Example:
+
+User:
+
+"Blue Suit dikhao."
+
+AI:
+
+"Blue Suit ki details..."
+
+User:
+
+"Iska stock kitna hai?"
+
+The AI should understand that "iska" refers to Blue Suit.
+
+Do not build long-term memory or customer profiling in this phase unless already supported by the existing architecture.
+
+Keep the implementation clean so future memory can be added.
+
+---
+
+# STEP 17 — ERROR HANDLING
+
+The AI must gracefully handle:
+
+* Gemini rate limits
+* all Gemini providers unavailable
+* invalid AI response
+* tool validation failure
+* Supabase errors
+* unauthorized requests
+* missing information
+* ambiguous requests
+
+Example:
+
+If the user says:
+
+"Product add karo."
+
+The AI should ask for the required details rather than inventing them.
+
+Example:
+
+"Bilkul. Product ka naam aur price bata dein."
+
+Never invent business data.
+
+---
+
+# STEP 18 — NO FAKE DATA
+
+This is critical.
+
+Do NOT use fake business data in production dashboard responses.
+
+The AI must retrieve actual authenticated business data from Supabase.
+
+Static mock data is allowed only for visual presentation components that are explicitly presentation-only.
+
+The AI must never pretend mock data is real.
+
+---
+
+# STEP 19 — SECURITY
+
+Security requirements:
+
+* API keys server-only
+* Supabase authentication required
+* authenticated user required for business tools
+* RLS respected
+* no cross-business data access
+* validate all tool inputs
+* no secret logging
+* no API key returned to client
+* no direct database access from untrusted model output
+
+Treat AI tool arguments as untrusted input.
+
+---
+
+# STEP 20 — PERFORMANCE
+
+Keep the AI architecture efficient.
+
+Do not unnecessarily send the entire database to Gemini.
+
+Retrieve only the information required by the current request.
+
+Use targeted business tools.
+
+Avoid huge context payloads.
+
+Do not make unnecessary duplicate database queries.
+
+---
+
+# STEP 21 — UI CONSISTENCY
+
+Use the existing locked design system.
+
+Do NOT change the established:
+
+* colors
+* typography
+* card style
+* gradients
+* buttons
+* spacing language
+* visual depth
+* dark/light theme
+
+The AI interface must feel like it belongs to the same application.
+
+Use the established premium emerald/black/off-white visual language.
+
+Do not introduce a new visual style.
+
+---
+
+# STEP 22 — RESPONSIVE AI EXPERIENCE
+
+The AI interface must work on:
+
+* mobile
+* tablet
+* laptop
+* desktop
+* large desktop
+
+On mobile:
+
+* chat must remain usable
+* input must remain accessible
+* buttons must remain touch-friendly
+* no horizontal overflow
+* tool/action indicators must remain readable
+
+---
+
+# STEP 23 — DO NOT IMPLEMENT YET
+
+Do NOT implement:
+
+* voice input/output
+* WhatsApp integration
+* YouTube automation
+* external business integrations
+* long-term AI memory
+* advanced analytics
+* AI sales forecasting
+* autonomous background agents
+* scheduled agents
+* paid AI providers
+* billing/subscriptions
+
+Those belong to later phases.
+
+---
+
+# STEP 24 — TESTING
+
+After implementation run:
+
+* typecheck
+* lint
+* production build
+
+Then perform real functional testing of the AI flow.
+
+Test at minimum:
+
+1. AI opens successfully.
+2. English request works.
+3. Roman Urdu request works.
+4. Product lookup works.
+5. Stock lookup works.
+6. Customer lookup works where available.
+7. AI can execute one legitimate write action where supported.
+8. AI does not claim fake success.
+9. Unauthorized access is blocked.
+10. Invalid tool arguments are handled.
+11. Gemini failover logic works with multiple configured provider entries.
+12. Missing Gemini keys are handled correctly.
+13. No secrets appear in browser/client output.
+14. No console errors.
+15. No layout overflow.
+
+Do not fabricate a successful failover test if real provider credentials are not available.
+
+If credentials are unavailable, test the routing logic with safe mocked provider responses only in a temporary QA harness, then remove that harness before completion.
+
+---
+
+# STEP 25 — VISUAL QA
+
+Visually inspect:
+
+* AI chat interface
+* dashboard integration
+* mobile AI experience
+* desktop AI experience
+* dark theme
+* light theme
+* loading states
+* tool/action states
+* error states
+* confirmation UI
+
+Make sure the AI interface looks premium and consistent with the existing application.
+
+Do not redesign the entire dashboard.
+
+---
+
+# STEP 26 — CLEANUP
+
+Before finishing:
+
+* remove temporary QA routes
+* remove temporary test files
+* remove debug logging
+* remove fake production data
+* remove unused imports
+* remove unused dependencies
+* ensure no secrets are committed
+* ensure `.env.example` contains only placeholders
+* preserve existing working modules
+
+---
+
+# FINAL REPORT
+
+Provide a concise report containing:
+
+1. AI architecture implemented.
+2. OpenAI Agents SDK integration status.
+3. Gemini provider integration status.
+4. Multi-project Gemini failover status.
+5. Business tools implemented.
+6. English/Roman Urdu behavior.
+7. Authentication/security behavior.
+8. AI UI implemented.
+9. Tests performed.
+10. Typecheck result.
+11. Lint result.
+12. Production build result.
+13. Visual QA result.
+14. Any genuine blockers.
+
+IMPORTANT:
+
+Do NOT modify `AGENTS.md`.
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Do NOT implement future-phase features.
+
+Continue from the existing `AI-Business-Manager/` project.
+
+Complete this phase fully before reporting completion.

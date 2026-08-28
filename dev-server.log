@@ -1,0 +1,173 @@
+   ▲ Next.js 15.5.23
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.100.138:3000
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ✓ Ready in 4.7s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 833ms (172 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 4.4s (1298 modules)
+ GET / 200 in 7605ms
+ GET / 200 in 740ms
+ ○ Compiling /dashboard/settings ...
+ ✓ Compiled /dashboard/settings in 9.9s (1562 modules)
+ ✓ Compiled in 1465ms (605 modules)
+ GET /dashboard/settings 200 in 13728ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 2.9s (1567 modules)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 5.6s (1685 modules)
+ GET /login 200 in 6515ms
+ POST /dashboard/settings 303 in 7516ms
+ POST /dashboard/settings 404 in 11202ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 2.5s (1727 modules)
+ GET /dashboard 200 in 5153ms
+ GET /dashboard 200 in 1446ms
+ GET /login 200 in 210ms
+ POST /dashboard 303 in 1132ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2.6s (1078 modules)
+ GET / 200 in 4372ms
+ GET /login 200 in 3358ms
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 923ms (1095 modules)
+ GET /icon.svg?2d1d126332e5961d 200 in 1331ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 9.6s (2079 modules)
+ GET / 404 in 10629ms
+ ✓ Compiled in 1284ms (826 modules)
+ ✓ Compiled in 857ms (826 modules)
+ ✓ Compiled in 655ms (826 modules)
+ ✓ Compiled in 917ms (826 modules)
+ ✓ Compiled in 680ms (826 modules)
+ ✓ Compiled in 921ms (826 modules)
+ ✓ Compiled in 625ms (826 modules)
+ ✓ Compiled in 533ms (826 modules)
+ ✓ Compiled in 681ms (826 modules)
+ ✓ Compiled in 667ms (826 modules)
+ ✓ Compiled in 841ms (826 modules)
+ ✓ Compiled in 541ms (826 modules)
+ ✓ Compiled in 650ms (826 modules)
+ ✓ Compiled in 588ms (826 modules)
+ ✓ Compiled in 858ms (826 modules)
+ ✓ Compiled in 3.3s (2046 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 1117ms (1248 modules)
+ ⨯ [Error [InvariantError]: Invariant: Expected clientReferenceManifest to be defined. This is a bug in Next.js.]
+ ⨯ [Error [InvariantError]: Invariant: Expected clientReferenceManifest to be defined. This is a bug in Next.js.] {
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\pages\\_document.js'
+}
+ GET / 500 in 12812ms
+ ✓ Compiled in 1901ms (826 modules)
+ ✓ Compiled in 748ms (826 modules)
+ ✓ Compiled in 899ms (826 modules)
+ ✓ Compiled in 1189ms (826 modules)
+ ✓ Compiled in 813ms (826 modules)
+ ✓ Compiled in 836ms (826 modules)
+ ✓ Compiled in 997ms (826 modules)
+ ✓ Compiled in 676ms (826 modules)
+ ✓ Compiled in 860ms (826 modules)
+ ✓ Compiled in 2.7s (2046 modules)
+ ✓ Compiled in 1899ms (826 modules)
+ ✓ Compiled in 1775ms (826 modules)
+ ✓ Compiled in 792ms (826 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 614ms (1248 modules)
+ ⨯ Error: Cannot find module './331.js'
+Require stack:
+- D:\AI-Business-Manager\.next\server\webpack-runtime.js
+- D:\AI-Business-Manager\.next\server\app\(marketing)\page.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\require.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\load-components.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\utils.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\swc\options.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\swc\index.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\config.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\next.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (D:\AI-Business-Manager\.next\server\app\(marketing)\page.js:2:13513)
+    at Object.<anonymous> (D:\AI-Business-Manager\.next\server\app\(marketing)\page.js:2:13577) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ Error: Cannot find module './992.js'
+Require stack:
+- D:\AI-Business-Manager\.next\server\webpack-runtime.js
+- D:\AI-Business-Manager\.next\server\app\(marketing)\page.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\require.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\load-components.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\utils.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\swc\options.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\swc\index.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\config.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\next.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (D:\AI-Business-Manager\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (D:\AI-Business-Manager\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+Error: Cannot find module './331.js'
+Require stack:
+- D:\AI-Business-Manager\.next\server\webpack-runtime.js
+- D:\AI-Business-Manager\.next\server\app\(marketing)\page.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\require.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\load-components.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\utils.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\swc\options.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\swc\index.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\config.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\next.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (D:\AI-Business-Manager\.next\server\app\(marketing)\page.js:2:13513)
+    at Object.<anonymous> (D:\AI-Business-Manager\.next\server\app\(marketing)\page.js:2:13577) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ⨯ Error: Cannot find module './992.js'
+Require stack:
+- D:\AI-Business-Manager\.next\server\webpack-runtime.js
+- D:\AI-Business-Manager\.next\server\app\(marketing)\page.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\require.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\load-components.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\utils.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\swc\options.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\swc\index.js
+- D:\AI-Business-Manager\node_modules\next\dist\build\next-config-ts\transpile-config.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\config.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\next.js
+- D:\AI-Business-Manager\node_modules\next\dist\server\lib\start-server.js
+    at <unknown> (D:\AI-Business-Manager\.next\server\pages\_document.js:1:325)
+    at Object.<anonymous> (D:\AI-Business-Manager\.next\server\pages\_document.js:1:371) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\fallback-build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\fallback-build-manifest.json'
+}
+ GET / 500 in 1622ms
+ GET / 500 in 363ms
+ ✓ Compiled in 1331ms (826 modules)
+ ✓ Compiled in 690ms (826 modules)
+ ✓ Compiled in 653ms (826 modules)
+ ✓ Compiled in 550ms (826 modules)
+[?25h

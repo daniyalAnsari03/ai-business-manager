@@ -1,0 +1,170 @@
+Make ONLY the following two changes to the existing **AI Business Manager** wordmark implementation.
+
+## 🚨 IMPORTANT — DO NOT CHANGE ANYTHING ELSE
+
+The current implementation is already correct and must remain unchanged in every other respect.
+
+**Do NOT modify:**
+
+* BrandMark/logo icon
+* Logo gradient
+* Sparkle icon
+* Logo dimensions
+* Font family
+* "Business Manager" italic styling
+* "Business Manager" green color
+* Existing component structure
+* BrandWordmark shared component architecture
+* Navbar layout
+* Sidebar layout
+* Footer layout
+* Spacing
+* Gaps
+* Padding
+* Margins
+* Navbar/sidebar/footer dimensions
+* Responsive behavior
+* Global typography
+* Other UI text
+* Animations
+* Content
+* SEO/meta
+* Any functionality
+* Any unrelated files
+
+This is ONLY a small wordmark size adjustment + light-theme readability fix.
+
+---
+
+# CHANGE 1 — INCREASE WORDMARK SIZE SLIGHTLY
+
+Increase the existing **AI Business Manager wordmark text size slightly**.
+
+The current sizes are:
+
+* Navbar: `text-[15px]`
+* Mobile top bar: `text-[15px]`
+* Sidebar/mobile drawer: `text-sm`
+* Footer: `text-[15px]`
+* Login: `text-[15px]`
+* Setup: `text-[15px]`
+
+Increase each existing wordmark size **slightly and proportionally**, while preserving the existing relative sizing between locations.
+
+For example, if the current `text-[15px]` is increased, use a modest next size such as `text-base` (`16px`) rather than making a large jump.
+
+For `text-sm`, increase it only slightly as well.
+
+### IMPORTANT:
+
+Do NOT redesign the typography.
+
+Do NOT make the wordmark dramatically larger.
+
+Do NOT change line-height, letter-spacing, spacing, logo size, or layout.
+
+Only make the **wordmark font-size slightly larger**.
+
+---
+
+# CHANGE 2 — FIX LIGHT/WHITE THEME READABILITY
+
+There is currently a theme contrast issue:
+
+### Dark theme
+
+The current styling works correctly:
+
+* `AI` → `#f5f5f0`
+* `Business Manager` → `#6ee7b7`
+
+### Light/white theme
+
+The background becomes white, so:
+
+* `AI` → `#f5f5f0`
+
+becomes almost invisible against the white background.
+
+**Fix ONLY this readability issue.**
+
+In the **light/white theme**, change the `AI` text color to the existing dark/black text color already used by the application's light theme.
+
+Do NOT invent a new color if an existing theme foreground/text color token is already available.
+
+Prefer the existing light-theme foreground/text token.
+
+For example, if the project already uses something like:
+
+`--foreground`
+
+or an existing dark text utility for light mode, reuse that.
+
+### Required visual result:
+
+**Dark theme:**
+
+* `AI` → off-white `#f5f5f0`
+* `Business Manager` → mint `#6ee7b7`
+
+**Light theme:**
+
+* `AI` → existing dark/black light-theme text color
+* `Business Manager` → `#6ee7b7`
+
+The green **Business Manager** styling must remain unchanged.
+
+---
+
+# DO NOT CHANGE THE SHARED ARCHITECTURE
+
+Keep the existing:
+
+`BrandWordmark`
+
+shared component and its current implementation.
+
+Do NOT duplicate the component.
+
+Do NOT move the component.
+
+Do NOT create separate brand components.
+
+Only update the necessary size and theme-aware `AI` color inside the existing shared implementation.
+
+---
+
+# FINAL VERIFICATION
+
+Verify both themes:
+
+### Dark theme
+
+* AI is clearly visible in off-white.
+* Business Manager is clearly visible in mint green.
+* Wordmark is slightly larger than before.
+
+### Light theme
+
+* AI is clearly visible in dark/black.
+* Business Manager remains mint green.
+* Wordmark is slightly larger than before.
+
+Confirm that:
+
+* Logo is unchanged.
+* Font family is unchanged.
+* Business Manager color is unchanged.
+* Business Manager italic styling is unchanged.
+* Layout is unchanged.
+* Spacing is unchanged.
+* Responsive behavior is unchanged.
+* No unrelated UI was modified.
+
+Run:
+
+1. Typecheck
+2. Lint
+3. Production build
+
+Report only the files actually changed and confirm that **no other changes were made**.

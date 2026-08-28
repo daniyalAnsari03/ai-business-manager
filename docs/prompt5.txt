@@ -1,0 +1,792 @@
+Read and follow `AGENTS.md` completely before doing anything.
+
+`AGENTS.md` is the project source of truth and is LOCKED.
+
+Prompt 4 is already complete. Do not redo or redesign Prompt 4 work.
+
+---
+
+## CRITICAL PROJECT RULES
+
+Do NOT modify, rewrite, replace, shorten, or restructure `AGENTS.md`.
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Do NOT move the project.
+
+Work only inside the existing:
+
+`AI-Business-Manager/`
+
+Continue from the current project state.
+
+Do NOT create unnecessary new folders.
+
+Use the existing project architecture and conventions.
+
+---
+
+## OBJECTIVE
+
+Implement the real authentication and initial business-owner onboarding system for the AI Business Manager.
+
+After this phase:
+
+PUBLIC HOMEPAGE
+↓
+GET STARTED / LOGIN
+↓
+SUPABASE AUTHENTICATION
+↓
+USER ACCOUNT
+↓
+BUSINESS PROFILE CHECK
+↓
+ONBOARDING IF NEEDED
+↓
+PROTECTED DASHBOARD
+
+The authentication must be real.
+
+Do NOT create fake authentication.
+
+Do NOT use mock users.
+
+Do NOT store authentication credentials manually.
+
+Do NOT build a fake dashboard login experience.
+
+---
+
+# STEP 1 — AUDIT EXISTING AUTHENTICATION
+
+Before implementing anything:
+
+1. Inspect the complete existing authentication implementation.
+2. Inspect Supabase configuration.
+3. Inspect existing Supabase client/server utilities.
+4. Inspect middleware/proxy configuration if present.
+5. Inspect existing routes.
+6. Inspect existing login/signup pages.
+7. Inspect existing dashboard protection.
+8. Inspect existing database migrations/schema.
+9. Inspect existing environment variables without exposing secret values.
+10. Check whether authentication was partially implemented in earlier work.
+11. Preserve working authentication code where possible.
+12. Fix incomplete or conflicting implementation instead of duplicating it.
+
+Do not create duplicate Supabase clients or duplicate authentication systems.
+
+---
+
+# STEP 2 — SUPABASE AUTHENTICATION
+
+Use Supabase Auth as the authentication system.
+
+The application must support:
+
+## Email + Password
+
+User can:
+
+- enter email
+- enter password
+- create an account
+- sign in
+- sign out
+
+## Google Authentication
+
+User can:
+
+- click `Continue with Google`
+- authenticate using their Google account
+- return to the application
+- become an authenticated Supabase user
+
+Use the official Supabase authentication flow.
+
+Do not implement Google OAuth manually.
+
+Do not store Google credentials.
+
+---
+
+# STEP 3 — SIMPLE USER EXPERIENCE
+
+The authentication experience must be extremely simple.
+
+The target user may be:
+
+- technically experienced
+- a normal business owner
+- non-technical
+- unfamiliar with software
+
+The user should never need to understand:
+
+- Supabase
+- OAuth
+- database
+- API
+- sessions
+- tokens
+
+The UI should simply communicate:
+
+## Login
+
+Welcome back
+
+Continue with Google
+
+or
+
+Email
+
+Password
+
+Sign in
+
+Don't have an account? Create one
+
+## Signup
+
+Create your account
+
+Continue with Google
+
+or
+
+Email
+
+Password
+
+Create account
+
+Keep the experience clean and premium.
+
+---
+
+# STEP 4 — AUTHENTICATION ROUTES
+
+Create or use appropriate routes for:
+
+- Login
+- Signup
+- Auth callback
+- Protected dashboard
+- Logout
+
+Use the existing routing conventions.
+
+Do not create unnecessary duplicate pages.
+
+The public homepage must remain publicly accessible.
+
+Unauthenticated users must not be able to access protected business-management pages.
+
+---
+
+# STEP 5 — SESSION MANAGEMENT
+
+Implement proper Supabase session handling.
+
+The application must correctly handle:
+
+- initial session
+- authenticated session
+- unauthenticated session
+- refresh
+- logout
+- OAuth callback
+- protected routes
+
+Do not rely only on client-side state to protect private pages.
+
+Protected routes must be enforced appropriately on the server/middleware layer according to the existing Next.js architecture.
+
+---
+
+# STEP 6 — DATABASE USER PROFILE
+
+After authentication, establish a proper application-level user profile.
+
+Use Supabase/Postgres.
+
+The authenticated Supabase user must be associated with an application profile.
+
+At minimum support:
+
+- user ID
+- email
+- display name
+- avatar/profile image where available
+- preferred language
+- created timestamp
+- updated timestamp
+
+Do NOT duplicate sensitive authentication credentials in the database.
+
+Supabase Auth remains responsible for authentication credentials.
+
+---
+
+# STEP 7 — BUSINESS OWNER PROFILE
+
+The core application is for business owners.
+
+After the user successfully authenticates, they should be able to establish their business profile.
+
+Create an appropriate business/profile structure using Supabase.
+
+At minimum support:
+
+- business ID
+- owner/user ID
+- business name
+- business type/category
+- preferred language
+- created timestamp
+- updated timestamp
+
+The business must belong to the authenticated user.
+
+A user must never be able to access another user's business.
+
+---
+
+# STEP 8 — INITIAL ONBOARDING
+
+After first authentication, determine whether the user has completed business setup.
+
+If not:
+
+send the user to a simple onboarding flow.
+
+The onboarding should be short and understandable.
+
+## Step 1
+
+Ask:
+
+What's your business name?
+
+Example:
+
+Dani Fashion
+
+## Step 2
+
+Ask:
+
+What type of business do you run?
+
+Provide simple choices such as:
+
+- Clothing
+- Restaurant
+- Retail
+- Services
+- E-commerce
+- Other
+
+## Step 3
+
+Ask:
+
+How would you like to use the app?
+
+Allow the user to select:
+
+- English
+- Roman Urdu
+
+This preference will later control the application's language.
+
+Do not ask unnecessary questions.
+
+Do not make onboarding complicated.
+
+---
+
+# STEP 9 — ENGLISH / ROMAN URDU
+
+The application already has the bilingual product direction.
+
+Make authentication and onboarding compatible with:
+
+## English
+
+Example:
+
+Create your business
+
+Add your business details to get started.
+
+## Roman Urdu
+
+Example:
+
+Apna business banayein
+
+Shuru karne ke liye apne business ki basic details add karein.
+
+The user should be able to choose their preferred language.
+
+Store the preference properly so future application phases can use it.
+
+Do not create a separate application for Roman Urdu.
+
+It is the same application with translated UI.
+
+---
+
+# STEP 10 — FIRST LOGIN FLOW
+
+The intended experience is:
+
+PUBLIC HOMEPAGE
+↓
+GET STARTED / LOGIN
+↓
+AUTHENTICATION
+↓
+SUPABASE USER
+↓
+CHECK BUSINESS PROFILE
+↓
+NO BUSINESS?
+↓
+ONBOARDING
+↓
+BUSINESS CREATED
+↓
+DASHBOARD
+
+If the user already completed onboarding:
+
+LOGIN
+↓
+SUPABASE SESSION
+↓
+BUSINESS EXISTS
+↓
+DASHBOARD
+
+Do not show onboarding again unnecessarily.
+
+---
+
+# STEP 11 — DASHBOARD ACCESS
+
+After successful authentication and onboarding:
+
+redirect the user to the existing dashboard.
+
+Do NOT redesign the dashboard from scratch.
+
+Do NOT replace the existing dashboard UI.
+
+Do NOT undo Prompt 4 visual work.
+
+Only connect authentication to the existing dashboard.
+
+The dashboard should now represent the authenticated business owner.
+
+---
+
+# STEP 12 — USER MENU
+
+Connect the authenticated user to the existing application navigation where appropriate.
+
+The authenticated user should be able to access:
+
+- profile/account information
+- business information
+- language preference
+- logout
+
+Use the existing design system.
+
+Keep the UI premium and consistent with Prompt 4.
+
+---
+
+# STEP 13 — LOGOUT
+
+Implement real Supabase logout.
+
+When the user clicks logout:
+
+1. Supabase session is terminated.
+2. Local authenticated state is cleared.
+3. User is redirected to the appropriate public page/login page.
+4. Protected dashboard pages are no longer accessible.
+
+Do not merely remove a frontend variable.
+
+---
+
+# STEP 14 — ROW LEVEL SECURITY
+
+Because business data will become the foundation for future:
+
+- products
+- inventory
+- customers
+- orders
+- reports
+- AI actions
+
+implement proper RLS for the user/business profile tables created in this phase.
+
+Rules must ensure:
+
+A user can only access their own profile and businesses.
+
+Do not create broad public policies.
+
+Do not use:
+
+USING (true)
+
+for private business/user data.
+
+Policies must be tied to the authenticated Supabase user.
+
+---
+
+# STEP 15 — SECURITY
+
+Do NOT expose:
+
+- service role keys
+- private secrets
+- passwords
+- OAuth secrets
+- server-only credentials
+
+to the browser.
+
+Only use appropriate public Supabase configuration on the client.
+
+Server-only secrets must remain server-side.
+
+Do not log authentication tokens or sensitive credentials.
+
+---
+
+# STEP 16 — ERROR HANDLING
+
+Authentication must provide understandable errors.
+
+Examples:
+
+## Wrong password
+
+Email or password is incorrect.
+
+## Existing account
+
+An account with this email already exists.
+
+## Network/server problem
+
+Something went wrong. Please try again.
+
+## OAuth problem
+
+We couldn't complete Google sign-in. Please try again.
+
+Do not expose raw Supabase/database errors directly to normal users.
+
+Errors should remain useful for developers in server logs without exposing sensitive information to users.
+
+---
+
+# STEP 17 — LOADING STATES
+
+Implement proper loading states for:
+
+- login
+- signup
+- Google authentication
+- onboarding submission
+- logout
+- session loading
+
+Prevent accidental duplicate submissions.
+
+Buttons should communicate when an operation is in progress.
+
+Use the existing premium design language.
+
+Do not create excessive animations.
+
+---
+
+# STEP 18 — AUTHENTICATION UI
+
+The authentication pages must match the already locked visual system.
+
+Use:
+
+- Obsidian / deep black
+- deep charcoal
+- emerald accent
+- off-white
+- existing typography
+- existing button styles
+- existing card/surface system
+- existing motion language
+
+Do NOT introduce:
+
+- blue authentication UI
+- generic Bootstrap-style forms
+- generic SaaS login templates
+- unrelated colors
+- unrelated component libraries
+
+Authentication should feel like the same product.
+
+---
+
+# STEP 19 — RESPONSIVENESS
+
+Test authentication and onboarding on:
+
+- small mobile
+- large mobile
+- tablet
+- laptop
+- desktop
+- large desktop
+
+Check:
+
+- form width
+- input sizes
+- button sizes
+- keyboard interaction
+- error messages
+- spacing
+- overflow
+- touch targets
+
+No horizontal overflow.
+
+---
+
+# STEP 20 — ACCESSIBILITY
+
+Ensure:
+
+- semantic form elements
+- proper labels
+- keyboard navigation
+- visible focus states
+- accessible error messages
+- sufficient contrast
+- appropriate autocomplete attributes
+- touch targets of at least 44px where applicable
+
+Do not rely only on placeholders as labels.
+
+---
+
+# STEP 21 — FREE-ONLY REQUIREMENT
+
+This phase must use only free/open-source capabilities already available in the approved architecture.
+
+Do NOT add:
+
+- paid authentication providers
+- paid SaaS authentication services
+- paid UI libraries
+- paid APIs
+- paid database services
+- unnecessary third-party services
+
+Supabase Auth and the existing Supabase project should be used within the available free-tier capabilities.
+
+Do not introduce anything that requires a paid subscription.
+
+---
+
+# STEP 22 — DO NOT IMPLEMENT YET
+
+Do NOT implement the following in this phase:
+
+- OpenAI Agents SDK orchestration
+- Gemini integration
+- AI Business Manager agent
+- AI tools
+- product management
+- inventory management
+- customer management
+- order management
+- reports
+- voice agent
+- AI chatbot functionality
+- AI actions
+- business analytics
+
+Those belong to later phases.
+
+This phase is specifically:
+
+Authentication + User Profile + Business Owner Setup + Protected Application Access
+
+---
+
+# STEP 23 — TESTING
+
+After implementation, run the appropriate checks.
+
+At minimum:
+
+npm run typecheck
+npm run lint
+npm run build
+
+Also test the actual authentication flow in the browser.
+
+Test:
+
+## Signup
+
+- email/password signup
+- validation
+- successful account creation
+
+## Login
+
+- correct credentials
+- incorrect credentials
+- session persistence
+
+## Google
+
+- Google login flow if configured
+- OAuth callback
+- authenticated session
+
+## Protected routes
+
+- unauthenticated user cannot access dashboard
+- authenticated user can access dashboard
+
+## Onboarding
+
+- new user is sent to onboarding
+- business is created
+- language preference is saved
+- user reaches dashboard
+
+## Returning user
+
+- existing business owner logs in
+- onboarding is skipped
+- dashboard opens
+
+## Logout
+
+- session terminates
+- dashboard becomes inaccessible
+- user returns to public/auth page
+
+---
+
+# STEP 24 — SUPABASE CONFIGURATION CHECK
+
+If Google OAuth requires configuration outside the codebase:
+
+Do NOT fake it.
+
+Clearly identify exactly what configuration must be completed in the Supabase dashboard.
+
+Do not expose secrets.
+
+Do not claim Google authentication is fully operational if the Supabase provider has not been configured.
+
+If the environment already has Google authentication configured, verify it.
+
+---
+
+# STEP 25 — VISUAL QA
+
+Start the development server if possible.
+
+Visually inspect:
+
+- Login
+- Signup
+- Google button
+- Form states
+- Error states
+- Loading states
+- Onboarding
+- Dashboard transition
+- Mobile layout
+- Desktop layout
+- Dark theme
+- Light theme
+- English
+- Roman Urdu
+
+Ensure the new authentication/onboarding UI looks like a natural part of the existing premium application.
+
+Do NOT redesign Prompt 4 components.
+
+---
+
+# STEP 26 — FINAL SECURITY CHECK
+
+Before finishing, verify:
+
+- private routes are protected
+- business ownership is enforced
+- RLS exists for private tables
+- no service-role key reaches client code
+- no passwords are stored manually
+- no authentication tokens are logged
+- no cross-user business access is possible through normal queries
+
+---
+
+# FINAL REPORT
+
+When finished, provide a concise implementation report containing:
+
+1. Existing authentication state before implementation.
+2. Authentication features implemented.
+3. Supabase tables/migrations created or updated.
+4. RLS policies created or updated.
+5. Routes/pages created or updated.
+6. User onboarding flow.
+7. English/Roman Urdu support implemented.
+8. Protected-route behavior.
+9. Logout behavior.
+10. Tests executed.
+11. Build result.
+12. Browser authentication QA result.
+13. Any genuine blockers.
+14. Any Supabase dashboard configuration that still requires manual setup.
+
+Do NOT modify `AGENTS.md`.
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Do NOT redesign Prompt 4.
+
+Do NOT implement future AI/business-management phases.
+
+Continue working only inside the existing:
+
+AI-Business-Manager/

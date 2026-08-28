@@ -1,0 +1,836 @@
+# PROMPT 10 — FULL SYSTEM INTEGRATION & AI BUSINESS MANAGER HARDENING
+
+Read and follow `AGENTS.md` completely before doing anything.
+
+`AGENTS.md` is the project source of truth and is LOCKED.
+
+Do NOT modify, rewrite, replace, shorten, or restructure `AGENTS.md`.
+
+Work ONLY inside the existing:
+
+`AI-Business-Manager/`
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Continue from the current project state.
+
+---
+
+# IMPORTANT CURRENT PROJECT STATE
+
+The following modules are ALREADY implemented and working:
+
+* Products
+* Customers
+* Orders
+* Sales
+* Inventory / Stock
+* Expenses
+* Settings / Business Configuration
+* AI Business Manager
+* Voice AI
+* Authentication
+* Google OAuth
+* Supabase / RLS
+* English + Roman Urdu
+* Dark + Light theme
+* Responsive UI
+* Existing dashboard navigation performance optimizations
+
+DO NOT rebuild or replace these modules.
+
+DO NOT create duplicate implementations.
+
+DO NOT redesign working pages.
+
+DO NOT redo completed feature work unless an actual bug is discovered.
+
+---
+
+# GEMINI ARCHITECTURE — LOCKED
+
+The current AI architecture MUST remain unchanged.
+
+Use:
+
+**OpenAI Agents SDK → existing AI system → Gemini router**
+
+The project currently uses:
+
+**Gemini 3.6**
+
+Gemini 3.6 is the currently working model.
+
+DO NOT:
+
+* downgrade to Gemini 3.5
+* switch back to Gemini 3.5
+* replace Gemini 3.6
+* change the model unless explicitly instructed
+* remove the existing Gemini failover architecture
+* replace the Gemini router
+
+The existing multi-project Gemini architecture must remain intact:
+
+**Gemini Project/Key 1**
+→ if applicable provider failure/quota exhaustion
+**Gemini Project/Key 2**
+→ next available project/key
+→ continue through the configured Gemini projects
+→ final existing fallback behavior
+
+Do NOT add Groq in this phase.
+
+Groq will be handled in a separate future phase.
+
+---
+
+# PERFORMANCE STATUS — LOCKED
+
+The previous dashboard/navigation performance issue has already been investigated and fixed.
+
+The following optimizations already exist:
+
+* cached server auth lookup
+* cached business lookup
+* cached profile lookup
+* middleware cookie fast path
+* optimized session validation
+* parallel dashboard layout fetching
+* duplicate dashboard queries removed
+* route-level loading UI
+* existing Next.js navigation optimizations
+
+The application is currently considered responsive.
+
+DO NOT perform another broad performance optimization pass.
+
+DO NOT rewrite navigation.
+
+DO NOT change dashboard routing just for performance.
+
+DO NOT spend the phase re-measuring already-fixed navigation unless a genuine regression is discovered.
+
+Preserve all existing performance improvements.
+
+---
+
+# OBJECTIVE
+
+This phase is NOT about building new modules.
+
+The objective is to:
+
+1. Audit the complete existing business system.
+2. Verify that all modules are correctly integrated.
+3. Verify that dashboard data is consistent.
+4. Deeply verify the AI Business Manager.
+5. Verify that AI tools perform real database operations.
+6. Harden the existing Gemini 3.6 multi-project failover.
+7. Verify Voice → AI → Gemini → TTS integration.
+8. Find and fix only genuine bugs or integration problems.
+9. Preserve all existing working functionality.
+10. Perform final production-level QA.
+
+---
+
+# STEP 1 — FULL ARCHITECTURE AUDIT
+
+Before changing anything:
+
+Read:
+
+* `AGENTS.md`
+* existing project documentation
+* AI documentation
+* database migrations
+* AI tool definitions
+* AI router
+* dashboard services
+* authentication services
+* language system
+* voice system
+
+Inspect:
+
+* `app/`
+* `components/`
+* `lib/`
+* `supabase/`
+* AI tools
+* AI agent configuration
+* Gemini router
+* voice pipeline
+* middleware
+* dashboard layout
+* services/data-access layer
+
+Understand the current architecture.
+
+Do NOT rewrite working architecture.
+
+---
+
+# STEP 2 — DATABASE INTEGRATION AUDIT
+
+Verify the relationships between:
+
+**Products**
+↓
+**Inventory / Stock**
+↓
+**Customers**
+↓
+**Orders**
+↓
+**Sales**
+↓
+**Expenses**
+↓
+**Dashboard**
+
+Verify:
+
+* real Supabase data is used
+* no fake/mock business data remains
+* business ownership is enforced
+* authenticated session determines identity
+* RLS remains enabled
+* server-side authorization remains intact
+
+Do NOT create duplicate tables.
+
+Do NOT create duplicate migrations.
+
+Do NOT change schema unless a genuine bug requires it.
+
+---
+
+# STEP 3 — PRODUCT ↔ INVENTORY CONSISTENCY
+
+Verify:
+
+* product creation
+* product editing
+* product deletion
+* stock quantities
+* low-stock calculations
+* stock adjustments
+* order-related stock deduction
+* stock never becomes negative
+
+If an existing stock adjustment function exists, reuse it.
+
+Do NOT create duplicate stock logic.
+
+---
+
+# STEP 4 — CUSTOMER ↔ ORDER CONSISTENCY
+
+Verify:
+
+* customer creation
+* customer editing
+* customer deletion behavior
+* customer order history
+* customer total spending
+* order counts
+* customer lookup from orders
+
+Ensure customer information shown in the UI comes from real database data.
+
+No fabricated values.
+
+---
+
+# STEP 5 — ORDER ↔ SALES CONSISTENCY
+
+Verify:
+
+* order totals
+* completed orders
+* cancelled orders
+* pending/confirmed orders
+* sales calculations
+* completed order counts
+* average order value
+* recent sales
+* sales period calculations
+
+Verify that Sales uses real order data and does not maintain a separate inconsistent sales source unless the existing architecture intentionally requires it.
+
+---
+
+# STEP 6 — EXPENSE ↔ DASHBOARD CONSISTENCY
+
+Verify:
+
+* expense creation
+* editing
+* deletion
+* totals
+* dashboard expense metrics
+* period calculations
+* business ownership
+
+Ensure dashboard numbers come from the same real database source.
+
+---
+
+# STEP 7 — DASHBOARD DATA CONSISTENCY
+
+Audit all dashboard metrics.
+
+Verify:
+
+* sales today
+* sales this month
+* orders
+* customers
+* expenses
+* low-stock products
+* recent orders
+* inventory statistics
+
+For each metric:
+
+1. Identify its source.
+2. Verify its query.
+3. Verify filters.
+4. Verify business ownership.
+5. Verify calculations.
+6. Verify date/time handling.
+7. Verify empty states.
+
+No fake statistics.
+
+No hardcoded business numbers.
+
+---
+
+# STEP 8 — AI BUSINESS MANAGER AUDIT
+
+Deeply inspect the existing AI Business Manager.
+
+Do NOT create another AI system.
+
+Do NOT replace the existing agent.
+
+Verify the existing OpenAI Agents SDK architecture.
+
+The AI must use the existing tools and services.
+
+Verify tools for:
+
+### Products
+
+* list products
+* find product
+* create product
+* update product
+* delete product
+* stock-related operations where already supported
+
+### Customers
+
+* list customers
+* find customer
+* create customer
+* update customer
+* delete customer
+
+### Orders
+
+* list orders
+* create orders
+* update order status
+* retrieve order details
+
+### Sales
+
+* sales summary
+* recent sales
+* period-based sales information
+
+### Expenses
+
+* list expenses
+* create expense
+* update expense
+* delete expense
+* expense summaries where already supported
+
+Do not invent tools that duplicate existing functionality.
+
+---
+
+# STEP 9 — AI REAL-DATABASE VERIFICATION
+
+Test real authenticated AI actions.
+
+Examples:
+
+User:
+
+"mere customers dikhao"
+
+Expected:
+
+AI retrieves real customers from Supabase.
+
+User:
+
+"Ali ka order history batao"
+
+Expected:
+
+AI retrieves the correct customer/order data.
+
+User:
+
+"aaj ki sales kitni hain?"
+
+Expected:
+
+AI retrieves real sales data.
+
+User:
+
+"mere completed orders kitne hain?"
+
+Expected:
+
+AI retrieves real completed order count.
+
+User:
+
+"mere low stock products dikhao"
+
+Expected:
+
+AI retrieves real inventory data.
+
+User:
+
+"mere expenses kitne hain?"
+
+Expected:
+
+AI retrieves real expense information.
+
+The AI response must reflect the actual database result.
+
+Never fabricate results.
+
+---
+
+# STEP 10 — AI ACTION VERIFICATION
+
+Test actions such as:
+
+* create product
+* update product
+* adjust stock
+* create customer
+* update customer
+* create order
+* update order status
+* create expense
+* update expense
+
+For every action:
+
+1. AI understands the request.
+2. Required information is identified.
+3. Missing information is requested.
+4. Confirmation is requested where required.
+5. Tool executes.
+6. Database operation succeeds.
+7. AI reports the actual result.
+
+Never claim success before the database operation succeeds.
+
+---
+
+# STEP 11 — AI CONFIRMATION SAFETY
+
+Verify destructive or important actions.
+
+Example:
+
+User:
+
+"Ali ka order delete kar do"
+
+AI must not immediately perform the action if confirmation is required.
+
+It should clearly ask for confirmation according to the existing confirmation system.
+
+Similarly verify:
+
+* deleting products
+* deleting customers
+* deleting expenses
+* deleting orders
+* important stock changes
+
+Do NOT weaken existing confirmation rules.
+
+---
+
+# STEP 12 — AI ERROR HANDLING
+
+Test:
+
+* missing customer
+* missing product
+* invalid quantity
+* insufficient stock
+* invalid order
+* database failure
+* unauthorized request
+* ambiguous request
+* network/provider failure
+
+AI should explain errors naturally.
+
+Never expose:
+
+* SQL errors
+* stack traces
+* Supabase internals
+* API keys
+* provider secrets
+* internal implementation details
+
+---
+
+# STEP 13 — GEMINI 3.6 FAILOVER HARDENING
+
+Inspect the existing Gemini router.
+
+DO NOT replace it.
+
+DO NOT change the architecture.
+
+DO NOT switch models.
+
+Current model:
+
+`gemini-3.6`
+
+Verify all configured Gemini project/key slots.
+
+Test applicable provider failures:
+
+* 429 quota exhaustion
+* 5xx errors
+* network failures
+* timeout
+* unavailable project
+* provider errors
+
+When a Gemini project is exhausted/unavailable:
+
+**automatically try the next configured Gemini project/key.**
+
+An exhausted project should not be hammered repeatedly during the same failure period if the existing architecture supports temporary cooldown/state.
+
+Preserve the existing legitimate multi-project design.
+
+Do NOT create fake quota handling.
+
+Do NOT claim a key is exhausted unless the provider actually reports the relevant error.
+
+---
+
+# STEP 14 — GEMINI MODEL SAFETY
+
+The project currently uses:
+
+`gemini-3.6`
+
+Do NOT change this to:
+
+`gemini-3.5`
+
+Do NOT automatically downgrade models.
+
+If a model/provider error occurs, classify it correctly.
+
+A retired/unavailable model error must NOT be treated as a successful AI response.
+
+---
+
+# STEP 15 — VOICE AI VERIFICATION
+
+Verify the existing voice pipeline:
+
+**Voice Input**
+↓
+**Speech Recognition**
+↓
+**AI Chat**
+↓
+**Existing OpenAI Agents SDK**
+↓
+**Gemini 3.6 Router**
+↓
+**AI Response**
+↓
+**Text-to-Speech**
+
+Do NOT create a separate voice AI backend.
+
+Verify:
+
+* English voice mode
+* Roman Urdu voice mode
+* conversation history
+* AI actions
+* confirmations
+* TTS
+* mute
+* replay
+* error handling
+
+Preserve the existing voice implementation.
+
+---
+
+# STEP 16 — LANGUAGE SYSTEM
+
+Verify:
+
+* English
+* Roman Urdu
+
+All existing modules must continue using the central language system.
+
+Do NOT create independent language switching.
+
+Verify:
+
+* dashboard
+* Products
+* Customers
+* Orders
+* Sales
+* Inventory
+* Expenses
+* Settings
+* AI Manager
+* Voice UI
+* error messages
+* confirmation messages
+* empty states
+
+Do not break existing language persistence.
+
+---
+
+# STEP 17 — AUTHENTICATION & SECURITY
+
+Verify:
+
+* email/password authentication
+* Google OAuth
+* logout
+* session validation
+* onboarding
+* protected routes
+* RLS
+* business ownership
+
+Test that one business owner cannot access another business owner's data.
+
+Do not weaken security for performance.
+
+Do not expose service-role credentials to the client.
+
+---
+
+# STEP 18 — RESPONSIVE & THEME REGRESSION TEST
+
+Verify existing UI across:
+
+* 320px
+* 390px
+* 768px
+* 1280px
+* 1440px
+* 1920px
+
+Test:
+
+* dark mode
+* light mode
+* English
+* Roman Urdu
+
+Do NOT redesign pages.
+
+Only fix genuine regressions.
+
+---
+
+# STEP 19 — ERROR / EMPTY / LOADING STATES
+
+Verify every existing module has proper:
+
+* loading state
+* empty state
+* error state
+* success feedback
+
+Ensure technical errors are not exposed to users.
+
+---
+
+# STEP 20 — DATABASE SECURITY VERIFICATION
+
+Verify:
+
+* RLS enabled
+* business ownership policies
+* authenticated access
+* unauthorized access rejected
+* no public broad-access policies
+* no client-controlled ownership bypass
+* no client-controlled price/totals bypass
+
+Do NOT remove or weaken RLS.
+
+---
+
+# STEP 21 — CLEANUP
+
+Only if genuinely necessary:
+
+* remove temporary debug logs
+* remove unused imports
+* remove temporary QA files
+* remove dead code
+
+Do NOT remove working functionality.
+
+Do NOT modify unrelated files.
+
+Do NOT create unnecessary dependencies.
+
+---
+
+# STEP 22 — TESTING
+
+Run:
+
+`npm run typecheck`
+
+`npm run lint`
+
+`npm run build`
+
+Then perform relevant runtime/browser QA.
+
+Test:
+
+1. Authentication
+2. Google login
+3. Dashboard
+4. Products
+5. Customers
+6. Orders
+7. Sales
+8. Inventory
+9. Expenses
+10. Settings
+11. AI Manager
+12. Voice
+13. English
+14. Roman Urdu
+15. Dark mode
+16. Light mode
+17. Mobile
+18. Desktop
+19. RLS/security
+20. AI confirmations
+21. Gemini failover
+22. Real database operations
+23. No console errors
+
+Do NOT fabricate tests.
+
+If a test cannot be executed, explicitly report that.
+
+---
+
+# STEP 23 — DO NOT TOUCH COMPLETED PERFORMANCE WORK
+
+The previous performance work is considered complete.
+
+Do NOT:
+
+* redo navigation optimization
+* rewrite middleware
+* rewrite dashboard layout
+* remove existing caching
+* remove loading skeletons
+* redesign navigation
+* perform another broad performance audit
+
+Only investigate performance if a genuine regression is discovered during normal QA.
+
+---
+
+# FINAL REPORT
+
+Provide a concise report containing:
+
+1. Overall integration status.
+2. Products integration status.
+3. Customers integration status.
+4. Orders integration status.
+5. Sales integration status.
+6. Inventory/Stock integration status.
+7. Expenses integration status.
+8. Settings status.
+9. Dashboard data consistency status.
+10. AI Business Manager status.
+11. AI tool verification status.
+12. AI confirmation/security status.
+13. Gemini 3.6 failover status.
+14. Number of Gemini projects/slots actually detected and tested.
+15. Voice integration status.
+16. English/Roman Urdu status.
+17. Authentication/security status.
+18. RLS status.
+19. Responsive/theme status.
+20. Typecheck result.
+21. Lint result.
+22. Production build result.
+23. Browser/runtime QA result.
+24. Genuine blockers, if any.
+
+IMPORTANT:
+
+Do NOT report something as verified if it was not actually tested.
+
+Do NOT rebuild completed modules.
+
+Do NOT modify `AGENTS.md`.
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Do NOT add Groq.
+
+Do NOT switch away from Gemini 3.6.
+
+Do NOT redo the completed performance/navigation optimization.
+
+Only make changes where the audit finds a genuine issue.
+
+Complete this phase fully before reporting completion.

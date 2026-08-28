@@ -1,0 +1,75 @@
+STOP. Do NOT report PASS again without this exact proof.
+
+I am telling you directly: TWO problems are still present after your 
+last two "fixes." Nothing changed for me as a real user.
+
+PROBLEM 1 — Slow/hanging clicks
+The homepage navbar and Get Started buttons are still slow/hanging 
+when clicked. Click → long wait → then it opens.
+
+PROBLEM 2 — Navbar scroll regression
+When scrolling down the homepage, the navbar disappears. Previously 
+it stayed visible/sticky while scrolling. This is a regression that 
+was already reported before and falsely claimed as checked/fixed.
+
+Do this now, in order:
+
+=== PART A: Diagnose the slow clicks ===
+
+1. Open the homepage in an actual browser (not curl/Invoke-WebRequest).
+2. Open DevTools → Performance tab. Click "Get Started" and record 
+   the trace. Paste the actual flame graph summary — what is running 
+   between click and navigation (long task, JS execution, network 
+   request, or nothing at all)?
+3. Open DevTools → Network tab. Click the same button. Is there ANY 
+   request firing before navigation happens? Show its name and duration.
+4. Add console.log(performance.now()) inside the onClick handler and 
+   at the top of the destination page's component, and show me the 
+   actual millisecond gap between them.
+5. Do this for EVERY clickable button/link on the homepage, 
+   individually — do not skip any: Navbar Login, Navbar Get Started, 
+   Hero primary CTA, Hero secondary CTA (if exists), every other 
+   "Get Started" button anywhere on the page, Final CTA, and at 
+   least one Footer link. List each one by name in your report with 
+   its own numbers — do not group them together.
+6. Paste the raw console/performance output. Do not summarize it as 
+   "fast" or "PASS" — show me the numbers and the trace.
+7. Fix the actual root cause of any real delay found. Do not add 
+   fake loading states, skeletons, or delays to hide it.
+
+=== PART B: Fix the navbar scroll regression ===
+
+1. Find the navbar component file (search for "navbar" or "Navbar" 
+   in components/).
+2. Show me its current CSS/className for position, top, z-index.
+3. Search the file (and its parent layout) for any of these and show 
+   me the exact lines if found:
+   - useScroll, useTransform, useMotionValueEvent (Framer Motion 
+     scroll hooks)
+   - any scroll event listener (onScroll, window.addEventListener('scroll'...))
+   - any "overflow" CSS on a parent container wrapping the navbar
+4. Tell me explicitly: is there currently ANY code that hides, 
+   translates, or fades the navbar based on scroll position? Yes/no, 
+   and show the exact code if yes.
+5. Fix it so the navbar is simply `position: sticky, top: 0` (or 
+   `fixed`) with no scroll-triggered hide/show logic at all — same 
+   as it worked before.
+6. After the fix, scroll the actual homepage top to bottom and 
+   confirm in your own words at what scroll position you tested and 
+   that the navbar was visible the entire time.
+7. Test on both desktop and mobile viewport sizes.
+
+=== FINAL REPORT REQUIREMENTS ===
+
+For Part A: paste raw trace/console numbers, not a summary word like 
+"fast" or "snappy."
+
+For Part B: paste the exact diff of lines removed/changed. Do not 
+say "fixed" without showing the code.
+
+If you cannot reproduce either problem this way, say so explicitly 
+and ask me to record a screen video instead — do not assume either 
+issue is resolved without this evidence.
+
+Do not touch unrelated files. Do not remove authentication, RLS, or 
+any existing functionality while doing this.

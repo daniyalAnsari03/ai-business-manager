@@ -1,0 +1,2086 @@
+   ▲ Next.js 15.5.23
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.100.138:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 7.1s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 2.2s (172 modules)
+ ○ Compiling /api/ai/chat ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (107kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (258kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled /api/ai/chat in 11.1s (1027 modules)
+ POST /api/ai/chat 401 in 14442ms
+[ai-chat] created conversation: 73b0f0ff-0143-48be-ab70-b077cff80856
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"73b0f0ff-0143-48be-ab70-b077cff80856","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Blue Kurta ka stock kitna hai?","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "Blue Kurta" => ambiguous (2 candidates)
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773"] )
+[ai-chat] settleDone — conversationId: 73b0f0ff-0143-48be-ab70-b077cff80856
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 7442ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"73b0f0ff-0143-48be-ab70-b077cff80856","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"pehla wala","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] findById -> searched id: "b8f6c2a1-7d34-4e91-9c52-1a6b3d8f2047" | available ids (first 6): ["a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773","a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: NOT_FOUND 
+[disambiguation] resolveProductTarget used ID path productId= "b8f6c2a1-7d34-4e91-9c52-1a6b3d8f2047" => NOT_FOUND
+[ai-chat] settleDone — conversationId: 73b0f0ff-0143-48be-ab70-b077cff80856
+ POST /api/ai/chat 200 in 5508ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"73b0f0ff-0143-48be-ab70-b077cff80856","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ab test dup ka stock batao","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "test dup" => ambiguous (2 candidates)
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784"] )
+[ai-chat] settleDone — conversationId: 73b0f0ff-0143-48be-ab70-b077cff80856
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 4596ms
+ ✓ Compiled in 184ms
+ ○ Compiling /api/ai/chat ...
+ ✓ Compiled /api/ai/chat in 735ms (832 modules)
+[ai-chat] created conversation: 32bd40a2-f617-4c26-b58d-56a6611138f4
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"32bd40a2-f617-4c26-b58d-56a6611138f4","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Blue Kurta ka stock kitna hai?","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "Blue Kurta" => ambiguous (2 candidates)
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773"] )
+[ai-chat] settleDone — conversationId: 32bd40a2-f617-4c26-b58d-56a6611138f4
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 8981ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"32bd40a2-f617-4c26-b58d-56a6611138f4","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"pehla wala","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] findById -> searched id: "prod_1" | available ids (first 6): ["a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773","a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: NOT_FOUND 
+[disambiguation] resolveProductTarget used ID path productId= "prod_1" => NOT_FOUND
+[ai-chat] settleDone — conversationId: 32bd40a2-f617-4c26-b58d-56a6611138f4
+ POST /api/ai/chat 200 in 4643ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"32bd40a2-f617-4c26-b58d-56a6611138f4","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ab test dup ka stock batao","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "test dup" => ambiguous (2 candidates)
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784"] )
+[ai-chat] settleDone — conversationId: 32bd40a2-f617-4c26-b58d-56a6611138f4
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 6024ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"32bd40a2-f617-4c26-b58d-56a6611138f4","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"pehla wala","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] findById -> searched id: "prod_001" | available ids (first 6): ["a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773","a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: NOT_FOUND 
+[disambiguation] resolveProductTarget used ID path productId= "prod_001" => NOT_FOUND
+[ai-chat] settleDone — conversationId: 32bd40a2-f617-4c26-b58d-56a6611138f4
+ POST /api/ai/chat 200 in 4653ms
+[ai-chat] created conversation: ebbfe65d-b627-4224-97d0-4a547d1083a4
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"ebbfe65d-b627-4224-97d0-4a547d1083a4","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Blue Kurta ka stock kitna hai?","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "Blue Kurta" => ambiguous (2 candidates)
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773"] )
+[ai-chat] settleDone — conversationId: ebbfe65d-b627-4224-97d0-4a547d1083a4
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 6757ms
+ ✓ Compiled in 748ms (832 modules)
+ ✓ Compiled in 476ms (832 modules)
+[ai-chat] created conversation: ba197670-0343-45b3-8d10-68c5df81564c
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"ba197670-0343-45b3-8d10-68c5df81564c","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Blue Kurta ka stock kitna hai?","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "Blue Kurta" => ambiguous (2 candidates)
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773"] )
+[ai-chat] settleDone — conversationId: ba197670-0343-45b3-8d10-68c5df81564c
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 11023ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] positional pick -> candidate index 0 id "a70d0fe7-759c-4c36-a98a-228556822d9c"
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"ba197670-0343-45b3-8d10-68c5df81564c","hasCandidates":true,"hasResolvedId":false,"pendingIsRelevant":true,"userMessage":"pehla wala","tool":"find_product","candidateCount":2,"candidateIds":["a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773"],"resolvedId":null}
+[disambiguation] positional pick -> candidate index 0 id "a70d0fe7-759c-4c36-a98a-228556822d9c"
+[disambiguation] SERVER-resolved user pick to id: "a70d0fe7-759c-4c36-a98a-228556822d9c"
+[disambiguation] findById -> searched id: "a70d0fe7-759c-4c36-a98a-228556822d9c" | available ids (first 6): ["a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773","a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=a70d0fe7-759c-4c36-a98a-228556822d9c)
+[disambiguation] resolveProductTarget used ID path productId= "a70d0fe7-759c-4c36-a98a-228556822d9c" => FOUND (Blue Kurta)
+[ai-chat] settleDone — conversationId: ba197670-0343-45b3-8d10-68c5df81564c
+[disambiguation] turn end -> stash resolvedId {"tool":"find_product","id":"a70d0fe7-759c-4c36-a98a-228556822d9c"}
+ POST /api/ai/chat 200 in 5425ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"ba197670-0343-45b3-8d10-68c5df81564c","hasCandidates":false,"hasResolvedId":true,"pendingIsRelevant":false,"userMessage":"ab test dup ka stock batao","tool":"find_product","candidateCount":0,"candidateIds":[],"resolvedId":"a70d0fe7-759c-4c36-a98a-228556822d9c"}
+[disambiguation] DROPPING stale pending state (not relevant to this turn) — tool: find_product | candidates: 0 | resolvedId: a70d0fe7-759c-4c36-a98a-228556822d9c
+[disambiguation] resolveProductTarget used NAME path query= "test dup" => ambiguous (2 candidates)
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784"] )
+[ai-chat] settleDone — conversationId: ba197670-0343-45b3-8d10-68c5df81564c
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 4352ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] positional pick -> candidate index 0 id "a1966c69-66c2-443c-975f-ec5bd16eef2f"
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"ba197670-0343-45b3-8d10-68c5df81564c","hasCandidates":true,"hasResolvedId":false,"pendingIsRelevant":true,"userMessage":"pehla wala","tool":"find_product","candidateCount":2,"candidateIds":["a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784"],"resolvedId":null}
+[disambiguation] positional pick -> candidate index 0 id "a1966c69-66c2-443c-975f-ec5bd16eef2f"
+[disambiguation] SERVER-resolved user pick to id: "a1966c69-66c2-443c-975f-ec5bd16eef2f"
+[disambiguation] findById -> searched id: "a1966c69-66c2-443c-975f-ec5bd16eef2f" | available ids (first 6): ["a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773","a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=a1966c69-66c2-443c-975f-ec5bd16eef2f)
+[disambiguation] resolveProductTarget used ID path productId= "a1966c69-66c2-443c-975f-ec5bd16eef2f" => FOUND (Test Dup)
+[ai-chat] settleDone — conversationId: ba197670-0343-45b3-8d10-68c5df81564c
+[disambiguation] turn end -> stash resolvedId {"tool":"find_product","id":"a1966c69-66c2-443c-975f-ec5bd16eef2f"}
+ POST /api/ai/chat 200 in 4956ms
+[ai-chat] created conversation: 6555e008-0dc3-4027-b4b6-a8271a638a1e
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"6555e008-0dc3-4027-b4b6-a8271a638a1e","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Ek naya product banao: name 'QA Silk', category 'Fabric', price 350, stock 25","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_product raw args: {
+  "name": "QA Silk",
+  "category": "Fabric",
+  "price": 350,
+  "stockQuantity": 25,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_product id parameter present: NO | name/query present: NO
+[product-tools] createProduct input: {
+  "name": "QA Silk",
+  "category": "Fabric",
+  "price": 350,
+  "stockQuantity": 25,
+  "lowStockThreshold": 5,
+  "description": null
+}
+[product-service] createProduct validated.imageUrl: null
+[ai-chat] settleDone — conversationId: 6555e008-0dc3-4027-b4b6-a8271a638a1e
+ POST /api/ai/chat 200 in 5123ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"6555e008-0dc3-4027-b4b6-a8271a638a1e","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"haan confirm","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] settleDone — conversationId: 6555e008-0dc3-4027-b4b6-a8271a638a1e
+ POST /api/ai/chat 200 in 3015ms
+ ○ Compiling /api/ai/upload ...
+ ✓ Compiled /api/ai/upload in 1793ms (367 modules)
+ POST /api/ai/upload 200 in 3458ms
+ ✓ Compiled /api/ai/chat in 457ms (834 modules)
+[ai-chat] created conversation: d44c85af-c103-4487-8056-1e7a6cf95ec0
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"d44c85af-c103-4487-8056-1e7a6cf95ec0","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Is image se ek naya product banao: name 'QA Image Kurta', category 'Apparel', price 250, stock 8","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_product raw args: {
+  "name": "QA Image Kurta",
+  "category": "Apparel",
+  "price": 250,
+  "stockQuantity": 8,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": "https://ofbsmjvofeexbbztqdmz.supabase.co/storage/v1/object/public/product-images/ae44d4de-e4e5-4854-8e5d-b5428f8797aa/3c917442-7da0-4e34-a37d-4916f7bc52a6.png"
+}
+[ai-chat] DIAGNOSTIC tool_called=create_product id parameter present: NO | name/query present: NO
+[product-tools] createProduct input: {
+  "name": "QA Image Kurta",
+  "category": "Apparel",
+  "price": 250,
+  "stockQuantity": 8,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": "https://ofbsmjvofeexbbztqdmz.supabase.co/storage/v1/object/public/product-images/ae44d4de-e4e5-4854-8e5d-b5428f8797aa/3c917442-7da0-4e34-a37d-4916f7bc52a6.png"
+}
+[product-service] createProduct validated.imageUrl: https://ofbsmjvofeexbbztqdmz.supabase.co/storage/v1/object/public/product-images/ae44d4de-e4e5-4854-8e5d-b5428f8797aa/3c917442-7da0-4e34-a37d-4916f7bc52a6.png
+[ai-chat] settleDone — conversationId: d44c85af-c103-4487-8056-1e7a6cf95ec0
+ POST /api/ai/chat 200 in 7596ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"d44c85af-c103-4487-8056-1e7a6cf95ec0","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Image Kurta ki image dikhao aur price bhi batao","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Image Kurta" => found 
+[ai-chat] settleDone — conversationId: d44c85af-c103-4487-8056-1e7a6cf95ec0
+ POST /api/ai/chat 200 in 5485ms
+[ai-chat] created conversation: d02e70e9-540e-45e5-b3d4-313066d44f30
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"d02e70e9-540e-45e5-b3d4-313066d44f30","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Silk ka price 400 aur stock 30 kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Silk" => found 
+[ai-chat] DIAGNOSTIC tool_called=update_product raw args: {
+  "productName": null,
+  "productId": "384be37b-6a5e-4fea-8af5-ca4132c28eec",
+  "name": null,
+  "category": null,
+  "price": 400,
+  "description": null,
+  "sku": null,
+  "lowStockThreshold": null,
+  "imageUrl": null
+}
+[ai-chat] DIAGNOSTIC tool_called=update_product id parameter present: YES (384be37b-6a5e-4fea-8af5-ca4132c28eec) | name/query present: NO
+[disambiguation] findById -> searched id: "384be37b-6a5e-4fea-8af5-ca4132c28eec" | available ids (first 6): ["2da5bec3-7263-4f58-8ba7-75ab642acc00","384be37b-6a5e-4fea-8af5-ca4132c28eec","a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773","a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784"] | resolved: FOUND (id=384be37b-6a5e-4fea-8af5-ca4132c28eec)
+[disambiguation] resolveProductTarget used ID path productId= "384be37b-6a5e-4fea-8af5-ca4132c28eec" => FOUND (QA Silk)
+[product-tools] updateProduct merged input: {
+  "productName": null,
+  "name": "QA Silk",
+  "category": "Fabric",
+  "price": 400,
+  "description": null,
+  "sku": null,
+  "lowStockThreshold": 5,
+  "stockQuantity": 25,
+  "imageUrl": null
+}
+[product-service] updateProduct validated.imageUrl: null
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock raw args: {
+  "productName": null,
+  "productId": "384be37b-6a5e-4fea-8af5-ca4132c28eec",
+  "newStock": 30
+}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock id parameter present: YES (384be37b-6a5e-4fea-8af5-ca4132c28eec) | name/query present: NO
+[disambiguation] findById -> searched id: "384be37b-6a5e-4fea-8af5-ca4132c28eec" | available ids (first 6): ["2da5bec3-7263-4f58-8ba7-75ab642acc00","384be37b-6a5e-4fea-8af5-ca4132c28eec","a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773","a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784"] | resolved: FOUND (id=384be37b-6a5e-4fea-8af5-ca4132c28eec)
+[disambiguation] resolveProductTarget used ID path productId= "384be37b-6a5e-4fea-8af5-ca4132c28eec" => FOUND (QA Silk)
+[ai-chat] settleDone — conversationId: d02e70e9-540e-45e5-b3d4-313066d44f30
+[disambiguation] turn end -> stash resolvedId {"tool":"set_product_stock","id":"384be37b-6a5e-4fea-8af5-ca4132c28eec"}
+ POST /api/ai/chat 200 in 9157ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"d02e70e9-540e-45e5-b3d4-313066d44f30","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"haan confirm karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] settleDone — conversationId: d02e70e9-540e-45e5-b3d4-313066d44f30
+ POST /api/ai/chat 200 in 2385ms
+[ai-chat] created conversation: 65e8d270-04ec-441a-845f-6fa9174350ab
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"65e8d270-04ec-441a-845f-6fa9174350ab","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Silk ka stock 2 kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock raw args: {
+  "productName": "QA Silk",
+  "productId": null,
+  "newStock": 2
+}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock id parameter present: NO | name/query present: YES
+[disambiguation] resolveProductTarget used NAME path query= "QA Silk" => found 
+[ai-chat] settleDone — conversationId: 65e8d270-04ec-441a-845f-6fa9174350ab
+ POST /api/ai/chat 200 in 4953ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"65e8d270-04ec-441a-845f-6fa9174350ab","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"kon se products low stock hain?","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] settleDone — conversationId: 65e8d270-04ec-441a-845f-6fa9174350ab
+ POST /api/ai/chat 200 in 4442ms
+[ai-chat] created conversation: 14de2547-d549-4e43-90e7-fe051562cbac
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"14de2547-d549-4e43-90e7-fe051562cbac","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Image Kurta product delete kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Image Kurta" => found 
+[ai-chat] settleDone — conversationId: 14de2547-d549-4e43-90e7-fe051562cbac
+ POST /api/ai/chat 200 in 4581ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"14de2547-d549-4e43-90e7-fe051562cbac","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"haan, delete karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=delete_product raw args: {
+  "productName": "QA Image Kurta",
+  "productId": null,
+  "confirmed": true
+}
+[ai-chat] DIAGNOSTIC tool_called=delete_product id parameter present: NO | name/query present: YES
+[disambiguation] resolveProductTarget used NAME path query= "QA Image Kurta" => found 
+[ai-chat] settleDone — conversationId: 14de2547-d549-4e43-90e7-fe051562cbac
+ POST /api/ai/chat 200 in 4901ms
+[ai-chat] created conversation: a661c4bd-96c5-4235-9228-943db3c8f420
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"a661c4bd-96c5-4235-9228-943db3c8f420","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Test Dup ka stock 50 kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock raw args: {
+  "productName": "Test Dup",
+  "productId": null,
+  "newStock": 50
+}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock id parameter present: NO | name/query present: YES
+[disambiguation] resolveProductTarget used NAME path query= "Test Dup" => ambiguous (2 candidates)
+[disambiguation] captured needs_clarification candidates for tool set_product_stock (count 2 , ids ["a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784"] )
+[ai-chat] settleDone — conversationId: a661c4bd-96c5-4235-9228-943db3c8f420
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 4459ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] attribute pick -> candidate id "54c7a64c-4322-4d9f-816a-0ca105736784"
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"a661c4bd-96c5-4235-9228-943db3c8f420","hasCandidates":true,"hasResolvedId":false,"pendingIsRelevant":true,"userMessage":"clothing wala","tool":"set_product_stock","candidateCount":2,"candidateIds":["a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784"],"resolvedId":null}
+[disambiguation] attribute pick -> candidate id "54c7a64c-4322-4d9f-816a-0ca105736784"
+[disambiguation] SERVER-resolved user pick to id: "54c7a64c-4322-4d9f-816a-0ca105736784"
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock raw args: {
+  "productName": null,
+  "productId": "54c7a64c-4322-4d9f-816a-0ca105736784",
+  "newStock": 50
+}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock id parameter present: YES (54c7a64c-4322-4d9f-816a-0ca105736784) | name/query present: NO
+[disambiguation] findById -> searched id: "54c7a64c-4322-4d9f-816a-0ca105736784" | available ids (first 6): ["384be37b-6a5e-4fea-8af5-ca4132c28eec","a70d0fe7-759c-4c36-a98a-228556822d9c","0b1bc342-18da-431b-b04b-7eaef132e773","a1966c69-66c2-443c-975f-ec5bd16eef2f","54c7a64c-4322-4d9f-816a-0ca105736784","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=54c7a64c-4322-4d9f-816a-0ca105736784)
+[disambiguation] resolveProductTarget used ID path productId= "54c7a64c-4322-4d9f-816a-0ca105736784" => FOUND (test dup)
+[ai-chat] settleDone — conversationId: a661c4bd-96c5-4235-9228-943db3c8f420
+[disambiguation] turn end -> stash resolvedId {"tool":"set_product_stock","id":"54c7a64c-4322-4d9f-816a-0ca105736784"}
+ POST /api/ai/chat 200 in 4412ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"a661c4bd-96c5-4235-9228-943db3c8f420","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"haan confirm karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] settleDone — conversationId: a661c4bd-96c5-4235-9228-943db3c8f420
+ POST /api/ai/chat 200 in 2683ms
+[ai-chat] created conversation: 8af484a5-b204-4eae-9c74-b8927f6fde2c
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"8af484a5-b204-4eae-9c74-b8927f6fde2c","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Ek naya customer add karo: name 'QA Customer Ahmed'","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_customer raw args: {
+  "name": "QA Customer Ahmed",
+  "phone": null,
+  "email": null,
+  "address": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_customer id parameter present: NO | name/query present: NO
+[ai-chat] settleDone — conversationId: 8af484a5-b204-4eae-9c74-b8927f6fde2c
+ POST /api/ai/chat 200 in 4701ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"8af484a5-b204-4eae-9c74-b8927f6fde2c","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"uska phone 03001234567 aur email ahmed@test.com add karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=update_customer raw args: {
+  "customerName": null,
+  "customerId": "861613fa-678f-4e34-9bd1-47492d2a3623",
+  "name": null,
+  "phone": "03001234567",
+  "email": "ahmed@test.com",
+  "address": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=update_customer id parameter present: YES (861613fa-678f-4e34-9bd1-47492d2a3623) | name/query present: NO
+[disambiguation] findById -> searched id: "861613fa-678f-4e34-9bd1-47492d2a3623" | available ids (first 6): ["861613fa-678f-4e34-9bd1-47492d2a3623","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=861613fa-678f-4e34-9bd1-47492d2a3623)
+[ai-chat] settleDone — conversationId: 8af484a5-b204-4eae-9c74-b8927f6fde2c
+[disambiguation] turn end -> stash resolvedId {"tool":"update_customer","id":"861613fa-678f-4e34-9bd1-47492d2a3623"}
+ POST /api/ai/chat 200 in 6876ms
+[ai-chat] created conversation: 6b641b01-f69c-485a-b285-6bc9cbd75323
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"6b641b01-f69c-485a-b285-6bc9cbd75323","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Customer Ahmed ka phone 03111234567 update karo aur address 'Lahore' add karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=update_customer raw args: {
+  "customerName": null,
+  "customerId": "861613fa-678f-4e34-9bd1-47492d2a3623",
+  "name": null,
+  "phone": "03111234567",
+  "email": null,
+  "address": "Lahore",
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=update_customer id parameter present: YES (861613fa-678f-4e34-9bd1-47492d2a3623) | name/query present: NO
+[disambiguation] findById -> searched id: "861613fa-678f-4e34-9bd1-47492d2a3623" | available ids (first 6): ["861613fa-678f-4e34-9bd1-47492d2a3623","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=861613fa-678f-4e34-9bd1-47492d2a3623)
+[ai-chat] settleDone — conversationId: 6b641b01-f69c-485a-b285-6bc9cbd75323
+[disambiguation] turn end -> stash resolvedId {"tool":"update_customer","id":"861613fa-678f-4e34-9bd1-47492d2a3623"}
+ POST /api/ai/chat 200 in 6947ms
+ ✓ Compiled in 126ms
+ ○ Compiling /api/ai/chat ...
+ ✓ Compiled /api/ai/chat in 1872ms (832 modules)
+[ai-chat] created conversation: 3b47dede-f141-4279-869b-07ccd74bcdf9
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"3b47dede-f141-4279-869b-07ccd74bcdf9","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Customer Ahmed ka email set karo ahmed@test.com","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=update_customer raw args: {
+  "customerName": null,
+  "customerId": "861613fa-678f-4e34-9bd1-47492d2a3623",
+  "name": null,
+  "phone": null,
+  "email": "ahmed@test.com",
+  "address": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=update_customer id parameter present: YES (861613fa-678f-4e34-9bd1-47492d2a3623) | name/query present: NO
+[disambiguation] findById -> searched id: "861613fa-678f-4e34-9bd1-47492d2a3623" | available ids (first 6): ["861613fa-678f-4e34-9bd1-47492d2a3623","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=861613fa-678f-4e34-9bd1-47492d2a3623)
+[ai-chat] settleDone — conversationId: 3b47dede-f141-4279-869b-07ccd74bcdf9
+[disambiguation] turn end -> stash resolvedId {"tool":"update_customer","id":"861613fa-678f-4e34-9bd1-47492d2a3623"}
+ POST /api/ai/chat 200 in 13690ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"3b47dede-f141-4279-869b-07ccd74bcdf9","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ab uska address 'Karachi' update karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=update_customer raw args: {
+  "customerName": null,
+  "customerId": "861613fa-678f-4e34-9bd1-47492d2a3623",
+  "name": null,
+  "phone": null,
+  "email": null,
+  "address": "Karachi",
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=update_customer id parameter present: YES (861613fa-678f-4e34-9bd1-47492d2a3623) | name/query present: NO
+[disambiguation] findById -> searched id: "861613fa-678f-4e34-9bd1-47492d2a3623" | available ids (first 6): ["861613fa-678f-4e34-9bd1-47492d2a3623","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=861613fa-678f-4e34-9bd1-47492d2a3623)
+[ai-chat] settleDone — conversationId: 3b47dede-f141-4279-869b-07ccd74bcdf9
+[disambiguation] turn end -> stash resolvedId {"tool":"update_customer","id":"861613fa-678f-4e34-9bd1-47492d2a3623"}
+ POST /api/ai/chat 200 in 7833ms
+[ai-chat] created conversation: 1b489849-71ad-402a-8412-04ad8cb9193e
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"1b489849-71ad-402a-8412-04ad8cb9193e","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Silk ka stock 10 kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock raw args: {
+  "productName": "QA Silk",
+  "productId": null,
+  "newStock": 10
+}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock id parameter present: NO | name/query present: YES
+[disambiguation] resolveProductTarget used NAME path query= "QA Silk" => found 
+[ai-chat] settleDone — conversationId: 1b489849-71ad-402a-8412-04ad8cb9193e
+ POST /api/ai/chat 200 in 8806ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"1b489849-71ad-402a-8412-04ad8cb9193e","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Customer Ahmed ke liye 3 'QA Silk' order banao","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Silk" => found 
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "QA Silk",
+      "quantity": 3
+    }
+  ],
+  "customerName": "QA Customer Ahmed",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: NO | name/query present: NO
+[ai-chat] settleDone — conversationId: 1b489849-71ad-402a-8412-04ad8cb9193e
+ POST /api/ai/chat 200 in 9959ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"1b489849-71ad-402a-8412-04ad8cb9193e","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ORD-000005 ko completed mark karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=update_order_status raw args: {
+  "orderNumber": "ORD-000005",
+  "orderId": null,
+  "status": "completed",
+  "confirmed": false
+}
+[ai-chat] DIAGNOSTIC tool_called=update_order_status id parameter present: NO | name/query present: NO
+[ai-chat] settleDone — conversationId: 1b489849-71ad-402a-8412-04ad8cb9193e
+ POST /api/ai/chat 200 in 6876ms
+ ✓ Compiled in 100ms
+ ○ Compiling /api/ai/chat ...
+ ✓ Compiled /api/ai/chat in 2.7s (832 modules)
+[ai-chat] created conversation: 74a09b52-1492-4ca2-8371-618cbc48eae9
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"74a09b52-1492-4ca2-8371-618cbc48eae9","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Customer Ahmed ke liye 2 'QA Silk' ka order banao","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Silk" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"status":"ok","product":{"id":"384be37b-6a5e-4fea-8af5-ca4132c28eec","name":"QA Silk","category":"Fabric","price":400,"stock":7,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"status":"ok","customer":{"id":"861613fa-678f-4e34-9bd1-47492d2a3623","name":"QA Customer Ahmed","phone":"03111234567","email":"ahmed@test.com","address":"Karachi","notes":null,"totalOrders":1,"totalSpent":1200}}
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "QA Silk",
+      "quantity": 2
+    }
+  ],
+  "customerName": "QA Customer Ahmed",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: NO | name/query present: NO
+[route][tool_output] create_order rawOutputType= string parsedStatus= ok raw= {"status":"ok","created":true,"orderNumber":"ORD-000006","total":800,"subtotal":800,"discount":0,"items":[{"productName":"QA Silk","quantity":2,"unitPrice":400}]}
+[ai-chat] settleDone — conversationId: 74a09b52-1492-4ca2-8371-618cbc48eae9
+ POST /api/ai/chat 200 in 17484ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"74a09b52-1492-4ca2-8371-618cbc48eae9","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ab is order ko completed kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=update_order_status raw args: {
+  "orderNumber": "ORD-000006",
+  "orderId": null,
+  "status": "completed",
+  "confirmed": false
+}
+[ai-chat] DIAGNOSTIC tool_called=update_order_status id parameter present: NO | name/query present: NO
+[route][tool_output] update_order_status rawOutputType= string parsedStatus= completed raw= {"status":"completed","updated":true,"orderNumber":"ORD-000006"}
+[ai-chat] settleDone — conversationId: 74a09b52-1492-4ca2-8371-618cbc48eae9
+ POST /api/ai/chat 200 in 5641ms
+ ○ Compiling /dashboard/products ...
+ ✓ Compiled /dashboard/products in 24.4s (2548 modules)
+ GET /dashboard/products 200 in 27486ms
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 1305ms (1782 modules)
+ GET /icon.svg?2d1d126332e5961d 200 in 1493ms
+ ✓ Compiled in 1098ms (1876 modules)
+ GET /dashboard/products 200 in 539ms
+ ✓ Compiled in 506ms (750 modules)
+ GET /dashboard/products 200 in 163ms
+ ✓ Compiled in 555ms (750 modules)
+ GET /dashboard/products 200 in 155ms
+ ✓ Compiled in 507ms (750 modules)
+ GET /dashboard/products 200 in 168ms
+ ✓ Compiled in 646ms (750 modules)
+ GET /dashboard/products 200 in 163ms
+ ○ Compiling /api/ai/chat ...
+ ✓ Compiled /api/ai/chat in 1944ms (1780 modules)
+ GET /dashboard/products 200 in 350ms
+[ai-chat] created conversation: 8898c6c6-dea5-45c4-8a93-6ba5a210495c
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"8898c6c6-dea5-45c4-8a93-6ba5a210495c","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Customer Ahmed ke liye 1 'QA Silk' ka order banao","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Silk" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"384be37b-6a5e-4fea-8af5-ca4132c28eec","name":"QA Silk","category":"Fabric","price":400,"stock":5,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"861613fa-678f-4e34-9bd1-47492d2a3623","name":"QA Customer Ahmed","phone":"03111234567","email":"ahmed@test.com","address":"Karachi","notes":null,"totalOrders":2,"totalSpent":2000},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "QA Silk",
+      "quantity": 1
+    }
+  ],
+  "customerName": "QA Customer Ahmed",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: NO | name/query present: NO
+[route][tool_output] create_order rawOutputType= string parsedStatus= ok raw= {"created":true,"orderNumber":"ORD-000007","total":400,"subtotal":400,"discount":0,"items":[{"productName":"QA Silk","quantity":1,"unitPrice":400}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 8898c6c6-dea5-45c4-8a93-6ba5a210495c
+ POST /api/ai/chat 200 in 14565ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"8898c6c6-dea5-45c4-8a93-6ba5a210495c","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ab is order ko completed kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=update_order_status raw args: {
+  "orderNumber": "ORD-000007",
+  "orderId": null,
+  "status": "completed",
+  "confirmed": false
+}
+[ai-chat] DIAGNOSTIC tool_called=update_order_status id parameter present: NO | name/query present: NO
+[route][tool_output] update_order_status rawOutputType= string parsedStatus= ok raw= {"updated":true,"orderNumber":"ORD-000007","newStatus":"completed","status":"ok"}
+[ai-chat] settleDone — conversationId: 8898c6c6-dea5-45c4-8a93-6ba5a210495c
+ POST /api/ai/chat 200 in 24044ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"8898c6c6-dea5-45c4-8a93-6ba5a210495c","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ORD-000007 ki details batao","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_order rawOutputType= string parsedStatus= ok raw= {"found":true,"order":{"id":"d8bafc37-71ed-40b5-bff8-b39f8490c5e9","orderNumber":"ORD-000007","status":"completed","customerName":"QA Customer Ahmed","orderedAt":"2026-08-27T12:55:06.998528+00:00","subtotal":400,"discount":0,"total":400,"notes":null,"items":[{"productName":"QA Silk","quantity":1,"un
+[ai-chat] settleDone — conversationId: 8898c6c6-dea5-45c4-8a93-6ba5a210495c
+ POST /api/ai/chat 200 in 5465ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"8898c6c6-dea5-45c4-8a93-6ba5a210495c","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Customer Ahmed ke kitne orders hain aur total kya hai?","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"861613fa-678f-4e34-9bd1-47492d2a3623","name":"QA Customer Ahmed","phone":"03111234567","email":"ahmed@test.com","address":"Karachi","notes":null,"totalOrders":3,"totalSpent":2400},"status":"ok"}
+[ai-chat] settleDone — conversationId: 8898c6c6-dea5-45c4-8a93-6ba5a210495c
+ POST /api/ai/chat 200 in 4717ms
+ ✓ Compiled in 1450ms (750 modules)
+ GET /dashboard/products 200 in 251ms
+[ai-chat] created conversation: 60a95c4c-129b-4964-b0e6-b31c006868cd
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"60a95c4c-129b-4964-b0e6-b31c006868cd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Ek naya customer banao 'QA Customer Ahmad'","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_customer raw args: {
+  "name": "QA Customer Ahmad",
+  "phone": null,
+  "email": null,
+  "address": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_customer id parameter present: NO | name/query present: NO
+[route][tool_output] create_customer rawOutputType= string parsedStatus= ok raw= {"created":true,"customer":{"id":"417432ec-2eac-46c4-8405-b66d50d86a88","name":"QA Customer Ahmad","phone":null,"email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: 60a95c4c-129b-4964-b0e6-b31c006868cd
+ POST /api/ai/chat 200 in 6514ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"60a95c4c-129b-4964-b0e6-b31c006868cd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Customer ka phone 03000000000 kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"417432ec-2eac-46c4-8405-b66d50d86a88","name":"QA Customer Ahmad","phone":null,"email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},{"id":"861613fa-678f-4e34-9bd1-47492d2a3623","name":"QA Customer Ahmed","phone":"03111234567","email":"
+[disambiguation] captured needs_clarification candidates for tool find_customer (count 2 , ids ["417432ec-2eac-46c4-8405-b66d50d86a88","861613fa-678f-4e34-9bd1-47492d2a3623"] )
+[ai-chat] settleDone — conversationId: 60a95c4c-129b-4964-b0e6-b31c006868cd
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 4391ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] positional pick -> candidate index 0 id "417432ec-2eac-46c4-8405-b66d50d86a88"
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"60a95c4c-129b-4964-b0e6-b31c006868cd","hasCandidates":true,"hasResolvedId":false,"pendingIsRelevant":true,"userMessage":"pehla wala","tool":"find_customer","candidateCount":2,"candidateIds":["417432ec-2eac-46c4-8405-b66d50d86a88","861613fa-678f-4e34-9bd1-47492d2a3623"],"resolvedId":null}
+[disambiguation] positional pick -> candidate index 0 id "417432ec-2eac-46c4-8405-b66d50d86a88"
+[disambiguation] SERVER-resolved user pick to id: "417432ec-2eac-46c4-8405-b66d50d86a88"
+[disambiguation] findById -> searched id: "417432ec-2eac-46c4-8405-b66d50d86a88" | available ids (first 6): ["417432ec-2eac-46c4-8405-b66d50d86a88","861613fa-678f-4e34-9bd1-47492d2a3623","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=417432ec-2eac-46c4-8405-b66d50d86a88)
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"417432ec-2eac-46c4-8405-b66d50d86a88","name":"QA Customer Ahmad","phone":null,"email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=update_customer raw args: {
+  "customerName": null,
+  "customerId": "417432ec-2eac-46c4-8405-b66d50d86a88",
+  "name": null,
+  "phone": "03000000000",
+  "email": null,
+  "address": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=update_customer id parameter present: YES (417432ec-2eac-46c4-8405-b66d50d86a88) | name/query present: NO
+[disambiguation] findById -> searched id: "417432ec-2eac-46c4-8405-b66d50d86a88" | available ids (first 6): ["417432ec-2eac-46c4-8405-b66d50d86a88","861613fa-678f-4e34-9bd1-47492d2a3623","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=417432ec-2eac-46c4-8405-b66d50d86a88)
+[route][tool_output] update_customer rawOutputType= string parsedStatus= ok raw= {"updated":true,"customer":{"id":"417432ec-2eac-46c4-8405-b66d50d86a88","name":"QA Customer Ahmad","phone":"03000000000","email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: 60a95c4c-129b-4964-b0e6-b31c006868cd
+[disambiguation] turn end -> stash resolvedId {"tool":"update_customer","id":"417432ec-2eac-46c4-8405-b66d50d86a88"}
+ POST /api/ai/chat 200 in 7938ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"60a95c4c-129b-4964-b0e6-b31c006868cd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"haan confirm karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] settleDone — conversationId: 60a95c4c-129b-4964-b0e6-b31c006868cd
+ POST /api/ai/chat 200 in 4100ms
+ ✓ Compiled in 1493ms (750 modules)
+ GET /dashboard/products 200 in 242ms
+ ✓ Compiled in 812ms (750 modules)
+ GET /dashboard/products 200 in 235ms
+[ai-chat] created conversation: 4802c53c-fc3e-409d-a56b-0dd0fe787b3f
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"4802c53c-fc3e-409d-a56b-0dd0fe787b3f","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Customer Ahmad ko delete kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"417432ec-2eac-46c4-8405-b66d50d86a88","name":"QA Customer Ahmad","phone":"03000000000","email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: 4802c53c-fc3e-409d-a56b-0dd0fe787b3f
+ POST /api/ai/chat 200 in 5217ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"4802c53c-fc3e-409d-a56b-0dd0fe787b3f","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"haan, confirm karta hoon","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=delete_customer raw args: {
+  "customerName": "QA Customer Ahmad",
+  "customerId": null,
+  "confirmed": true
+}
+[ai-chat] DIAGNOSTIC tool_called=delete_customer id parameter present: NO | name/query present: NO
+[route][tool_output] delete_customer rawOutputType= string parsedStatus= ok raw= {"removed":true,"name":"QA Customer Ahmad","status":"ok"}
+[ai-chat] settleDone — conversationId: 4802c53c-fc3e-409d-a56b-0dd0fe787b3f
+ POST /api/ai/chat 200 in 8695ms
+[ai-chat] created conversation: 65578cd5-3869-449e-8f40-156071b7ebf4
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"65578cd5-3869-449e-8f40-156071b7ebf4","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Ek expense add karo: title 'QA Machine Upr', amount 450, category utilities","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_expense raw args: {
+  "title": "QA Machine Upr",
+  "amount": 450,
+  "category": "utilities",
+  "expenseDate": "2026-08-27",
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_expense id parameter present: NO | name/query present: NO
+[route][tool_output] create_expense rawOutputType= string parsedStatus= ok raw= {"created":true,"expense":{"title":"QA Machine Upr","amount":450,"category":"utilities","date":"2026-08-27"},"status":"ok"}
+[ai-chat] settleDone — conversationId: 65578cd5-3869-449e-8f40-156071b7ebf4
+ POST /api/ai/chat 200 in 4885ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"65578cd5-3869-449e-8f40-156071b7ebf4","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Machine Upr ka amount 600 kar do aur notes 'monthly bill' add karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Machine Upr" => not_found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= error raw= {"reason":"not_found","hint":"No such product. Tell the user honestly and offer to add it.","status":"error"}
+[ai-chat] settleDone — conversationId: 65578cd5-3869-449e-8f40-156071b7ebf4
+ POST /api/ai/chat 200 in 6400ms
+[ai-chat] created conversation: 9b97cbff-a774-4571-b2cf-4f39f16b5b58
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"9b97cbff-a774-4571-b2cf-4f39f16b5b58","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Expense 'QA Machine Upr' ka amount 600 update karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=update_expense raw args: {
+  "expenseTitle": "QA Machine Upr",
+  "expenseId": null,
+  "title": null,
+  "amount": 600,
+  "category": null,
+  "expenseDate": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=update_expense id parameter present: NO | name/query present: NO
+[route][tool_output] update_expense rawOutputType= string parsedStatus= ok raw= {"updated":true,"expense":{"id":"e613f4c4-d0be-4e57-90aa-72830a050867","title":"QA Machine Upr","amount":600,"category":"utilities","date":"2026-08-27","notes":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: 9b97cbff-a774-4571-b2cf-4f39f16b5b58
+ POST /api/ai/chat 200 in 6018ms
+[ai-chat] created conversation: eaca7268-8af5-433b-8ad4-0d68ae218ea8
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"eaca7268-8af5-433b-8ad4-0d68ae218ea8","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"is mahine ke total expenses kitne hain?","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] expense_summary rawOutputType= string parsedStatus= ok raw= {"summary":{"todayTotal":600,"weekTotal":600,"monthTotal":10700,"allTimeTotal":10700,"monthCount":3,"allTimeCount":3,"monthByCategory":[{"category":"rent","total":10000},{"category":"utilities","total":600},{"category":"supplies","total":100}],"largestThisMonth":{"title":"Rent","amount":10000,"date"
+[ai-chat] settleDone — conversationId: eaca7268-8af5-433b-8ad4-0d68ae218ea8
+ POST /api/ai/chat 200 in 7331ms
+[ai-chat] created conversation: 4f460646-bcbd-41d9-b208-21fe1c05efb5
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"4f460646-bcbd-41d9-b208-21fe1c05efb5","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Machine Upr expense delete kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_expenses rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"expenses":[{"title":"QA Machine Upr","amount":600,"category":"utilities","date":"2026-08-27"}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 4f460646-bcbd-41d9-b208-21fe1c05efb5
+ POST /api/ai/chat 200 in 5071ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"4f460646-bcbd-41d9-b208-21fe1c05efb5","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"haan, delete karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=delete_expense raw args: {
+  "expenseTitle": "QA Machine Upr",
+  "expenseId": null,
+  "confirmed": true
+}
+[ai-chat] DIAGNOSTIC tool_called=delete_expense id parameter present: NO | name/query present: NO
+[route][tool_output] delete_expense rawOutputType= string parsedStatus= ok raw= {"removed":true,"title":"QA Machine Upr","status":"ok"}
+[ai-chat] settleDone — conversationId: 4f460646-bcbd-41d9-b208-21fe1c05efb5
+ POST /api/ai/chat 200 in 5697ms
+ ✓ Compiled in 1323ms (750 modules)
+ ✓ Compiled in 788ms (750 modules)
+ GET /dashboard/products 200 in 653ms
+ GET /dashboard/products 200 in 215ms
+ ✓ Compiled in 733ms (750 modules)
+ GET /dashboard/products 200 in 218ms
+[ai-chat] created conversation: c3808650-e027-4fcf-9446-4da3b19fddf7
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"c3808650-e027-4fcf-9446-4da3b19fddf7","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"aaj ki sales kitni hui?","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] sales_summary rawOutputType= string parsedStatus= ok raw= {"today":{"revenue":2400,"orderCount":3,"averageOrderValue":800},"yesterday":{"revenue":0,"orderCount":0,"averageOrderValue":0},"week":{"revenue":2400,"orderCount":3,"averageOrderValue":800},"lastWeek":{"revenue":0,"orderCount":0,"averageOrderValue":0},"month":{"revenue":2400,"orderCount":3,"average
+[ai-chat] settleDone — conversationId: c3808650-e027-4fcf-9446-4da3b19fddf7
+ POST /api/ai/chat 200 in 5880ms
+[ai-chat] created conversation: 7d203a23-7eab-4c68-8de1-f60d3f0573d7
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"7d203a23-7eab-4c68-8de1-f60d3f0573d7","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"sales aur expenses ka comparison batao","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] business_overview rawOutputType= string parsedStatus= ok raw= {"sales":{"today":{"revenue":2400,"orderCount":3},"yesterday":{"revenue":0,"orderCount":0},"week":{"revenue":2400,"orderCount":3},"lastWeek":{"revenue":0,"orderCount":0},"month":{"revenue":2400,"orderCount":3},"lastMonth":{"revenue":0,"orderCount":0},"allTime":{"revenue":2400,"orderCount":3}},"order
+[ai-chat] settleDone — conversationId: 7d203a23-7eab-4c68-8de1-f60d3f0573d7
+ POST /api/ai/chat 200 in 7038ms
+ ✓ Compiled in 1432ms (750 modules)
+ ✓ Compiled in 764ms (750 modules)
+ GET /dashboard/products 200 in 630ms
+ GET /dashboard/products 200 in 251ms
+ ✓ Compiled in 809ms (750 modules)
+ GET /dashboard/products 200 in 337ms
+ ✓ Compiled in 1559ms (750 modules)
+ ✓ Compiled in 812ms (750 modules)
+ GET /dashboard/products 200 in 699ms
+ GET /dashboard/products 200 in 205ms
+ ✓ Compiled in 777ms (750 modules)
+ GET /dashboard/products 200 in 180ms
+ ○ Compiling /api/ai/conversations ...
+ ✓ Compiled /api/ai/conversations in 1285ms (1863 modules)
+ GET /api/ai/conversations 200 in 3183ms
+ GET /api/ai/conversations?q=kharchay 200 in 1546ms
+ ○ Compiling /api/ai/conversations/[id] ...
+ ✓ Compiled /api/ai/conversations/[id] in 858ms (1865 modules)
+ GET /api/ai/conversations/eaca7268-8af5-433b-8ad4-0d68ae218ea8 200 in 4460ms
+ GET /api/ai/conversations/eaca7268-8af5-433b-8ad4-0d68ae218ea8 200 in 1073ms
+ ✓ Compiled in 687ms (750 modules)
+ GET /dashboard/products 200 in 454ms
+ GET /api/ai/conversations 200 in 853ms
+ GET /api/ai/conversations?q=kharchay 200 in 1515ms
+ GET /api/ai/conversations/eaca7268-8af5-433b-8ad4-0d68ae218ea8 200 in 969ms
+ GET /api/ai/conversations/eaca7268-8af5-433b-8ad4-0d68ae218ea8 200 in 720ms
+ ○ Compiling /api/ai/conversations/[id]/messages ...
+ ✓ Compiled /api/ai/conversations/[id]/messages in 929ms (1867 modules)
+ DELETE /api/ai/conversations/eaca7268-8af5-433b-8ad4-0d68ae218ea8/messages 200 in 4288ms
+ GET /api/ai/conversations/eaca7268-8af5-433b-8ad4-0d68ae218ea8 200 in 792ms
+ ✓ Compiled in 1521ms (750 modules)
+ GET /dashboard/products 200 in 760ms
+ ✓ Compiled in 1418ms (750 modules)
+ GET /dashboard/products 200 in 371ms
+ ✓ Compiled in 523ms (750 modules)
+ GET /dashboard/products 200 in 150ms
+ ○ Compiling /api/ai/chat ...
+ ✓ Compiled /api/ai/chat in 779ms (1780 modules)
+[ai-chat] created conversation: 165ee83f-bc20-4806-8858-2d32d23a8e48
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"165ee83f-bc20-4806-8858-2d32d23a8e48","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"meri kitni products hain? list kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 165ee83f-bc20-4806-8858-2d32d23a8e48
+ POST /api/ai/chat 200 in 8773ms
+ ✓ Compiled in 610ms (750 modules)
+ GET /dashboard/products 200 in 277ms
+ ✓ Compiled in 338ms (750 modules)
+ GET /dashboard/products 200 in 185ms
+[ai-chat] created conversation: ba1e1306-0ef0-49cc-a433-feb1d6799028
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"ba1e1306-0ef0-49cc-a433-feb1d6799028","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Eik naya product add karo: name 'QA Test Kurta', category 'Apparel', price 500, stock 10","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_product raw args: {
+  "name": "QA Test Kurta",
+  "category": "Apparel",
+  "price": 500,
+  "stockQuantity": 10,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_product id parameter present: NO | name/query present: NO
+[product-tools] createProduct input: {
+  "name": "QA Test Kurta",
+  "category": "Apparel",
+  "price": 500,
+  "stockQuantity": 10,
+  "lowStockThreshold": 5,
+  "description": null
+}
+[product-service] createProduct validated.imageUrl: null
+[route][tool_output] create_product rawOutputType= string parsedStatus= ok raw= {"created":true,"product":{"id":"6a9d600b-52dd-4075-b843-b5263c557993","name":"QA Test Kurta","category":"Apparel","price":500,"stock":10,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: ba1e1306-0ef0-49cc-a433-feb1d6799028
+ POST /api/ai/chat 200 in 4930ms
+ ✓ Compiled in 306ms (750 modules)
+ GET /dashboard/products 200 in 155ms
+ ○ Compiling /api/ai/upload ...
+ ✓ Compiled /api/ai/upload in 1063ms (1782 modules)
+ POST /api/ai/upload 200 in 2517ms
+[ai-chat] created conversation: d9ea97b2-1c6d-442f-901f-a0eddb1b07be
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"d9ea97b2-1c6d-442f-901f-a0eddb1b07be","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Is image se eik naya product banao: name 'QA Image Kurta', category 'Apparel', price 250, stock 8","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_product raw args: {
+  "name": "QA Image Kurta",
+  "category": "Apparel",
+  "price": 250,
+  "stockQuantity": 8,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": "https://ofbsmjvofeexbbztqdmz.supabase.co/storage/v1/object/public/product-images/ae44d4de-e4e5-4854-8e5d-b5428f8797aa/e2995092-c17c-4022-800a-6e5e3f108d77.png"
+}
+[ai-chat] DIAGNOSTIC tool_called=create_product id parameter present: NO | name/query present: NO
+[product-tools] createProduct input: {
+  "name": "QA Image Kurta",
+  "category": "Apparel",
+  "price": 250,
+  "stockQuantity": 8,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": "https://ofbsmjvofeexbbztqdmz.supabase.co/storage/v1/object/public/product-images/ae44d4de-e4e5-4854-8e5d-b5428f8797aa/e2995092-c17c-4022-800a-6e5e3f108d77.png"
+}
+[product-service] createProduct validated.imageUrl: https://ofbsmjvofeexbbztqdmz.supabase.co/storage/v1/object/public/product-images/ae44d4de-e4e5-4854-8e5d-b5428f8797aa/e2995092-c17c-4022-800a-6e5e3f108d77.png
+[route][tool_output] create_product rawOutputType= string parsedStatus= ok raw= {"created":true,"product":{"id":"219d66a8-c224-4f65-b0de-5743c817ac62","name":"QA Image Kurta","category":"Apparel","price":250,"stock":8,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":"https://ofbsmjvofeexbbztqdmz.supabase.co/storage/v1/object/public/product-images/ae44d4de-e4e5-485
+[ai-chat] settleDone — conversationId: d9ea97b2-1c6d-442f-901f-a0eddb1b07be
+ POST /api/ai/chat 200 in 6110ms
+ ✓ Compiled in 526ms (750 modules)
+ GET /dashboard/products 200 in 337ms
+[ai-chat] created conversation: a58c7e75-de94-40a1-a992-f582ed186b86
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"a58c7e75-de94-40a1-a992-f582ed186b86","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Test Kurta ka price 600 kar do aur stock 5 kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Test Kurta" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"6a9d600b-52dd-4075-b843-b5263c557993","name":"QA Test Kurta","category":"Apparel","price":500,"stock":10,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=update_product raw args: {
+  "productName": null,
+  "productId": "6a9d600b-52dd-4075-b843-b5263c557993",
+  "name": null,
+  "category": null,
+  "price": 600,
+  "description": null,
+  "sku": null,
+  "lowStockThreshold": null,
+  "imageUrl": null
+}
+[ai-chat] DIAGNOSTIC tool_called=update_product id parameter present: YES (6a9d600b-52dd-4075-b843-b5263c557993) | name/query present: NO
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock raw args: {
+  "productName": null,
+  "productId": "6a9d600b-52dd-4075-b843-b5263c557993",
+  "newStock": 5
+}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock id parameter present: YES (6a9d600b-52dd-4075-b843-b5263c557993) | name/query present: NO
+[disambiguation] findById -> searched id: "6a9d600b-52dd-4075-b843-b5263c557993" | available ids (first 6): ["219d66a8-c224-4f65-b0de-5743c817ac62","6a9d600b-52dd-4075-b843-b5263c557993","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=6a9d600b-52dd-4075-b843-b5263c557993)
+[disambiguation] resolveProductTarget used ID path productId= "6a9d600b-52dd-4075-b843-b5263c557993" => FOUND (QA Test Kurta)
+[disambiguation] findById -> searched id: "6a9d600b-52dd-4075-b843-b5263c557993" | available ids (first 6): ["219d66a8-c224-4f65-b0de-5743c817ac62","6a9d600b-52dd-4075-b843-b5263c557993","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=6a9d600b-52dd-4075-b843-b5263c557993)
+[disambiguation] resolveProductTarget used ID path productId= "6a9d600b-52dd-4075-b843-b5263c557993" => FOUND (QA Test Kurta)
+[product-tools] updateProduct merged input: {
+  "productName": null,
+  "name": "QA Test Kurta",
+  "category": "Apparel",
+  "price": 600,
+  "description": null,
+  "sku": null,
+  "lowStockThreshold": 5,
+  "stockQuantity": 10,
+  "imageUrl": null
+}
+[product-service] updateProduct validated.imageUrl: null
+[route][tool_output] update_product rawOutputType= string parsedStatus= ok raw= {"updated":true,"product":{"id":"6a9d600b-52dd-4075-b843-b5263c557993","name":"QA Test Kurta","category":"Apparel","price":600,"stock":10,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[route][tool_output] set_product_stock rawOutputType= string parsedStatus= ok raw= {"updated":true,"previous_stock":10,"product":{"id":"6a9d600b-52dd-4075-b843-b5263c557993","name":"QA Test Kurta","category":"Apparel","price":500,"stock":5,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: a58c7e75-de94-40a1-a992-f582ed186b86
+[disambiguation] turn end -> stash resolvedId {"tool":"set_product_stock","id":"6a9d600b-52dd-4075-b843-b5263c557993"}
+ POST /api/ai/chat 200 in 7698ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"a58c7e75-de94-40a1-a992-f582ed186b86","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Test Kurta ki details batao","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Test Kurta" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"6a9d600b-52dd-4075-b843-b5263c557993","name":"QA Test Kurta","category":"Apparel","price":600,"stock":10,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: a58c7e75-de94-40a1-a992-f582ed186b86
+ POST /api/ai/chat 200 in 4188ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"a58c7e75-de94-40a1-a992-f582ed186b86","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Image Kurta ki image dikhao","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Image Kurta" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"219d66a8-c224-4f65-b0de-5743c817ac62","name":"QA Image Kurta","category":"Apparel","price":250,"stock":8,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":"https://ofbsmjvofeexbbztqdmz.supabase.co/storage/v1/object/public/product-images/ae44d4de-e4e5-4854-8e5d-b5428f87
+[ai-chat] settleDone — conversationId: a58c7e75-de94-40a1-a992-f582ed186b86
+ POST /api/ai/chat 200 in 4142ms
+ ✓ Compiled in 2.6s (1859 modules)
+ GET /dashboard/products 200 in 450ms
+ ✓ Compiled in 440ms (750 modules)
+ GET /dashboard/products 200 in 103ms
+ ○ Compiling /api/ai/chat ...
+ ✓ Compiled /api/ai/chat in 776ms (1780 modules)
+ GET /dashboard/products 200 in 193ms
+[ai-chat] created conversation: 7beeb77c-3d54-4fe8-939f-7256e775849e
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"7beeb77c-3d54-4fe8-939f-7256e775849e","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Test Kurta ka price 650 kar do aur stock 7 kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Test Kurta" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"6a9d600b-52dd-4075-b843-b5263c557993","name":"QA Test Kurta","category":"Apparel","price":600,"stock":10,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=update_product raw args: {
+  "productName": null,
+  "productId": "6a9d600b-52dd-4075-b843-b5263c557993",
+  "name": null,
+  "category": null,
+  "price": 650,
+  "description": null,
+  "sku": null,
+  "lowStockThreshold": null,
+  "imageUrl": null
+}
+[ai-chat] DIAGNOSTIC tool_called=update_product id parameter present: YES (6a9d600b-52dd-4075-b843-b5263c557993) | name/query present: NO
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock raw args: {
+  "productName": null,
+  "productId": "6a9d600b-52dd-4075-b843-b5263c557993",
+  "newStock": 7
+}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock id parameter present: YES (6a9d600b-52dd-4075-b843-b5263c557993) | name/query present: NO
+[disambiguation] findById -> searched id: "6a9d600b-52dd-4075-b843-b5263c557993" | available ids (first 6): ["219d66a8-c224-4f65-b0de-5743c817ac62","6a9d600b-52dd-4075-b843-b5263c557993","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=6a9d600b-52dd-4075-b843-b5263c557993)
+[disambiguation] resolveProductTarget used ID path productId= "6a9d600b-52dd-4075-b843-b5263c557993" => FOUND (QA Test Kurta)
+[disambiguation] findById -> searched id: "6a9d600b-52dd-4075-b843-b5263c557993" | available ids (first 6): ["219d66a8-c224-4f65-b0de-5743c817ac62","6a9d600b-52dd-4075-b843-b5263c557993","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=6a9d600b-52dd-4075-b843-b5263c557993)
+[disambiguation] resolveProductTarget used ID path productId= "6a9d600b-52dd-4075-b843-b5263c557993" => FOUND (QA Test Kurta)
+[product-tools] updateProduct merged input: {
+  "productName": null,
+  "name": "QA Test Kurta",
+  "category": "Apparel",
+  "price": 650,
+  "description": null,
+  "sku": null,
+  "lowStockThreshold": 5,
+  "stockQuantity": 10,
+  "imageUrl": null
+}
+[product-service] updateProduct validated.imageUrl: null
+[route][tool_output] update_product rawOutputType= string parsedStatus= ok raw= {"updated":true,"product":{"id":"6a9d600b-52dd-4075-b843-b5263c557993","name":"QA Test Kurta","category":"Apparel","price":650,"stock":7,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[route][tool_output] set_product_stock rawOutputType= string parsedStatus= ok raw= {"updated":true,"previous_stock":10,"product":{"id":"6a9d600b-52dd-4075-b843-b5263c557993","name":"QA Test Kurta","category":"Apparel","price":600,"stock":7,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: 7beeb77c-3d54-4fe8-939f-7256e775849e
+[disambiguation] turn end -> stash resolvedId {"tool":"set_product_stock","id":"6a9d600b-52dd-4075-b843-b5263c557993"}
+ POST /api/ai/chat 200 in 9345ms
+ ✓ Compiled in 368ms (750 modules)
+ GET /dashboard/products 200 in 121ms
+[ai-chat] created conversation: 3ce92e88-3bf6-4610-93c2-e4a00a5a15ce
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"3ce92e88-3bf6-4610-93c2-e4a00a5a15ce","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Naya product banao 'QA Dup' category 'Clothing' price 100 stock 20","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_product raw args: {
+  "name": "QA Dup",
+  "category": "Clothing",
+  "price": 100,
+  "stockQuantity": 20,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_product id parameter present: NO | name/query present: NO
+[product-tools] createProduct input: {
+  "name": "QA Dup",
+  "category": "Clothing",
+  "price": 100,
+  "stockQuantity": 20,
+  "lowStockThreshold": 5,
+  "description": null
+}
+[product-service] createProduct validated.imageUrl: null
+[route][tool_output] create_product rawOutputType= string parsedStatus= ok raw= {"created":true,"product":{"id":"c4f133d7-56e5-4c64-a6e2-26f804d6f561","name":"QA Dup","category":"Clothing","price":100,"stock":20,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: 3ce92e88-3bf6-4610-93c2-e4a00a5a15ce
+ POST /api/ai/chat 200 in 4389ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"3ce92e88-3bf6-4610-93c2-e4a00a5a15ce","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Aur eik aur product banao 'qa dup' category 'Fashion' price 150 stock 30","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_product raw args: {
+  "name": "qa dup",
+  "category": "Fashion",
+  "price": 150,
+  "stockQuantity": 30,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_product id parameter present: NO | name/query present: NO
+[product-tools] createProduct input: {
+  "name": "qa dup",
+  "category": "Fashion",
+  "price": 150,
+  "stockQuantity": 30,
+  "lowStockThreshold": 5,
+  "description": null
+}
+[product-service] createProduct validated.imageUrl: null
+[route][tool_output] create_product rawOutputType= string parsedStatus= ok raw= {"created":true,"product":{"id":"0a3db4b0-8523-4150-a2b9-a9eab84758f6","name":"qa dup","category":"Fashion","price":150,"stock":30,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: 3ce92e88-3bf6-4610-93c2-e4a00a5a15ce
+ POST /api/ai/chat 200 in 4048ms
+ ✓ Compiled in 376ms (750 modules)
+ GET /dashboard/products 200 in 178ms
+[ai-chat] created conversation: e62fe494-67ca-4db0-b449-44e3d7bd4cae
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"e62fe494-67ca-4db0-b449-44e3d7bd4cae","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Dup ki details batao","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Dup" => ambiguous (2 candidates)
+[route][tool_output] find_product rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"0a3db4b0-8523-4150-a2b9-a9eab84758f6","name":"qa dup","category":"Fashion","price":150,"stock":30,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},{"id":"c4f133d7-56e5-4c64-a6e2-26f804d6f561","name":"QA Dup","category":"Clothing","pri
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"] )
+[ai-chat] settleDone — conversationId: e62fe494-67ca-4db0-b449-44e3d7bd4cae
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 5340ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] positional pick -> candidate index 0 id "0a3db4b0-8523-4150-a2b9-a9eab84758f6"
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"e62fe494-67ca-4db0-b449-44e3d7bd4cae","hasCandidates":true,"hasResolvedId":false,"pendingIsRelevant":true,"userMessage":"pehla wala","tool":"find_product","candidateCount":2,"candidateIds":["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"],"resolvedId":null}
+[disambiguation] positional pick -> candidate index 0 id "0a3db4b0-8523-4150-a2b9-a9eab84758f6"
+[disambiguation] SERVER-resolved user pick to id: "0a3db4b0-8523-4150-a2b9-a9eab84758f6"
+[disambiguation] findById -> searched id: "0a3db4b0-8523-4150-a2b9-a9eab84758f6" | available ids (first 6): ["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561","219d66a8-c224-4f65-b0de-5743c817ac62","6a9d600b-52dd-4075-b843-b5263c557993","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=0a3db4b0-8523-4150-a2b9-a9eab84758f6)
+[disambiguation] resolveProductTarget used ID path productId= "0a3db4b0-8523-4150-a2b9-a9eab84758f6" => FOUND (qa dup)
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"0a3db4b0-8523-4150-a2b9-a9eab84758f6","name":"qa dup","category":"Fashion","price":150,"stock":30,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: e62fe494-67ca-4db0-b449-44e3d7bd4cae
+[disambiguation] turn end -> stash resolvedId {"tool":"find_product","id":"0a3db4b0-8523-4150-a2b9-a9eab84758f6"}
+ POST /api/ai/chat 200 in 4395ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"e62fe494-67ca-4db0-b449-44e3d7bd4cae","hasCandidates":false,"hasResolvedId":true,"pendingIsRelevant":false,"userMessage":"QA Dup ki details batao dobara","tool":"find_product","candidateCount":0,"candidateIds":[],"resolvedId":"0a3db4b0-8523-4150-a2b9-a9eab84758f6"}
+[disambiguation] DROPPING stale pending state (not relevant to this turn) — tool: find_product | candidates: 0 | resolvedId: 0a3db4b0-8523-4150-a2b9-a9eab84758f6
+[disambiguation] resolveProductTarget used NAME path query= "QA Dup" => ambiguous (2 candidates)
+[route][tool_output] find_product rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"0a3db4b0-8523-4150-a2b9-a9eab84758f6","name":"qa dup","category":"Fashion","price":150,"stock":30,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},{"id":"c4f133d7-56e5-4c64-a6e2-26f804d6f561","name":"QA Dup","category":"Clothing","pri
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"] )
+[ai-chat] settleDone — conversationId: e62fe494-67ca-4db0-b449-44e3d7bd4cae
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 5183ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] attribute pick -> candidate id "c4f133d7-56e5-4c64-a6e2-26f804d6f561"
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"e62fe494-67ca-4db0-b449-44e3d7bd4cae","hasCandidates":true,"hasResolvedId":false,"pendingIsRelevant":true,"userMessage":"clothing wala","tool":"find_product","candidateCount":2,"candidateIds":["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"],"resolvedId":null}
+[disambiguation] attribute pick -> candidate id "c4f133d7-56e5-4c64-a6e2-26f804d6f561"
+[disambiguation] SERVER-resolved user pick to id: "c4f133d7-56e5-4c64-a6e2-26f804d6f561"
+[disambiguation] findById -> searched id: "c4f133d7-56e5-4c64-a6e2-26f804d6f561" | available ids (first 6): ["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561","219d66a8-c224-4f65-b0de-5743c817ac62","6a9d600b-52dd-4075-b843-b5263c557993","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=c4f133d7-56e5-4c64-a6e2-26f804d6f561)
+[disambiguation] resolveProductTarget used ID path productId= "c4f133d7-56e5-4c64-a6e2-26f804d6f561" => FOUND (QA Dup)
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"c4f133d7-56e5-4c64-a6e2-26f804d6f561","name":"QA Dup","category":"Clothing","price":100,"stock":20,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: e62fe494-67ca-4db0-b449-44e3d7bd4cae
+[disambiguation] turn end -> stash resolvedId {"tool":"find_product","id":"c4f133d7-56e5-4c64-a6e2-26f804d6f561"}
+ POST /api/ai/chat 200 in 5428ms
+[ai-chat] created conversation: 54771c31-c404-4753-970a-ea567bd5b986
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"54771c31-c404-4753-970a-ea567bd5b986","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Naya product banao 'test dup' category 'Clothing' price 50 stock 10","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_product raw args: {
+  "name": "test dup",
+  "category": "Clothing",
+  "price": 50,
+  "stockQuantity": 10,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_product id parameter present: NO | name/query present: NO
+[product-tools] createProduct input: {
+  "name": "test dup",
+  "category": "Clothing",
+  "price": 50,
+  "stockQuantity": 10,
+  "lowStockThreshold": 5,
+  "description": null
+}
+[product-service] createProduct validated.imageUrl: null
+[route][tool_output] create_product rawOutputType= string parsedStatus= ok raw= {"created":true,"product":{"id":"15e3caa5-584d-4660-82ab-7d69aadf65e6","name":"test dup","category":"Clothing","price":50,"stock":10,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: 54771c31-c404-4753-970a-ea567bd5b986
+ POST /api/ai/chat 200 in 4805ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"54771c31-c404-4753-970a-ea567bd5b986","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Aur doosra product banao 'Test Dup' category 'Fashion' price 60 stock 12","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_product raw args: {
+  "name": "Test Dup",
+  "category": "Fashion",
+  "price": 60,
+  "stockQuantity": 12,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_product id parameter present: NO | name/query present: NO
+[product-tools] createProduct input: {
+  "name": "Test Dup",
+  "category": "Fashion",
+  "price": 60,
+  "stockQuantity": 12,
+  "lowStockThreshold": 5,
+  "description": null
+}
+[product-service] createProduct validated.imageUrl: null
+[route][tool_output] create_product rawOutputType= string parsedStatus= ok raw= {"created":true,"product":{"id":"d4618389-5b86-4938-88dc-572f765483eb","name":"Test Dup","category":"Fashion","price":60,"stock":12,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: 54771c31-c404-4753-970a-ea567bd5b986
+ POST /api/ai/chat 200 in 5199ms
+ ✓ Compiled in 635ms (750 modules)
+ GET /dashboard/products 200 in 133ms
+[ai-chat] created conversation: c7549659-460b-4a64-bff1-776679f4a4b9
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"c7549659-460b-4a64-bff1-776679f4a4b9","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"test dup ki details batao","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "test dup" => ambiguous (2 candidates)
+[route][tool_output] find_product rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"d4618389-5b86-4938-88dc-572f765483eb","name":"Test Dup","category":"Fashion","price":60,"stock":12,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},{"id":"15e3caa5-584d-4660-82ab-7d69aadf65e6","name":"test dup","category":"Clothing","
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["d4618389-5b86-4938-88dc-572f765483eb","15e3caa5-584d-4660-82ab-7d69aadf65e6"] )
+[ai-chat] settleDone — conversationId: c7549659-460b-4a64-bff1-776679f4a4b9
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 5015ms
+ ✓ Compiled in 458ms (750 modules)
+ GET /dashboard/products 200 in 146ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"e62fe494-67ca-4db0-b449-44e3d7bd4cae","hasCandidates":false,"hasResolvedId":true,"pendingIsRelevant":false,"userMessage":"test dup ki details batao","tool":"find_product","candidateCount":0,"candidateIds":[],"resolvedId":"c4f133d7-56e5-4c64-a6e2-26f804d6f561"}
+[disambiguation] DROPPING stale pending state (not relevant to this turn) — tool: find_product | candidates: 0 | resolvedId: c4f133d7-56e5-4c64-a6e2-26f804d6f561
+[disambiguation] resolveProductTarget used NAME path query= "test dup" => ambiguous (2 candidates)
+[route][tool_output] find_product rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"d4618389-5b86-4938-88dc-572f765483eb","name":"Test Dup","category":"Fashion","price":60,"stock":12,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},{"id":"15e3caa5-584d-4660-82ab-7d69aadf65e6","name":"test dup","category":"Clothing","
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["d4618389-5b86-4938-88dc-572f765483eb","15e3caa5-584d-4660-82ab-7d69aadf65e6"] )
+[ai-chat] settleDone — conversationId: e62fe494-67ca-4db0-b449-44e3d7bd4cae
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 4387ms
+[ai-chat] created conversation: 6c4b18b6-ee33-48bb-8201-72900dcb1c0f
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"6c4b18b6-ee33-48bb-8201-72900dcb1c0f","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Test Kurta ka stock 4 kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock raw args: {
+  "productName": "QA Test Kurta",
+  "productId": null,
+  "newStock": 4
+}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock id parameter present: NO | name/query present: YES
+[disambiguation] resolveProductTarget used NAME path query= "QA Test Kurta" => found 
+[route][tool_output] set_product_stock rawOutputType= string parsedStatus= ok raw= {"updated":true,"previous_stock":7,"product":{"id":"6a9d600b-52dd-4075-b843-b5263c557993","name":"QA Test Kurta","category":"Apparel","price":650,"stock":4,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: 6c4b18b6-ee33-48bb-8201-72900dcb1c0f
+ POST /api/ai/chat 200 in 4311ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"6c4b18b6-ee33-48bb-8201-72900dcb1c0f","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"mere low stock products kon se hain?","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] low_stock_products rawOutputType= string parsedStatus= ok raw= {"count":1,"products":[{"id":"6a9d600b-52dd-4075-b843-b5263c557993","name":"QA Test Kurta","category":"Apparel","price":650,"stock":4,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null,"out_of_stock":false}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 6c4b18b6-ee33-48bb-8201-72900dcb1c0f
+ POST /api/ai/chat 200 in 5073ms
+ ✓ Compiled in 480ms (750 modules)
+ GET /dashboard/products 200 in 130ms
+[ai-chat] created conversation: 3051da3a-7fdc-4cf5-bac9-b81bd18c17e5
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"3051da3a-7fdc-4cf5-bac9-b81bd18c17e5","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Test Kurta ko delete kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Test Kurta" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"6a9d600b-52dd-4075-b843-b5263c557993","name":"QA Test Kurta","category":"Apparel","price":650,"stock":4,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: 3051da3a-7fdc-4cf5-bac9-b81bd18c17e5
+ POST /api/ai/chat 200 in 9266ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"3051da3a-7fdc-4cf5-bac9-b81bd18c17e5","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"han delete kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=delete_product raw args: {
+  "productName": "QA Test Kurta",
+  "productId": null,
+  "confirmed": true
+}
+[ai-chat] DIAGNOSTIC tool_called=delete_product id parameter present: NO | name/query present: YES
+[disambiguation] resolveProductTarget used NAME path query= "QA Test Kurta" => found 
+[route][tool_output] delete_product rawOutputType= string parsedStatus= ok raw= {"removed":true,"name":"QA Test Kurta","status":"ok"}
+[ai-chat] settleDone — conversationId: 3051da3a-7fdc-4cf5-bac9-b81bd18c17e5
+ POST /api/ai/chat 200 in 7455ms
+ ✓ Compiled in 493ms (750 modules)
+ GET /dashboard/products 200 in 173ms
+[ai-chat] created conversation: 8a5fa749-19ea-4d0e-8029-f8807e55ef26
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"8a5fa749-19ea-4d0e-8029-f8807e55ef26","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Eik naya customer add karo: name 'QA Customer Ali'","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_customer raw args: {
+  "name": "QA Customer Ali",
+  "phone": null,
+  "email": null,
+  "address": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_customer id parameter present: NO | name/query present: NO
+[route][tool_output] create_customer rawOutputType= string parsedStatus= ok raw= {"created":true,"customer":{"id":"f143307b-3979-42b1-be04-2711f96bcd23","name":"QA Customer Ali","phone":null,"email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: 8a5fa749-19ea-4d0e-8029-f8807e55ef26
+ POST /api/ai/chat 200 in 4264ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"8a5fa749-19ea-4d0e-8029-f8807e55ef26","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"us ka phone 03001234567 email ali.qa@example.com address 'Lahore, Pakistan'","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_customer raw args: {
+  "name": "QA Customer Ali",
+  "phone": "03001234567",
+  "email": "ali.qa@example.com",
+  "address": "Lahore, Pakistan",
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_customer id parameter present: NO | name/query present: NO
+[route][tool_output] create_customer rawOutputType= string parsedStatus= ok raw= {"created":true,"customer":{"id":"17e81ee1-74e7-497c-80ec-42b6cbd8a880","name":"QA Customer Ali","phone":"03001234567","email":"ali.qa@example.com","address":"Lahore, Pakistan","notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: 8a5fa749-19ea-4d0e-8029-f8807e55ef26
+ POST /api/ai/chat 200 in 4713ms
+ ✓ Compiled in 2.9s (2530 modules)
+ GET /dashboard/products 200 in 731ms
+[ai-chat] created conversation: b0fb21bc-a0fb-40d1-89bb-b924d911ea85
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"b0fb21bc-a0fb-40d1-89bb-b924d911ea85","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Eik naya customer add karo: name 'QA Customer Ali'","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_customer raw args: {
+  "name": "QA Customer Ali",
+  "phone": null,
+  "email": null,
+  "address": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_customer id parameter present: NO | name/query present: NO
+[route][tool_output] create_customer rawOutputType= string parsedStatus= ok raw= {"created":true,"customer":{"id":"4cf02a57-de4b-4c3b-92e2-ec1278cd58bf","name":"QA Customer Ali","phone":null,"email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: b0fb21bc-a0fb-40d1-89bb-b924d911ea85
+ POST /api/ai/chat 200 in 6989ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"b0fb21bc-a0fb-40d1-89bb-b924d911ea85","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"us ka phone 03001234567 email ali.qa@example.com address 'Lahore, Pakistan'","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"4cf02a57-de4b-4c3b-92e2-ec1278cd58bf","name":"QA Customer Ali","phone":null,"email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=update_customer raw args: {
+  "customerName": null,
+  "customerId": "4cf02a57-de4b-4c3b-92e2-ec1278cd58bf",
+  "name": null,
+  "phone": "03001234567",
+  "email": "ali.qa@example.com",
+  "address": "Lahore, Pakistan",
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=update_customer id parameter present: YES (4cf02a57-de4b-4c3b-92e2-ec1278cd58bf) | name/query present: NO
+[disambiguation] findById -> searched id: "4cf02a57-de4b-4c3b-92e2-ec1278cd58bf" | available ids (first 6): ["4cf02a57-de4b-4c3b-92e2-ec1278cd58bf","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=4cf02a57-de4b-4c3b-92e2-ec1278cd58bf)
+[route][tool_output] update_customer rawOutputType= string parsedStatus= ok raw= {"updated":true,"customer":{"id":"4cf02a57-de4b-4c3b-92e2-ec1278cd58bf","name":"QA Customer Ali","phone":"03001234567","email":"ali.qa@example.com","address":"Lahore, Pakistan","notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: b0fb21bc-a0fb-40d1-89bb-b924d911ea85
+[disambiguation] turn end -> stash resolvedId {"tool":"update_customer","id":"4cf02a57-de4b-4c3b-92e2-ec1278cd58bf"}
+ POST /api/ai/chat 200 in 6324ms
+ ✓ Compiled in 732ms (750 modules)
+ GET /dashboard/products 200 in 177ms
+[ai-chat] created conversation: 2039cc0e-be30-4b4a-9bc1-1f3269a33aa3
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"2039cc0e-be30-4b4a-9bc1-1f3269a33aa3","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Customer Ali ka email update karo ali2@example.com","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"4cf02a57-de4b-4c3b-92e2-ec1278cd58bf","name":"QA Customer Ali","phone":"03001234567","email":"ali.qa@example.com","address":"Lahore, Pakistan","notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=update_customer raw args: {
+  "customerName": null,
+  "customerId": "4cf02a57-de4b-4c3b-92e2-ec1278cd58bf",
+  "name": null,
+  "phone": null,
+  "email": "ali2@example.com",
+  "address": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=update_customer id parameter present: YES (4cf02a57-de4b-4c3b-92e2-ec1278cd58bf) | name/query present: NO
+[disambiguation] findById -> searched id: "4cf02a57-de4b-4c3b-92e2-ec1278cd58bf" | available ids (first 6): ["4cf02a57-de4b-4c3b-92e2-ec1278cd58bf","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=4cf02a57-de4b-4c3b-92e2-ec1278cd58bf)
+[route][tool_output] update_customer rawOutputType= string parsedStatus= ok raw= {"updated":true,"customer":{"id":"4cf02a57-de4b-4c3b-92e2-ec1278cd58bf","name":"QA Customer Ali","phone":"03001234567","email":"ali2@example.com","address":"Lahore, Pakistan","notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: 2039cc0e-be30-4b4a-9bc1-1f3269a33aa3
+[disambiguation] turn end -> stash resolvedId {"tool":"update_customer","id":"4cf02a57-de4b-4c3b-92e2-ec1278cd58bf"}
+ POST /api/ai/chat 200 in 7510ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"2039cc0e-be30-4b4a-9bc1-1f3269a33aa3","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Naya customer banao 'QA Customer Bilal' phone 03451234567","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_customer raw args: {
+  "name": "QA Customer Bilal",
+  "phone": "03451234567",
+  "email": null,
+  "address": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_customer id parameter present: NO | name/query present: NO
+[route][tool_output] create_customer rawOutputType= string parsedStatus= ok raw= {"created":true,"customer":{"id":"5ff77a79-2035-4601-865c-8040cb127f01","name":"QA Customer Bilal","phone":"03451234567","email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: 2039cc0e-be30-4b4a-9bc1-1f3269a33aa3
+ POST /api/ai/chat 200 in 4961ms
+ ✓ Compiled in 532ms (750 modules)
+ GET /dashboard/products 200 in 211ms
+ ✓ Compiled in 332ms (750 modules)
+ GET /dashboard/products 200 in 149ms
+[ai-chat] created conversation: 50a64eb6-7a0c-489c-b96d-a16bae5a6259
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"50a64eb6-7a0c-489c-b96d-a16bae5a6259","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Naya customer banao 'QA Hamza Khan' phone 0311","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_customer raw args: {
+  "name": "QA Hamza Khan",
+  "phone": "0311",
+  "email": null,
+  "address": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_customer id parameter present: NO | name/query present: NO
+[route][tool_output] create_customer rawOutputType= string parsedStatus= ok raw= {"created":true,"customer":{"id":"e9f58064-7b26-4fab-9930-17c7c7647b32","name":"QA Hamza Khan","phone":"0311","email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: 50a64eb6-7a0c-489c-b96d-a16bae5a6259
+ POST /api/ai/chat 200 in 6052ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"50a64eb6-7a0c-489c-b96d-a16bae5a6259","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Naya customer banao 'QA Hamza Ahmed' phone 0322","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_customer raw args: {
+  "name": "QA Hamza Ahmed",
+  "phone": "0322",
+  "email": null,
+  "address": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_customer id parameter present: NO | name/query present: NO
+[route][tool_output] create_customer rawOutputType= string parsedStatus= ok raw= {"created":true,"customer":{"id":"52501762-12ec-4cd5-9ab5-fcdb45fa7105","name":"QA Hamza Ahmed","phone":"0322","email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: 50a64eb6-7a0c-489c-b96d-a16bae5a6259
+ POST /api/ai/chat 200 in 4635ms
+ ✓ Compiled in 561ms (750 modules)
+ GET /dashboard/products 200 in 130ms
+ ✓ Compiled in 336ms (750 modules)
+ GET /dashboard/products 200 in 139ms
+[ai-chat] created conversation: 55e96e37-ad00-4d57-a12f-0cf57347c3ba
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"55e96e37-ad00-4d57-a12f-0cf57347c3ba","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Hamza ka phone number kya hai","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"52501762-12ec-4cd5-9ab5-fcdb45fa7105","name":"QA Hamza Ahmed","phone":"0322","email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},{"id":"e9f58064-7b26-4fab-9930-17c7c7647b32","name":"QA Hamza Khan","phone":"0311","email":null,"address
+[disambiguation] captured needs_clarification candidates for tool find_customer (count 2 , ids ["52501762-12ec-4cd5-9ab5-fcdb45fa7105","e9f58064-7b26-4fab-9930-17c7c7647b32"] )
+[ai-chat] settleDone — conversationId: 55e96e37-ad00-4d57-a12f-0cf57347c3ba
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 5797ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] positional pick -> candidate index 0 id "52501762-12ec-4cd5-9ab5-fcdb45fa7105"
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"55e96e37-ad00-4d57-a12f-0cf57347c3ba","hasCandidates":true,"hasResolvedId":false,"pendingIsRelevant":true,"userMessage":"pehla wala","tool":"find_customer","candidateCount":2,"candidateIds":["52501762-12ec-4cd5-9ab5-fcdb45fa7105","e9f58064-7b26-4fab-9930-17c7c7647b32"],"resolvedId":null}
+[disambiguation] positional pick -> candidate index 0 id "52501762-12ec-4cd5-9ab5-fcdb45fa7105"
+[disambiguation] SERVER-resolved user pick to id: "52501762-12ec-4cd5-9ab5-fcdb45fa7105"
+[disambiguation] findById -> searched id: "52501762-12ec-4cd5-9ab5-fcdb45fa7105" | available ids (first 6): ["52501762-12ec-4cd5-9ab5-fcdb45fa7105","e9f58064-7b26-4fab-9930-17c7c7647b32","5ff77a79-2035-4601-865c-8040cb127f01","4cf02a57-de4b-4c3b-92e2-ec1278cd58bf","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=52501762-12ec-4cd5-9ab5-fcdb45fa7105)
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"52501762-12ec-4cd5-9ab5-fcdb45fa7105","name":"QA Hamza Ahmed","phone":"0322","email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: 55e96e37-ad00-4d57-a12f-0cf57347c3ba
+[disambiguation] turn end -> stash resolvedId {"tool":"find_customer","id":"52501762-12ec-4cd5-9ab5-fcdb45fa7105"}
+ POST /api/ai/chat 200 in 5477ms
+ ✓ Compiled in 353ms (750 modules)
+ GET /dashboard/products 200 in 105ms
+[ai-chat] created conversation: 6a90dbb5-3154-43d0-a92d-63d6b00a6a08
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"6a90dbb5-3154-43d0-a92d-63d6b00a6a08","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Customer Bilal ko delete karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"5ff77a79-2035-4601-865c-8040cb127f01","name":"QA Customer Bilal","phone":"03451234567","email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: 6a90dbb5-3154-43d0-a92d-63d6b00a6a08
+ POST /api/ai/chat 200 in 4691ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"6a90dbb5-3154-43d0-a92d-63d6b00a6a08","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"haan, delete karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=delete_customer raw args: {
+  "customerName": "QA Customer Bilal",
+  "customerId": null,
+  "confirmed": true
+}
+[ai-chat] DIAGNOSTIC tool_called=delete_customer id parameter present: NO | name/query present: NO
+[route][tool_output] delete_customer rawOutputType= string parsedStatus= ok raw= {"removed":true,"name":"QA Customer Bilal","status":"ok"}
+[ai-chat] settleDone — conversationId: 6a90dbb5-3154-43d0-a92d-63d6b00a6a08
+ POST /api/ai/chat 200 in 5856ms
+ ✓ Compiled in 359ms (750 modules)
+ GET /dashboard/products 200 in 152ms
+[ai-chat] created conversation: 33d4c179-cbb1-44a3-b992-3ff1545d9387
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"33d4c179-cbb1-44a3-b992-3ff1545d9387","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Customer Ali ke liye order banao: 2 QA Image Kurta","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Image Kurta" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"219d66a8-c224-4f65-b0de-5743c817ac62","name":"QA Image Kurta","category":"Apparel","price":250,"stock":8,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":"https://ofbsmjvofeexbbztqdmz.supabase.co/storage/v1/object/public/product-images/ae44d4de-e4e5-4854-8e5d-b5428f87
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "QA Image Kurta",
+      "quantity": 2
+    }
+  ],
+  "customerName": "QA Customer Ali",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: NO | name/query present: NO
+[route][tool_output] create_order rawOutputType= string parsedStatus= ok raw= {"created":true,"orderNumber":"ORD-000008","total":500,"subtotal":500,"discount":0,"items":[{"productName":"QA Image Kurta","quantity":2,"unitPrice":250}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 33d4c179-cbb1-44a3-b992-3ff1545d9387
+ POST /api/ai/chat 200 in 7686ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"33d4c179-cbb1-44a3-b992-3ff1545d9387","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"order ready hai, save karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_order rawOutputType= string parsedStatus= ok raw= {"found":true,"order":{"id":"2afe4147-7cce-47d7-b236-1e0a513c3353","orderNumber":"ORD-000008","status":"pending","customerName":"QA Customer Ali","orderedAt":"2026-08-27T13:45:25.725007+00:00","subtotal":500,"discount":0,"total":500,"notes":null,"items":[{"productName":"QA Image Kurta","quantity":2,
+[ai-chat] DIAGNOSTIC tool_called=update_order_status raw args: {
+  "orderNumber": null,
+  "orderId": "2afe4147-7cce-47d7-b236-1e0a513c3353",
+  "status": "completed",
+  "confirmed": false
+}
+[ai-chat] DIAGNOSTIC tool_called=update_order_status id parameter present: YES (2afe4147-7cce-47d7-b236-1e0a513c3353) | name/query present: NO
+[disambiguation] findById -> searched id: "2afe4147-7cce-47d7-b236-1e0a513c3353" | available ids (first 6): ["2afe4147-7cce-47d7-b236-1e0a513c3353","d8bafc37-71ed-40b5-bff8-b39f8490c5e9","f8f7b4b6-b57e-462d-a920-2ba5e8381bf4","57a90655-57de-41e8-a6ba-8446d4f4f4be"] | resolved: FOUND (id=2afe4147-7cce-47d7-b236-1e0a513c3353)
+[route][tool_output] update_order_status rawOutputType= string parsedStatus= ok raw= {"updated":true,"orderNumber":"ORD-000008","newStatus":"completed","status":"ok"}
+[ai-chat] settleDone — conversationId: 33d4c179-cbb1-44a3-b992-3ff1545d9387
+[disambiguation] turn end -> stash resolvedId {"tool":"update_order_status","id":"2afe4147-7cce-47d7-b236-1e0a513c3353"}
+ POST /api/ai/chat 200 in 9366ms
+ ✓ Compiled in 564ms (750 modules)
+ GET /dashboard/products 200 in 148ms
+ ✓ Compiled in 385ms (750 modules)
+ GET /dashboard/products 200 in 115ms
+[ai-chat] created conversation: c67b5ca3-554d-4ac2-a671-1e64b0b88574
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"c67b5ca3-554d-4ac2-a671-1e64b0b88574","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Customer Ali ki order history kya hai","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] get_customer_orders rawOutputType= string parsedStatus= ok raw= {"customer":{"name":"QA Customer Ali","phone":"03001234567"},"totalOrdersOnRecord":1,"totalSpent":500,"count":1,"orders":[{"orderNumber":"ORD-000008","status":"completed","orderedAt":"2026-08-27T13:45:25.725007+00:00","total":500,"items":[{"productName":"QA Image Kurta","quantity":2,"unitPrice":250}
+[ai-chat] settleDone — conversationId: c67b5ca3-554d-4ac2-a671-1e64b0b88574
+ POST /api/ai/chat 200 in 5211ms
+ ✓ Compiled in 439ms (750 modules)
+ GET /dashboard/products 200 in 110ms
+[ai-chat] created conversation: d0f601ef-f0b1-45af-974f-3b1e50e697c0
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"d0f601ef-f0b1-45af-974f-3b1e50e697c0","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Hamza Ahmed ke liye order banao: 3 QA Dup","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Dup" => ambiguous (2 candidates)
+[route][tool_output] find_product rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"0a3db4b0-8523-4150-a2b9-a9eab84758f6","name":"qa dup","category":"Fashion","price":150,"stock":30,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},{"id":"c4f133d7-56e5-4c64-a6e2-26f804d6f561","name":"QA Dup","category":"Clothing","pri
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"] )
+[ai-chat] settleDone — conversationId: d0f601ef-f0b1-45af-974f-3b1e50e697c0
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 4314ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] no deterministic selection match; msg= "order ka status cancel karo"
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"d0f601ef-f0b1-45af-974f-3b1e50e697c0","hasCandidates":true,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"order ka status cancel karo","tool":"find_product","candidateCount":2,"candidateIds":["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"],"resolvedId":null}
+[disambiguation] DROPPING stale pending state (not relevant to this turn) — tool: find_product | candidates: 2 | resolvedId: null
+[route][tool_output] list_orders rawOutputType= string parsedStatus= ok raw= {"count":0,"truncated":false,"orders":[],"status":"ok"}
+[ai-chat] settleDone — conversationId: d0f601ef-f0b1-45af-974f-3b1e50e697c0
+ POST /api/ai/chat 200 in 4323ms
+ ✓ Compiled in 595ms (750 modules)
+ GET /dashboard/products 200 in 170ms
+[ai-chat] created conversation: c64a0581-9e4b-4cf8-8483-bd154ed7033f
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"c64a0581-9e4b-4cf8-8483-bd154ed7033f","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Hamza Ahmed ke liye order banao: 3 QA Dup","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Dup" => ambiguous (2 candidates)
+[route][tool_output] find_product rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"0a3db4b0-8523-4150-a2b9-a9eab84758f6","name":"qa dup","category":"Fashion","price":150,"stock":30,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},{"id":"c4f133d7-56e5-4c64-a6e2-26f804d6f561","name":"QA Dup","category":"Clothing","pri
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"] )
+[ai-chat] settleDone — conversationId: c64a0581-9e4b-4cf8-8483-bd154ed7033f
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 8601ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] attribute pick ambiguous (matched 2 ) — leaving to model: ["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"]
+[disambiguation] no deterministic selection match; msg= "clothing wala qa dup, 3 pieces banao"
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"c64a0581-9e4b-4cf8-8483-bd154ed7033f","hasCandidates":true,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Clothing wala QA Dup, 3 pieces banao","tool":"find_product","candidateCount":2,"candidateIds":["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"],"resolvedId":null}
+[disambiguation] DROPPING stale pending state (not relevant to this turn) — tool: find_product | candidates: 2 | resolvedId: null
+[disambiguation] resolveProductTarget used NAME path query= "QA Dup" => ambiguous (2 candidates)
+[route][tool_output] find_product rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"0a3db4b0-8523-4150-a2b9-a9eab84758f6","name":"qa dup","category":"Fashion","price":150,"stock":30,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},{"id":"c4f133d7-56e5-4c64-a6e2-26f804d6f561","name":"QA Dup","category":"Clothing","pri
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"] )
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "QA Dup",
+      "quantity": 3
+    }
+  ],
+  "customerName": "Hamza Ahmed",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: NO | name/query present: NO
+[route][tool_output] create_order rawOutputType= string parsedStatus= needs_clarification raw= {"created":false,"problems":["\"QA Dup\" matches several products: qa dup, QA Dup"],"hint":"Explain the problems and ask the user how to proceed. Do not create the order.","status":"needs_clarification"}
+[ai-chat] settleDone — conversationId: c64a0581-9e4b-4cf8-8483-bd154ed7033f
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 10081ms
+ ✓ Compiled in 1258ms (1859 modules)
+ ✓ Compiled in 794ms (750 modules)
+ GET /dashboard/products 200 in 705ms
+ GET /dashboard/products 200 in 96ms
+ ✓ Compiled in 542ms (750 modules)
+ GET /dashboard/products 200 in 109ms
+ ○ Compiling /api/ai/chat ...
+ ✓ Compiled /api/ai/chat in 3s (1780 modules)
+ GET /dashboard/products 200 in 205ms
+[ai-chat] created conversation: 71a9c0ef-0b35-4943-9c55-fa1c82f034fa
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"71a9c0ef-0b35-4943-9c55-fa1c82f034fa","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Hamza Ahmed ke liye order banao: 3 QA Dup","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Dup" => ambiguous (2 candidates)
+[route][tool_output] find_product rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"0a3db4b0-8523-4150-a2b9-a9eab84758f6","name":"qa dup","category":"Fashion","price":150,"stock":30,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},{"id":"c4f133d7-56e5-4c64-a6e2-26f804d6f561","name":"QA Dup","category":"Clothing","pri
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"] )
+[ai-chat] settleDone — conversationId: 71a9c0ef-0b35-4943-9c55-fa1c82f034fa
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 9200ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] attribute pick ambiguous (matched 2 ) — leaving to model: ["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"]
+[disambiguation] no deterministic selection match; msg= "clothing wala qa dup, 3 pieces banao"
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"71a9c0ef-0b35-4943-9c55-fa1c82f034fa","hasCandidates":true,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Clothing wala QA Dup, 3 pieces banao","tool":"find_product","candidateCount":2,"candidateIds":["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"],"resolvedId":null}
+[disambiguation] DROPPING stale pending state (not relevant to this turn) — tool: find_product | candidates: 2 | resolvedId: null
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "QA Dup",
+      "productId": "prod_qa_dup_clothing",
+      "quantity": 3
+    }
+  ],
+  "customerName": "Hamza Ahmed",
+  "customerId": null,
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: NO | name/query present: NO
+[disambiguation] findById -> searched id: "prod_qa_dup_clothing" | available ids (first 6): ["d4618389-5b86-4938-88dc-572f765483eb","15e3caa5-584d-4660-82ab-7d69aadf65e6","0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561","219d66a8-c224-4f65-b0de-5743c817ac62","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: NOT_FOUND 
+[route][tool_output] create_order rawOutputType= string parsedStatus= needs_clarification raw= {"created":false,"problems":["Product id \"prod_qa_dup_clothing\" not found in this business"],"hint":"Explain the problems and ask the user how to proceed. Do not create the order.","status":"needs_clarification"}
+[ai-chat] settleDone — conversationId: 71a9c0ef-0b35-4943-9c55-fa1c82f034fa
+ POST /api/ai/chat 200 in 4425ms
+ ✓ Compiled in 1402ms (1859 modules)
+ GET /dashboard/products 200 in 433ms
+ ✓ Compiled in 377ms (750 modules)
+ GET /dashboard/products 200 in 131ms
+ ○ Compiling /api/ai/chat ...
+ ✓ Compiled /api/ai/chat in 1600ms (1780 modules)
+ GET /dashboard/products 200 in 215ms
+[ai-chat] created conversation: 639424a9-babc-4e0a-a655-fe0adfc06168
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"639424a9-babc-4e0a-a655-fe0adfc06168","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Hamza Ahmed ke liye order banao: 3 QA Dup","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "QA Dup" => ambiguous (2 candidates)
+[route][tool_output] find_product rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"0a3db4b0-8523-4150-a2b9-a9eab84758f6","name":"qa dup","category":"Fashion","price":150,"stock":30,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},{"id":"c4f133d7-56e5-4c64-a6e2-26f804d6f561","name":"QA Dup","category":"Clothing","pri
+[disambiguation] captured needs_clarification candidates for tool find_product (count 2 , ids ["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"] )
+[ai-chat] settleDone — conversationId: 639424a9-babc-4e0a-a655-fe0adfc06168
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 8440ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] attribute pick -> candidate id "c4f133d7-56e5-4c64-a6e2-26f804d6f561"
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"639424a9-babc-4e0a-a655-fe0adfc06168","hasCandidates":true,"hasResolvedId":false,"pendingIsRelevant":true,"userMessage":"Clothing wala QA Dup, 3 pieces banao","tool":"find_product","candidateCount":2,"candidateIds":["0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561"],"resolvedId":null}
+[disambiguation] attribute pick -> candidate id "c4f133d7-56e5-4c64-a6e2-26f804d6f561"
+[disambiguation] SERVER-resolved user pick to id: "c4f133d7-56e5-4c64-a6e2-26f804d6f561"
+[disambiguation] findById -> searched id: "c4f133d7-56e5-4c64-a6e2-26f804d6f561" | available ids (first 6): ["d4618389-5b86-4938-88dc-572f765483eb","15e3caa5-584d-4660-82ab-7d69aadf65e6","0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561","219d66a8-c224-4f65-b0de-5743c817ac62","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=c4f133d7-56e5-4c64-a6e2-26f804d6f561)
+[disambiguation] resolveProductTarget used ID path productId= "c4f133d7-56e5-4c64-a6e2-26f804d6f561" => FOUND (QA Dup)
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"c4f133d7-56e5-4c64-a6e2-26f804d6f561","name":"QA Dup","category":"Clothing","price":100,"stock":20,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"52501762-12ec-4cd5-9ab5-fcdb45fa7105","name":"QA Hamza Ahmed","phone":"0322","email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "QA Dup",
+      "productId": "c4f133d7-56e5-4c64-a6e2-26f804d6f561",
+      "quantity": 3
+    }
+  ],
+  "customerName": null,
+  "customerId": "52501762-12ec-4cd5-9ab5-fcdb45fa7105",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: YES (52501762-12ec-4cd5-9ab5-fcdb45fa7105) | name/query present: NO
+[disambiguation] findById -> searched id: "c4f133d7-56e5-4c64-a6e2-26f804d6f561" | available ids (first 6): ["d4618389-5b86-4938-88dc-572f765483eb","15e3caa5-584d-4660-82ab-7d69aadf65e6","0a3db4b0-8523-4150-a2b9-a9eab84758f6","c4f133d7-56e5-4c64-a6e2-26f804d6f561","219d66a8-c224-4f65-b0de-5743c817ac62","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=c4f133d7-56e5-4c64-a6e2-26f804d6f561)
+[disambiguation] findById -> searched id: "52501762-12ec-4cd5-9ab5-fcdb45fa7105" | available ids (first 6): ["52501762-12ec-4cd5-9ab5-fcdb45fa7105","e9f58064-7b26-4fab-9930-17c7c7647b32","4cf02a57-de4b-4c3b-92e2-ec1278cd58bf","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=52501762-12ec-4cd5-9ab5-fcdb45fa7105)
+[route][tool_output] create_order rawOutputType= string parsedStatus= ok raw= {"created":true,"orderNumber":"ORD-000009","total":300,"subtotal":300,"discount":0,"items":[{"productName":"QA Dup","quantity":3,"unitPrice":100}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 639424a9-babc-4e0a-a655-fe0adfc06168
+[disambiguation] turn end -> stash resolvedId {"tool":"create_order","id":"52501762-12ec-4cd5-9ab5-fcdb45fa7105"}
+ POST /api/ai/chat 200 in 10622ms
+ ✓ Compiled in 838ms (750 modules)
+ GET /dashboard/products 200 in 735ms
+ ✓ Compiled in 352ms (750 modules)
+ GET /dashboard/products 200 in 102ms
+[ai-chat] created conversation: 9ef0b55d-9f23-4c6b-a8ab-c32246628eff
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"9ef0b55d-9f23-4c6b-a8ab-c32246628eff","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ORD-000009 ka status cancel karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_order rawOutputType= string parsedStatus= ok raw= {"found":true,"order":{"id":"5c15c46b-f998-4226-9688-e2b9cfd032ac","orderNumber":"ORD-000009","status":"pending","customerName":"QA Hamza Ahmed","orderedAt":"2026-08-27T13:51:03.866856+00:00","subtotal":300,"discount":0,"total":300,"notes":null,"items":[{"productName":"QA Dup","quantity":3,"unitPric
+[ai-chat] settleDone — conversationId: 9ef0b55d-9f23-4c6b-a8ab-c32246628eff
+ POST /api/ai/chat 200 in 7875ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"9ef0b55d-9f23-4c6b-a8ab-c32246628eff","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"haan, cancel karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=update_order_status raw args: {
+  "orderNumber": "ORD-000009",
+  "orderId": null,
+  "status": "cancelled",
+  "confirmed": true
+}
+[ai-chat] DIAGNOSTIC tool_called=update_order_status id parameter present: NO | name/query present: NO
+[route][tool_output] update_order_status rawOutputType= string parsedStatus= ok raw= {"updated":true,"orderNumber":"ORD-000009","newStatus":"cancelled","status":"ok"}
+[ai-chat] settleDone — conversationId: 9ef0b55d-9f23-4c6b-a8ab-c32246628eff
+ POST /api/ai/chat 200 in 4016ms
+ ✓ Compiled in 821ms (750 modules)
+ ✓ Compiled in 383ms (750 modules)
+ GET /dashboard/products 200 in 292ms
+ GET /dashboard/products 200 in 104ms
+[ai-chat] created conversation: 73acf93b-298c-4293-b3f8-ef518d4c464c
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"73acf93b-298c-4293-b3f8-ef518d4c464c","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Office Rent ka kharcha record karo: amount 5000, category rent","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_expense raw args: {
+  "title": "QA Office Rent",
+  "amount": 5000,
+  "category": "rent",
+  "expenseDate": "2026-08-27",
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_expense id parameter present: NO | name/query present: NO
+[route][tool_output] create_expense rawOutputType= string parsedStatus= ok raw= {"created":true,"expense":{"title":"QA Office Rent","amount":5000,"category":"rent","date":"2026-08-27"},"status":"ok"}
+[ai-chat] settleDone — conversationId: 73acf93b-298c-4293-b3f8-ef518d4c464c
+ POST /api/ai/chat 200 in 3692ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"73acf93b-298c-4293-b3f8-ef518d4c464c","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Office Rent ka amount 5500 kar do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=update_expense raw args: {
+  "expenseTitle": "QA Office Rent",
+  "expenseId": null,
+  "title": null,
+  "amount": 5500,
+  "category": null,
+  "expenseDate": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=update_expense id parameter present: NO | name/query present: NO
+[route][tool_output] update_expense rawOutputType= string parsedStatus= ok raw= {"updated":true,"expense":{"id":"af55ec5c-c2b7-492d-bc4c-35da436faa40","title":"QA Office Rent","amount":5500,"category":"rent","date":"2026-08-27","notes":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: 73acf93b-298c-4293-b3f8-ef518d4c464c
+ POST /api/ai/chat 200 in 4404ms
+ ✓ Compiled in 570ms (750 modules)
+ ✓ Compiled in 798ms (750 modules)
+ GET /dashboard/products 200 in 355ms
+ GET /dashboard/products 200 in 96ms
+ ✓ Compiled in 639ms (750 modules)
+ ✓ Compiled in 732ms (750 modules)
+ GET /dashboard/products 200 in 123ms
+ GET /dashboard/products 200 in 107ms
+[ai-chat] created conversation: 130f83aa-d1f3-48c4-becd-fe60058f7b70
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"130f83aa-d1f3-48c4-becd-fe60058f7b70","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Stationery ka kharcha record karo 500, category supplies","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_expense raw args: {
+  "title": "QA Stationery",
+  "amount": 500,
+  "category": "supplies",
+  "expenseDate": "2026-08-27",
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_expense id parameter present: NO | name/query present: NO
+[route][tool_output] create_expense rawOutputType= string parsedStatus= ok raw= {"created":true,"expense":{"title":"QA Stationery","amount":500,"category":"supplies","date":"2026-08-27"},"status":"ok"}
+[ai-chat] settleDone — conversationId: 130f83aa-d1f3-48c4-becd-fe60058f7b70
+ POST /api/ai/chat 200 in 3994ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"130f83aa-d1f3-48c4-becd-fe60058f7b70","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"qa stationery kharcha record karo 300, category other","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_expense raw args: {
+  "title": "QA Stationery",
+  "amount": 300,
+  "category": "other",
+  "expenseDate": "2026-08-27",
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_expense id parameter present: NO | name/query present: NO
+[route][tool_output] create_expense rawOutputType= string parsedStatus= ok raw= {"created":true,"expense":{"title":"QA Stationery","amount":300,"category":"other","date":"2026-08-27"},"status":"ok"}
+[ai-chat] settleDone — conversationId: 130f83aa-d1f3-48c4-becd-fe60058f7b70
+ POST /api/ai/chat 200 in 3637ms
+ ✓ Compiled in 1473ms (750 modules)
+ GET /dashboard/products 200 in 167ms
+ ✓ Compiled in 1289ms (750 modules)
+ GET /dashboard/products 200 in 181ms
+[ai-chat] created conversation: 673ad0ba-d7d7-4748-a6da-fd4927bcf2c5
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"673ad0ba-d7d7-4748-a6da-fd4927bcf2c5","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"QA Stationery ka kharcha delete karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_expenses rawOutputType= string parsedStatus= ok raw= {"count":2,"truncated":false,"expenses":[{"title":"QA Stationery","amount":300,"category":"other","date":"2026-08-27"},{"title":"QA Stationery","amount":500,"category":"supplies","date":"2026-08-27"}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 673ad0ba-d7d7-4748-a6da-fd4927bcf2c5
+ POST /api/ai/chat 200 in 3765ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"673ad0ba-d7d7-4748-a6da-fd4927bcf2c5","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"300 wala, other category wala","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] settleDone — conversationId: 673ad0ba-d7d7-4748-a6da-fd4927bcf2c5
+ ○ Compiling /login ...
+ POST /api/ai/chat 200 in 4361ms
+ ✓ Compiled /login in 9.2s (2543 modules)
+ GET /login?next=%2Fdashboard%2Fproducts 200 in 14843ms
+ GET /dashboard/products 200 in 540ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"673ad0ba-d7d7-4748-a6da-fd4927bcf2c5","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"haan, delete karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 532ms (1792 modules)
+ GET /icon.svg?2d1d126332e5961d 200 in 639ms
+[ai-chat] DIAGNOSTIC tool_called=delete_expense raw args: {
+  "expenseTitle": "QA Stationery",
+  "expenseId": null,
+  "confirmed": true
+}
+[ai-chat] DIAGNOSTIC tool_called=delete_expense id parameter present: NO | name/query present: NO
+[route][tool_output] delete_expense rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"18865991-cd4d-4343-87bd-c62178d61c8e","title":"QA Stationery","amount":300,"category":"other","date":"2026-08-27","notes":null},{"id":"370cc791-eb45-43b1-b2a2-8c72019e07af","title":"QA Stationery","amount":500,"category":"supplies","date":"2026-08-27","n
+[disambiguation] captured needs_clarification candidates for tool delete_expense (count 2 , ids ["18865991-cd4d-4343-87bd-c62178d61c8e","370cc791-eb45-43b1-b2a2-8c72019e07af"] )
+[ai-chat] settleDone — conversationId: 673ad0ba-d7d7-4748-a6da-fd4927bcf2c5
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 17925ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2.3s (2576 modules)
+ GET /dashboard/products 200 in 440ms
+ GET / 200 in 5116ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] no deterministic selection match; msg= "rs 300 wala delete karo"
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"673ad0ba-d7d7-4748-a6da-fd4927bcf2c5","hasCandidates":true,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Rs 300 wala delete karo","tool":"delete_expense","candidateCount":2,"candidateIds":["18865991-cd4d-4343-87bd-c62178d61c8e","370cc791-eb45-43b1-b2a2-8c72019e07af"],"resolvedId":null}
+[disambiguation] DROPPING stale pending state (not relevant to this turn) — tool: delete_expense | candidates: 2 | resolvedId: null
+[ai-chat] DIAGNOSTIC tool_called=delete_expense raw args: {
+  "expenseTitle": "QA Stationery",
+  "expenseId": null,
+  "confirmed": true
+}
+[ai-chat] DIAGNOSTIC tool_called=delete_expense id parameter present: NO | name/query present: NO
+[route][tool_output] delete_expense rawOutputType= string parsedStatus= needs_clarification raw= {"multiple_matches":true,"candidates":[{"id":"18865991-cd4d-4343-87bd-c62178d61c8e","title":"QA Stationery","amount":300,"category":"other","date":"2026-08-27","notes":null},{"id":"370cc791-eb45-43b1-b2a2-8c72019e07af","title":"QA Stationery","amount":500,"category":"supplies","date":"2026-08-27","n
+[disambiguation] captured needs_clarification candidates for tool delete_expense (count 2 , ids ["18865991-cd4d-4343-87bd-c62178d61c8e","370cc791-eb45-43b1-b2a2-8c72019e07af"] )
+[ai-chat] settleDone — conversationId: 673ad0ba-d7d7-4748-a6da-fd4927bcf2c5
+[disambiguation] turn end -> stash candidate list (count 2 )
+ POST /api/ai/chat 200 in 5931ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1640ms (2557 modules)
+ POST /api/ai/chat 404 in 1964ms
+[ai-chat] created conversation: 745a4475-8ce9-42f1-bdfa-919bfef8a267
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"745a4475-8ce9-42f1-bdfa-919bfef8a267","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Aaj ki sales kitni hui hain","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] sales_summary rawOutputType= string parsedStatus= ok raw= {"today":{"revenue":2900,"orderCount":4,"averageOrderValue":725},"yesterday":{"revenue":0,"orderCount":0,"averageOrderValue":0},"week":{"revenue":2900,"orderCount":4,"averageOrderValue":725},"lastWeek":{"revenue":0,"orderCount":0,"averageOrderValue":0},"month":{"revenue":2900,"orderCount":4,"average
+[ai-chat] settleDone — conversationId: 745a4475-8ce9-42f1-bdfa-919bfef8a267
+ POST /api/ai/chat 200 in 6341ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"745a4475-8ce9-42f1-bdfa-919bfef8a267","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Aaj ka business overview do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] business_overview rawOutputType= string parsedStatus= ok raw= {"sales":{"today":{"revenue":2900,"orderCount":4},"yesterday":{"revenue":0,"orderCount":0},"week":{"revenue":2900,"orderCount":4},"lastWeek":{"revenue":0,"orderCount":0},"month":{"revenue":2900,"orderCount":4},"lastMonth":{"revenue":0,"orderCount":0},"allTime":{"revenue":2900,"orderCount":4}},"order
+[ai-chat] settleDone — conversationId: 745a4475-8ce9-42f1-bdfa-919bfef8a267
+ POST /api/ai/chat 200 in 4350ms
+ ✓ Compiled in 637ms (761 modules)
+ GET /dashboard/products 200 in 788ms
+[ai-chat] created conversation: cbc4302f-d02f-49cc-b7bb-071219fccc45
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"cbc4302f-d02f-49cc-b7bb-071219fccc45","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Is mahine ke kharche ka summary do","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] expense_summary rawOutputType= string parsedStatus= ok raw= {"summary":{"todayTotal":6300,"weekTotal":6300,"monthTotal":16400,"allTimeTotal":16400,"monthCount":5,"allTimeCount":5,"monthByCategory":[{"category":"rent","total":15500},{"category":"supplies","total":600},{"category":"other","total":300}],"largestThisMonth":{"title":"Rent","amount":10000,"date":"
+[ai-chat] settleDone — conversationId: cbc4302f-d02f-49cc-b7bb-071219fccc45
+ POST /api/ai/chat 200 in 6283ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"cbc4302f-d02f-49cc-b7bb-071219fccc45","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Sabse zyada kya bik raha hai","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] top_selling_products rawOutputType= string parsedStatus= ok raw= {"days":30,"count":2,"products":[{"productName":"QA Silk","unitsSold":6,"revenue":2400,"orderCount":3},{"productName":"QA Image Kurta","unitsSold":2,"revenue":500,"orderCount":1}],"status":"ok"}
+[ai-chat] settleDone — conversationId: cbc4302f-d02f-49cc-b7bb-071219fccc45
+ POST /api/ai/chat 200 in 4038ms
+ ✓ Compiled in 1067ms (757 modules)
+ GET /dashboard/products 200 in 172ms
+ ✓ Compiled in 449ms (757 modules)
+ GET /dashboard/products 200 in 155ms
+ ✓ Compiled in 385ms (757 modules)
+ GET /dashboard/products 200 in 100ms
+ ✓ Compiled in 1172ms (757 modules)
+ ✓ Compiled in 601ms (757 modules)
+ GET /dashboard/products 200 in 104ms
+ GET /dashboard/products 200 in 98ms
+ ✓ Compiled in 421ms (757 modules)
+ GET /dashboard/products 200 in 101ms
+ ✓ Compiled in 356ms (757 modules)
+ GET /dashboard/products 200 in 100ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\app\(marketing)\page.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\app\\(marketing)\\page.js',
+  page: '/'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 5.8s (2228 modules)
+ GET /dashboard/products 200 in 328ms
+ GET / 500 in 7120ms
+ GET /dashboard/products 200 in 233ms
+ ○ Compiling /_not-found ...
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled /_not-found in 2.4s (2247 modules)
+ GET / 404 in 3068ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\app\dashboard\products\page.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\app\\dashboard\\products\\page.js',
+  page: '/dashboard/products'
+}
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 804ms (2250 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\pages\\_document.js'
+}
+ GET /icon.svg?2d1d126332e5961d 200 in 1350ms
+ GET /dashboard/products 500 in 8372ms
+ ⨯ [Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\app\dashboard\products\page.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\app\\dashboard\\products\\page.js',
+  page: '/dashboard/products'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\pages\\_document.js'
+}
+ GET /dashboard/products 500 in 708ms
+ ○ Compiling /dashboard/assistant ...
+ ✓ Compiled /dashboard/assistant in 10.2s (2265 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ [Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\app\dashboard\products\page.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\app\\dashboard\\products\\page.js',
+  page: '/dashboard/products'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\pages\\_document.js'
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\app\dashboard\products\page.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\app\\dashboard\\products\\page.js',
+  page: '/dashboard/products'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\pages\\_document.js'
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ GET /dashboard/products 500 in 298ms
+ GET /dashboard/products 500 in 75ms
+ GET /dashboard/assistant 200 in 13717ms
+ GET /dashboard/products 200 in 1701ms
+ ○ Compiling /_not-found ...
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled /icon.svg in 2.6s (2237 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled in 839ms (2240 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\app\_not-found\page.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\app\\_not-found\\page.js'
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\pages\\_document.js'
+}
+ GET /icon.svg?2d1d126332e5961d 200 in 2549ms
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [Error: ENOENT: no such file or directory, open 'D:\AI-Business-Manager\.next\server\pages\_document.js'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'D:\\AI-Business-Manager\\.next\\server\\pages\\_document.js'
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ GET /dashboard/assistant 500 in 4439ms
+ GET /dashboard/assistant 500 in 532ms
+ GET /dashboard/products 200 in 1688ms
+ GET /dashboard/products 200 in 3345ms
+ GET /dashboard/assistant 200 in 519ms
+ ○ Compiling /api/ai/conversations ...
+ ✓ Compiled /api/ai/conversations in 5.7s (1336 modules)
+ GET /api/ai/conversations 200 in 6835ms
+ ○ Compiling /api/ai/chat ...
+ ✓ Compiled /api/ai/chat in 6.6s (1986 modules)
+[ai-chat] created conversation: fb98eb83-6970-410e-a843-2fdc79fd64fd
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fb98eb83-6970-410e-a843-2fdc79fd64fd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"banarsi chiffon add kro","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] settleDone — conversationId: fb98eb83-6970-410e-a843-2fdc79fd64fd
+ POST /api/ai/chat 200 in 15695ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fb98eb83-6970-410e-a843-2fdc79fd64fd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"price 800 multi-color detailing 500","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_product raw args: {
+  "name": "Banarsi Chiffon",
+  "category": "multi-color detailing",
+  "price": 800,
+  "stockQuantity": 500,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_product id parameter present: NO | name/query present: NO
+[product-tools] createProduct input: {
+  "name": "Banarsi Chiffon",
+  "category": "multi-color detailing",
+  "price": 800,
+  "stockQuantity": 500,
+  "lowStockThreshold": 5,
+  "description": null
+}
+[product-service] createProduct validated.imageUrl: null
+[route][tool_output] create_product rawOutputType= string parsedStatus= ok raw= {"created":true,"product":{"id":"5d1b8054-a6ee-4e92-89da-62b105ce2a9c","name":"Banarsi Chiffon","category":"multi-color detailing","price":800,"stock":500,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: fb98eb83-6970-410e-a843-2fdc79fd64fd
+ POST /api/ai/chat 200 in 4737ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fb98eb83-6970-410e-a843-2fdc79fd64fd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"banarsi chiffons add kro, price 800 multi-color detailing 500","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_product raw args: {
+  "name": "Banarsi Chiffons",
+  "category": "Multi-color detailing",
+  "price": 800,
+  "stockQuantity": 500,
+  "lowStockThreshold": 5,
+  "description": null,
+  "imageUrl": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_product id parameter present: NO | name/query present: NO
+[product-tools] createProduct input: {
+  "name": "Banarsi Chiffons",
+  "category": "Multi-color detailing",
+  "price": 800,
+  "stockQuantity": 500,
+  "lowStockThreshold": 5,
+  "description": null
+}
+[product-service] createProduct validated.imageUrl: null
+[route][tool_output] create_product rawOutputType= string parsedStatus= ok raw= {"created":true,"product":{"id":"45e8caeb-82cd-4cee-9a92-fc5afa8e3f34","name":"Banarsi Chiffons","category":"Multi-color detailing","price":800,"stock":500,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: fb98eb83-6970-410e-a843-2fdc79fd64fd
+ POST /api/ai/chat 200 in 45727ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fb98eb83-6970-410e-a843-2fdc79fd64fd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"banarsi chiffons dlete krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "Banarsi Chiffons" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"45e8caeb-82cd-4cee-9a92-fc5afa8e3f34","name":"Banarsi Chiffons","category":"Multi-color detailing","price":800,"stock":500,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: fb98eb83-6970-410e-a843-2fdc79fd64fd
+ POST /api/ai/chat 200 in 5124ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fb98eb83-6970-410e-a843-2fdc79fd64fd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"han","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "Banarsi Chiffons" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"45e8caeb-82cd-4cee-9a92-fc5afa8e3f34","name":"Banarsi Chiffons","category":"Multi-color detailing","price":800,"stock":500,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=delete_product raw args: {
+  "productName": null,
+  "productId": "45e8caeb-82cd-4cee-9a92-fc5afa8e3f34",
+  "confirmed": true
+}
+[ai-chat] DIAGNOSTIC tool_called=delete_product id parameter present: YES (45e8caeb-82cd-4cee-9a92-fc5afa8e3f34) | name/query present: NO
+[disambiguation] findById -> searched id: "45e8caeb-82cd-4cee-9a92-fc5afa8e3f34" | available ids (first 6): ["45e8caeb-82cd-4cee-9a92-fc5afa8e3f34","5d1b8054-a6ee-4e92-89da-62b105ce2a9c","59652a6b-4e27-47a8-b743-a18646e7f42c","2d415d5b-c81e-49bc-a703-78a0139a1013","b03182c7-4b94-48d5-8745-705a21e49349","77f941b2-479d-4d3a-9a41-17e203b18d8b"] | resolved: FOUND (id=45e8caeb-82cd-4cee-9a92-fc5afa8e3f34)
+[disambiguation] resolveProductTarget used ID path productId= "45e8caeb-82cd-4cee-9a92-fc5afa8e3f34" => FOUND (Banarsi Chiffons)
+[route][tool_output] delete_product rawOutputType= string parsedStatus= ok raw= {"removed":true,"name":"Banarsi Chiffons","status":"ok"}
+[ai-chat] settleDone — conversationId: fb98eb83-6970-410e-a843-2fdc79fd64fd
+[disambiguation] turn end -> stash resolvedId {"tool":"delete_product","id":"45e8caeb-82cd-4cee-9a92-fc5afa8e3f34"}
+ POST /api/ai/chat 200 in 6735ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fb98eb83-6970-410e-a843-2fdc79fd64fd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"banarsi chiffons stck 700 krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "Banarsi Chiffons" => not_found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= error raw= {"reason":"not_found","hint":"No such product. Tell the user honestly and offer to add it.","status":"error"}
+[ai-chat] settleDone — conversationId: fb98eb83-6970-410e-a843-2fdc79fd64fd
+ POST /api/ai/chat 200 in 4769ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fb98eb83-6970-410e-a843-2fdc79fd64fd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"banarsi chiffon stck 700 krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "banarsi chiffon" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"5d1b8054-a6ee-4e92-89da-62b105ce2a9c","name":"Banarsi Chiffon","category":"multi-color detailing","price":800,"stock":500,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock raw args: {
+  "productName": null,
+  "productId": "5d1b8054-a6ee-4e92-89da-62b105ce2a9c",
+  "newStock": 700
+}
+[ai-chat] DIAGNOSTIC tool_called=set_product_stock id parameter present: YES (5d1b8054-a6ee-4e92-89da-62b105ce2a9c) | name/query present: NO
+[disambiguation] findById -> searched id: "5d1b8054-a6ee-4e92-89da-62b105ce2a9c" | available ids (first 6): ["5d1b8054-a6ee-4e92-89da-62b105ce2a9c","59652a6b-4e27-47a8-b743-a18646e7f42c","2d415d5b-c81e-49bc-a703-78a0139a1013","b03182c7-4b94-48d5-8745-705a21e49349","77f941b2-479d-4d3a-9a41-17e203b18d8b"] | resolved: FOUND (id=5d1b8054-a6ee-4e92-89da-62b105ce2a9c)
+[disambiguation] resolveProductTarget used ID path productId= "5d1b8054-a6ee-4e92-89da-62b105ce2a9c" => FOUND (Banarsi Chiffon)
+[route][tool_output] set_product_stock rawOutputType= string parsedStatus= ok raw= {"updated":true,"previous_stock":500,"product":{"id":"5d1b8054-a6ee-4e92-89da-62b105ce2a9c","name":"Banarsi Chiffon","category":"multi-color detailing","price":800,"stock":700,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] settleDone — conversationId: fb98eb83-6970-410e-a843-2fdc79fd64fd
+[disambiguation] turn end -> stash resolvedId {"tool":"set_product_stock","id":"5d1b8054-a6ee-4e92-89da-62b105ce2a9c"}
+ POST /api/ai/chat 200 in 7907ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fb98eb83-6970-410e-a843-2fdc79fd64fd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"hira custmr add krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] settleDone — conversationId: fb98eb83-6970-410e-a843-2fdc79fd64fd
+ POST /api/ai/chat 200 in 3097ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fb98eb83-6970-410e-a843-2fdc79fd64fd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"q zruri nhhyn mjhay no email address mre lie zruri h bhai","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] settleDone — conversationId: fb98eb83-6970-410e-a843-2fdc79fd64fd
+ POST /api/ai/chat 200 in 3035ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fb98eb83-6970-410e-a843-2fdc79fd64fd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"03219830968 hira@gmail.com sector 7/b orangi town karachi","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[ai-chat] DIAGNOSTIC tool_called=create_customer raw args: {
+  "name": "Hira",
+  "phone": "03219830968",
+  "email": "hira@gmail.com",
+  "address": "Sector 7/B, Orangi Town, Karachi",
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_customer id parameter present: NO | name/query present: NO
+[route][tool_output] create_customer rawOutputType= string parsedStatus= ok raw= {"created":true,"customer":{"id":"53c788ce-52ea-44d9-9332-62fd7ca93e15","name":"Hira","phone":"03219830968","email":"hira@gmail.com","address":"Sector 7/B, Orangi Town, Karachi","notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] settleDone — conversationId: fb98eb83-6970-410e-a843-2fdc79fd64fd
+ POST /api/ai/chat 200 in 6918ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fb98eb83-6970-410e-a843-2fdc79fd64fd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"hira ka order banarsi chiffon 200 complete krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "banarsi chiffon" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"5d1b8054-a6ee-4e92-89da-62b105ce2a9c","name":"Banarsi Chiffon","category":"multi-color detailing","price":800,"stock":700,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"53c788ce-52ea-44d9-9332-62fd7ca93e15","name":"Hira","phone":"03219830968","email":"hira@gmail.com","address":"Sector 7/B, Orangi Town, Karachi","notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "Banarsi Chiffon",
+      "productId": "5d1b8054-a6ee-4e92-89da-62b105ce2a9c",
+      "quantity": 200
+    }
+  ],
+  "customerName": "Hira",
+  "customerId": "53c788ce-52ea-44d9-9332-62fd7ca93e15",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: YES (53c788ce-52ea-44d9-9332-62fd7ca93e15) | name/query present: NO
+[disambiguation] findById -> searched id: "5d1b8054-a6ee-4e92-89da-62b105ce2a9c" | available ids (first 6): ["5d1b8054-a6ee-4e92-89da-62b105ce2a9c","59652a6b-4e27-47a8-b743-a18646e7f42c","2d415d5b-c81e-49bc-a703-78a0139a1013","b03182c7-4b94-48d5-8745-705a21e49349","77f941b2-479d-4d3a-9a41-17e203b18d8b"] | resolved: FOUND (id=5d1b8054-a6ee-4e92-89da-62b105ce2a9c)
+[disambiguation] findById -> searched id: "53c788ce-52ea-44d9-9332-62fd7ca93e15" | available ids (first 6): ["53c788ce-52ea-44d9-9332-62fd7ca93e15","6f3d449d-62fe-4490-b425-645917591a94","05579ee5-4819-4967-b861-a1919a08e9f4","6941bc4c-95d8-49bb-82e8-8567660f5933","bbaf82a2-9c74-4afd-8d55-69dd9b4cb64c","b95164fb-ad7c-4a71-8167-ab4960c32135"] | resolved: FOUND (id=53c788ce-52ea-44d9-9332-62fd7ca93e15)
+[route][tool_output] create_order rawOutputType= string parsedStatus= ok raw= {"created":true,"orderNumber":"ORD-000010","total":160000,"subtotal":160000,"discount":0,"items":[{"productName":"Banarsi Chiffon","quantity":200,"unitPrice":800}],"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=update_order_status raw args: {
+  "orderNumber": "ORD-000010",
+  "orderId": null,
+  "status": "completed",
+  "confirmed": false
+}
+[ai-chat] DIAGNOSTIC tool_called=update_order_status id parameter present: NO | name/query present: NO
+[route][tool_output] update_order_status rawOutputType= string parsedStatus= ok raw= {"updated":true,"orderNumber":"ORD-000010","newStatus":"completed","status":"ok"}
+[ai-chat] settleDone — conversationId: fb98eb83-6970-410e-a843-2fdc79fd64fd
+[disambiguation] turn end -> stash resolvedId {"tool":"create_order","id":"53c788ce-52ea-44d9-9332-62fd7ca93e15"}
+ POST /api/ai/chat 200 in 11091ms
+[ai-provider] openai primary engaged (model will be used for first attempt on each request)
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fb98eb83-6970-410e-a843-2fdc79fd64fd","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"order complete h ya pending?","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_order rawOutputType= string parsedStatus= ok raw= {"found":true,"order":{"id":"d410f6d5-0039-4734-bf7c-a71577c2bedd","orderNumber":"ORD-000010","status":"completed","customerName":"Hira","orderedAt":"2026-08-27T14:45:37.539433+00:00","subtotal":160000,"discount":0,"total":160000,"notes":null,"items":[{"productName":"Banarsi Chiffon","quantity":200,
+[ai-chat] settleDone — conversationId: fb98eb83-6970-410e-a843-2fdc79fd64fd
+ POST /api/ai/chat 200 in 5471ms
+ ○ Compiling /dashboard/orders ...
+ ✓ Compiled /dashboard/orders in 21.3s (2274 modules)
+ GET /dashboard/products 200 in 2031ms
+ GET /dashboard/orders 200 in 2978ms
+ GET /dashboard/orders 200 in 26098ms
+ ○ Compiling /icon.svg ...
+ GET /dashboard/products 200 in 15409ms
+ ✓ Compiled /icon.svg in 1379ms (1360 modules)
+ GET /icon.svg?2d1d126332e5961d 200 in 2016ms
+ GET /icon.svg?2d1d126332e5961d 200 in 169ms
+ ○ Compiling /dashboard/customers ...
+ ✓ Compiled /dashboard/customers in 2.6s (2311 modules)
+ GET /dashboard/orders 200 in 860ms
+ GET /dashboard/customers 200 in 1076ms
+ GET /dashboard/customers 200 in 4523ms
+ GET /dashboard/orders 200 in 2006ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 13s (2307 modules)
+ GET /dashboard/orders 200 in 1017ms
+ GET /dashboard 200 in 1639ms
+ GET /dashboard 200 in 15980ms
+ ○ Compiling /dashboard/sales ...
+ ✓ Compiled /dashboard/sales in 3s (2315 modules)
+ GET /dashboard/orders 200 in 710ms
+ GET /dashboard/sales 200 in 1735ms
+ GET /dashboard/sales 200 in 6257ms
+ GET /dashboard/sales 200 in 1067ms
+ GET /dashboard/sales 200 in 870ms
+ GET /dashboard/orders 200 in 1550ms
+ GET /dashboard 200 in 1056ms
+ GET /dashboard/assistant 200 in 406ms
+ ○ Compiling /api/ai/conversations ...
+ ✓ Compiled /api/ai/conversations in 4.3s (1314 modules)
+ GET /api/ai/conversations 200 in 5658ms
+ GET /api/ai/conversations 200 in 583ms
+ GET /api/ai/conversations 200 in 507ms
+ ○ Compiling /api/ai/conversations/[id] ...
+ ✓ Compiled /api/ai/conversations/[id] in 2.6s (1316 modules)
+ GET /api/ai/conversations/fb98eb83-6970-410e-a843-2fdc79fd64fd 200 in 4409ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 11.1s (1365 modules)
+ GET /login 200 in 12607ms
+ POST /dashboard/assistant 303 in 14120ms
+ ○ Compiling / ...
+ ✓ Compiled / in 5.4s (1392 modules)
+ GET / 200 in 6892ms
+ GET / 200 in 3541ms
+ GET / 200 in 13426ms
+ GET / 200 in 11703ms
+ GET / 200 in 8743ms
+ GET / 200 in 7020ms
+ GET / 200 in 4952ms
+ GET / 200 in 3595ms
+ GET / 200 in 3689ms
+ GET / 200 in 3608ms
+ GET / 200 in 3604ms
+ GET / 200 in 3538ms
+ GET / 200 in 3075ms
+ GET / 200 in 3651ms
+ GET / 200 in 3707ms
+ GET / 200 in 3302ms
+ GET / 200 in 3924ms
+ GET / 200 in 4209ms
+ GET / 200 in 3909ms
+ GET / 200 in 5929ms
+ GET / 200 in 5339ms
+ GET / 200 in 4723ms
+ GET / 200 in 3987ms
+ GET / 200 in 3107ms
+ GET / 200 in 3136ms
+ GET / 200 in 2548ms
+ GET / 200 in 11836ms
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 14.3s (1384 modules)
+ GET /icon.svg?2d1d126332e5961d 200 in 16298ms
+ GET / 200 in 6239ms
+ GET / 200 in 2456ms
+ GET /icon.svg?2d1d126332e5961d 200 in 71ms
+ GET / 200 in 830ms
+ GET / 200 in 2344ms
+ GET / 200 in 1696ms
+ GET /icon.svg?2d1d126332e5961d 200 in 83ms
+ GET / 200 in 1715ms
+ GET /icon.svg?2d1d126332e5961d 200 in 62ms
+ GET /login?next=%2Fdashboard%2Fsettings 200 in 349ms
+ ○ Compiling /auth/callback ...
+ ✓ Compiled /auth/callback in 7.9s (2325 modules)
+ GET /auth/callback?code=7875e1dc-c224-4a8c-868b-f2669c9935ba&next=%2Fdashboard%2Fsettings 307 in 10119ms
+ ✓ Compiled in 2.3s (941 modules)
+ GET /login?next=%2Fdashboard%2Fsettings 200 in 2422ms
+ GET / 200 in 2237ms
+ ○ Compiling /dashboard/settings ...
+ ✓ Compiled /dashboard/settings in 10s (2343 modules)
+ GET /auth/callback?code=d05afc1e-5758-4ff8-8348-1a8a25c08195&next=%2Fdashboard%2Fsettings 307 in 7903ms
+ GET / 200 in 13918ms
+ GET /dashboard/settings 200 in 9620ms
+ GET /dashboard/settings 200 in 1907ms
+ GET /dashboard/settings 200 in 1771ms
+ GET / 200 in 1106ms
+ GET /dashboard 200 in 1166ms
+ ○ Compiling /dashboard/assistant ...
+ ✓ Compiled /dashboard/assistant in 5.5s (1410 modules)
+ GET /dashboard/assistant 200 in 1294ms
+ GET /dashboard/assistant 200 in 7575ms
+ GET /dashboard/assistant 200 in 1207ms
+ ○ Compiling /api/ai/conversations ...
+ ✓ Compiled /api/ai/conversations in 10.8s (1413 modules)
+ GET /api/ai/conversations 200 in 12603ms
+ GET /api/ai/conversations 200 in 409ms
+ GET /api/ai/conversations 200 in 582ms
+ GET /api/ai/conversations 200 in 658ms
+ ○ Compiling /api/ai/conversations/[id] ...
+ ✓ Compiled /api/ai/conversations/[id] in 2.8s (1398 modules)
+ GET /api/ai/conversations/3e6be4bf-55da-4590-99ef-e3103e4cd00d 200 in 4380ms
+ GET /api/ai/conversations 200 in 982ms
+ GET /api/ai/conversations/fb98eb83-6970-410e-a843-2fdc79fd64fd 200 in 1351ms
+ ○ Compiling /dashboard/products ...
+ ✓ Compiled /dashboard/products in 4s (1407 modules)
+ GET /dashboard/products 200 in 2332ms
+ GET /dashboard/products 200 in 7371ms
+ GET /dashboard/products 200 in 2398ms
+ ○ Compiling /dashboard/customers ...
+ ✓ Compiled /dashboard/customers in 1495ms (1414 modules)
+ GET /dashboard/customers 200 in 3826ms
+ GET /dashboard/customers 200 in 1394ms
+ GET /dashboard/orders 200 in 1296ms
+ ○ Compiling /dashboard/inventory ...
+ ✓ Compiled /dashboard/inventory in 8.3s (2344 modules)
+ GET /dashboard/inventory 200 in 1229ms
+ GET /dashboard/inventory 200 in 11221ms
+ GET / 200 in 1982ms
+ ○ Compiling /dashboard/sales ...
+ ✓ Compiled /dashboard/sales in 3.4s (1403 modules)
+ GET /dashboard/sales 200 in 2531ms
+ GET /dashboard/sales 200 in 2367ms
+ GET /dashboard/sales 200 in 6978ms
+ GET /dashboard/orders 200 in 2634ms
+ ○ Compiling /dashboard/expenses ...
+ ✓ Compiled /dashboard/expenses in 12.5s (2366 modules)
+ GET / 200 in 1404ms
+ GET /dashboard/expenses 200 in 14939ms
+ GET /dashboard/expenses 200 in 1792ms
+ GET /dashboard/expenses 200 in 935ms
+ GET /dashboard/expenses 200 in 782ms
+ GET /dashboard/expenses 200 in 903ms
+ GET /dashboard/expenses 200 in 986ms
+ GET /dashboard/expenses 200 in 644ms
+ ○ Compiling /dashboard/settings ...
+ ✓ Compiled /dashboard/settings in 5.9s (1337 modules)
+ GET /dashboard/settings 200 in 8310ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 16.6s (1331 modules)
+ GET /dashboard 200 in 4455ms
+ GET /dashboard 200 in 4675ms
+ GET /dashboard 200 in 25983ms
+ ○ Compiling /dashboard/assistant ...
+ ✓ Compiled /dashboard/assistant in 1616ms (1342 modules)
+ GET /dashboard/assistant 200 in 3060ms
+ ○ Compiling /api/ai/conversations ...
+ ✓ Compiled /api/ai/conversations in 6.1s (1360 modules)
+ GET /api/ai/conversations 200 in 8127ms
+ GET /api/ai/conversations 200 in 868ms
+ GET /api/ai/conversations 200 in 1691ms
+ ○ Compiling /api/ai/conversations/[id] ...
+ ✓ Compiled /api/ai/conversations/[id] in 3.3s (1356 modules)
+ GET /api/ai/conversations/fb98eb83-6970-410e-a843-2fdc79fd64fd 200 in 6429ms
+ GET /api/ai/conversations 200 in 1424ms
+ GET /api/ai/conversations/3e6be4bf-55da-4590-99ef-e3103e4cd00d 200 in 1374ms
+ ✓ Compiled in 11.2s (955 modules)
+ ✓ Compiled in 1768ms (955 modules)
+ ○ Compiling /_not-found ...
+ GET /dashboard/assistant 200 in 1824ms
+ ✓ Compiled /_not-found in 8.2s (2253 modules)
+ GET /dashboard/settings 404 in 10701ms
+ GET /dashboard/assistant 200 in 7612ms
+ GET /dashboard/settings 200 in 777ms
+ GET /dashboard/settings 200 in 1186ms
+ ○ Compiling / ...
+ ✓ Compiled / in 3.1s (1336 modules)
+ GET / 200 in 17956ms
+ GET / 200 in 807ms
+ GET / 200 in 966ms
+ GET / 200 in 1015ms
+ GET / 200 in 928ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 8.8s (1403 modules)
+ GET /login 200 in 12340ms
+ GET /login 200 in 260ms
+ GET /login 200 in 194ms
+ GET / 200 in 1036ms
+ GET / 200 in 908ms
+ GET / 200 in 901ms
+ GET /login 200 in 204ms
+ GET /login 200 in 178ms
+ GET /login 200 in 216ms

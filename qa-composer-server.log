@@ -1,0 +1,106 @@
+   ▲ Next.js 15.5.23
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.100.138:3000
+
+ ✓ Starting...
+ ✓ Ready in 2s
+[ai-chat] created conversation: fe698780-3fe6-43e0-8a09-f3465fbb98c0
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"fe698780-3fe6-43e0-8a09-f3465fbb98c0","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ayaz ka order 50 sheesha silk order complete krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"8667bb33-0817-41f5-bc41-90979a58c993","name":"Ayaz","phone":null,"email":null,"address":null,"notes":null,"totalOrders":0,"totalSpent":0},"status":"ok"}
+[disambiguation] resolveProductTarget used NAME path query= "Sheesha Silk" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"fb450a16-09dd-49b9-9b40-4ae7079d3120","name":"Sheesha Silk","category":"fabric","price":100,"stock":200,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "Sheesha Silk",
+      "productId": "fb450a16-09dd-49b9-9b40-4ae7079d3120",
+      "quantity": 50
+    }
+  ],
+  "customerName": "Ayaz",
+  "customerId": "8667bb33-0817-41f5-bc41-90979a58c993",
+  "status": "completed",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: YES (8667bb33-0817-41f5-bc41-90979a58c993) | name/query present: NO
+[disambiguation] findById -> searched id: "fb450a16-09dd-49b9-9b40-4ae7079d3120" | available ids (first 6): ["fb450a16-09dd-49b9-9b40-4ae7079d3120","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=fb450a16-09dd-49b9-9b40-4ae7079d3120)
+[disambiguation] findById -> searched id: "8667bb33-0817-41f5-bc41-90979a58c993" | available ids (first 6): ["8667bb33-0817-41f5-bc41-90979a58c993","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=8667bb33-0817-41f5-bc41-90979a58c993)
+[route][tool_output] create_order rawOutputType= string parsedStatus= ok raw= {"created":true,"orderNumber":"ORD-000026","orderStatus":"completed","total":5000,"subtotal":5000,"discount":0,"items":[{"productName":"Sheesha Silk","quantity":50,"unitPrice":100}],"status":"ok"}
+[ai-chat] settleDone — conversationId: fe698780-3fe6-43e0-8a09-f3465fbb98c0
+[disambiguation] turn end -> stash resolvedId {"tool":"create_order","id":"8667bb33-0817-41f5-bc41-90979a58c993"}
+[ai-chat] created conversation: c75e80d3-e09e-44be-a186-15554a46eb09
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"c75e80d3-e09e-44be-a186-15554a46eb09","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ayaz ka order 50 sheesha silk order complete krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"8667bb33-0817-41f5-bc41-90979a58c993","name":"Ayaz","phone":null,"email":null,"address":null,"notes":null,"totalOrders":1,"totalSpent":5000},"status":"ok"}
+[disambiguation] resolveProductTarget used NAME path query= "Sheesha Silk" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"fb450a16-09dd-49b9-9b40-4ae7079d3120","name":"Sheesha Silk","category":"fabric","price":100,"stock":150,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "Sheesha Silk",
+      "productId": "fb450a16-09dd-49b9-9b40-4ae7079d3120",
+      "quantity": 50
+    }
+  ],
+  "customerName": "Ayaz",
+  "customerId": "8667bb33-0817-41f5-bc41-90979a58c993",
+  "status": "completed",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: YES (8667bb33-0817-41f5-bc41-90979a58c993) | name/query present: NO
+[disambiguation] findById -> searched id: "fb450a16-09dd-49b9-9b40-4ae7079d3120" | available ids (first 6): ["fb450a16-09dd-49b9-9b40-4ae7079d3120","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=fb450a16-09dd-49b9-9b40-4ae7079d3120)
+[disambiguation] findById -> searched id: "8667bb33-0817-41f5-bc41-90979a58c993" | available ids (first 6): ["8667bb33-0817-41f5-bc41-90979a58c993","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=8667bb33-0817-41f5-bc41-90979a58c993)
+[route][tool_output] create_order rawOutputType= string parsedStatus= ok raw= {"created":true,"orderNumber":"ORD-000027","orderStatus":"completed","total":5000,"subtotal":5000,"discount":0,"items":[{"productName":"Sheesha Silk","quantity":50,"unitPrice":100}],"status":"ok"}
+[ai-chat] settleDone — conversationId: c75e80d3-e09e-44be-a186-15554a46eb09
+[disambiguation] turn end -> stash resolvedId {"tool":"create_order","id":"8667bb33-0817-41f5-bc41-90979a58c993"}
+[ai-chat] created conversation: 504acf4c-d244-408e-bcb9-e9f855056fe7
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"504acf4c-d244-408e-bcb9-e9f855056fe7","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ayaz ka order 50 sheesha silk order complete krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"8667bb33-0817-41f5-bc41-90979a58c993","name":"Ayaz","phone":null,"email":null,"address":null,"notes":null,"totalOrders":2,"totalSpent":10000},"status":"ok"}
+[disambiguation] resolveProductTarget used NAME path query= "Sheesha Silk" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"fb450a16-09dd-49b9-9b40-4ae7079d3120","name":"Sheesha Silk","category":"fabric","price":100,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "Sheesha Silk",
+      "productId": "fb450a16-09dd-49b9-9b40-4ae7079d3120",
+      "quantity": 50
+    }
+  ],
+  "customerName": "Ayaz",
+  "customerId": "8667bb33-0817-41f5-bc41-90979a58c993",
+  "status": "completed",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: YES (8667bb33-0817-41f5-bc41-90979a58c993) | name/query present: NO
+[disambiguation] findById -> searched id: "fb450a16-09dd-49b9-9b40-4ae7079d3120" | available ids (first 6): ["fb450a16-09dd-49b9-9b40-4ae7079d3120","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=fb450a16-09dd-49b9-9b40-4ae7079d3120)
+[disambiguation] findById -> searched id: "8667bb33-0817-41f5-bc41-90979a58c993" | available ids (first 6): ["8667bb33-0817-41f5-bc41-90979a58c993","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=8667bb33-0817-41f5-bc41-90979a58c993)
+[route][tool_output] create_order rawOutputType= string parsedStatus= ok raw= {"created":true,"orderNumber":"ORD-000028","orderStatus":"completed","total":5000,"subtotal":5000,"discount":0,"items":[{"productName":"Sheesha Silk","quantity":50,"unitPrice":100}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 504acf4c-d244-408e-bcb9-e9f855056fe7
+[disambiguation] turn end -> stash resolvedId {"tool":"create_order","id":"8667bb33-0817-41f5-bc41-90979a58c993"}
+[ai-chat] created conversation: c39893e4-2bdf-4fe6-9913-d118c0ccb4d4
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"c39893e4-2bdf-4fe6-9913-d118c0ccb4d4","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"ayaz ka order 50 sheesha silk order complete krdo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[disambiguation] resolveProductTarget used NAME path query= "sheesha silk" => found 
+[route][tool_output] find_product rawOutputType= string parsedStatus= ok raw= {"product":{"id":"fb450a16-09dd-49b9-9b40-4ae7079d3120","name":"Sheesha Silk","category":"fabric","price":9999999999.99,"stock":50,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null},"status":"ok"}
+[route][tool_output] find_customer rawOutputType= string parsedStatus= ok raw= {"customer":{"id":"8667bb33-0817-41f5-bc41-90979a58c993","name":"Ayaz","phone":null,"email":null,"address":null,"notes":null,"totalOrders":3,"totalSpent":15000},"status":"ok"}
+[ai-chat] DIAGNOSTIC tool_called=create_order raw args: {
+  "items": [
+    {
+      "productName": "Sheesha Silk",
+      "productId": "fb450a16-09dd-49b9-9b40-4ae7079d3120",
+      "quantity": 50
+    }
+  ],
+  "customerName": "Ayaz",
+  "customerId": "8667bb33-0817-41f5-bc41-90979a58c993",
+  "status": "completed",
+  "discount": null,
+  "notes": null
+}
+[ai-chat] DIAGNOSTIC tool_called=create_order id parameter present: YES (8667bb33-0817-41f5-bc41-90979a58c993) | name/query present: NO
+[disambiguation] findById -> searched id: "fb450a16-09dd-49b9-9b40-4ae7079d3120" | available ids (first 6): ["fb450a16-09dd-49b9-9b40-4ae7079d3120","511f7892-593a-4576-80b7-f023ad68f7bd"] | resolved: FOUND (id=fb450a16-09dd-49b9-9b40-4ae7079d3120)
+[disambiguation] findById -> searched id: "8667bb33-0817-41f5-bc41-90979a58c993" | available ids (first 6): ["8667bb33-0817-41f5-bc41-90979a58c993","e64cfff1-03f6-4cd9-bce2-450cbc532b6e"] | resolved: FOUND (id=8667bb33-0817-41f5-bc41-90979a58c993)
+[route][tool_output] create_order rawOutputType= string parsedStatus= error raw= {"reason":"database_error","hint":"Could not create the order. Do not claim success.","status":"error"}
+[ai-chat] settleDone — conversationId: c39893e4-2bdf-4fe6-9913-d118c0ccb4d4
+[disambiguation] turn end -> stash resolvedId {"tool":"create_order","id":"8667bb33-0817-41f5-bc41-90979a58c993"}

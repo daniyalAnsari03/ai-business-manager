@@ -1,0 +1,543 @@
+{
+  "pass": "after",
+  "baseUrl": "http://localhost:3100",
+  "startedAt": "2026-08-27T20:19:03.783Z",
+  "email": "dinsbydaniyal@gmail.com",
+  "desktop": {
+    "cold": {
+      "dashboard": {
+        "path": "/dashboard",
+        "visibleMs": "1035ms",
+        "loadEventMs": "789ms",
+        "dclMs": "417ms",
+        "lcpMs": "784ms",
+        "networkIdleMs": "1603ms"
+      },
+      "assistant": {
+        "path": "/dashboard/assistant",
+        "visibleMs": "841ms",
+        "loadEventMs": "694ms",
+        "dclMs": "465ms",
+        "lcpMs": "740ms",
+        "networkIdleMs": "1794ms"
+      },
+      "products": {
+        "path": "/dashboard/products",
+        "visibleMs": "828ms",
+        "loadEventMs": "723ms",
+        "dclMs": "391ms",
+        "lcpMs": "704ms",
+        "networkIdleMs": "1549ms"
+      },
+      "customers": {
+        "path": "/dashboard/customers",
+        "visibleMs": "834ms",
+        "loadEventMs": "741ms",
+        "dclMs": "470ms",
+        "lcpMs": "784ms",
+        "networkIdleMs": "1619ms"
+      },
+      "orders": {
+        "path": "/dashboard/orders",
+        "visibleMs": "771ms",
+        "loadEventMs": "588ms",
+        "dclMs": "397ms",
+        "lcpMs": "728ms",
+        "networkIdleMs": "1504ms"
+      },
+      "inventory": {
+        "path": "/dashboard/inventory",
+        "visibleMs": "799ms",
+        "loadEventMs": "683ms",
+        "dclMs": "364ms",
+        "lcpMs": "676ms",
+        "networkIdleMs": "1526ms"
+      },
+      "sales": {
+        "path": "/dashboard/sales",
+        "visibleMs": "831ms",
+        "loadEventMs": "726ms",
+        "dclMs": "651ms",
+        "lcpMs": "748ms",
+        "networkIdleMs": "1523ms"
+      },
+      "expenses": {
+        "path": "/dashboard/expenses",
+        "visibleMs": "833ms",
+        "loadEventMs": "730ms",
+        "dclMs": "435ms",
+        "lcpMs": "720ms",
+        "networkIdleMs": "1562ms"
+      },
+      "settings": {
+        "path": "/dashboard/settings",
+        "visibleMs": "798ms",
+        "loadEventMs": "656ms",
+        "dclMs": "480ms",
+        "lcpMs": "576ms",
+        "networkIdleMs": "1638ms"
+      }
+    },
+    "warm": {
+      "dashboard": {
+        "path": "/dashboard",
+        "clickToVisibleMs": "877ms"
+      },
+      "assistant": {
+        "path": "/dashboard/assistant",
+        "clickToVisibleMs": "402ms"
+      },
+      "products": {
+        "path": "/dashboard/products",
+        "clickToVisibleMs": "565ms"
+      },
+      "customers": {
+        "path": "/dashboard/customers",
+        "clickToVisibleMs": "764ms"
+      },
+      "orders": {
+        "path": "/dashboard/orders",
+        "clickToVisibleMs": "645ms"
+      },
+      "inventory": {
+        "path": "/dashboard/inventory",
+        "clickToVisibleMs": "442ms"
+      },
+      "sales": {
+        "path": "/dashboard/sales",
+        "clickToVisibleMs": "480ms"
+      },
+      "expenses": {
+        "path": "/dashboard/expenses",
+        "clickToVisibleMs": "516ms"
+      },
+      "settings": {
+        "path": "/dashboard/settings",
+        "clickToVisibleMs": "408ms"
+      }
+    },
+    "modals": {
+      "products": {
+        "openMs": "489ms"
+      },
+      "customers": {
+        "openMs": "121ms"
+      },
+      "orders": {
+        "openMs": "301ms"
+      },
+      "expenses": {
+        "openMs": "147ms"
+      }
+    },
+    "ai": {
+      "message": "Apne products list karo",
+      "submitToFirstMs": "6310ms",
+      "submitToSettleMs": "7449ms",
+      "submitToSettleWallMs": "7462ms",
+      "firstTokenObserved": true,
+      "error": null
+    }
+  },
+  "mobile": {
+    "cold": {
+      "dashboard": {
+        "path": "/dashboard",
+        "visibleMs": "1894ms",
+        "loadEventMs": "1811ms",
+        "dclMs": "1630ms",
+        "lcpMs": "1812ms",
+        "networkIdleMs": "2437ms"
+      },
+      "assistant": {
+        "path": "/dashboard/assistant",
+        "visibleMs": "714ms",
+        "loadEventMs": "610ms",
+        "dclMs": "442ms",
+        "lcpMs": "500ms",
+        "networkIdleMs": "1634ms"
+      },
+      "products": {
+        "path": "/dashboard/products",
+        "visibleMs": "761ms",
+        "loadEventMs": "537ms",
+        "dclMs": "357ms",
+        "lcpMs": "692ms",
+        "networkIdleMs": "1348ms"
+      },
+      "customers": {
+        "path": "/dashboard/customers",
+        "visibleMs": "754ms",
+        "loadEventMs": "592ms",
+        "dclMs": "387ms",
+        "lcpMs": "724ms",
+        "networkIdleMs": "1354ms"
+      },
+      "orders": {
+        "path": "/dashboard/orders",
+        "visibleMs": "790ms",
+        "loadEventMs": "549ms",
+        "dclMs": "491ms",
+        "lcpMs": "760ms",
+        "networkIdleMs": "1336ms"
+      },
+      "inventory": {
+        "path": "/dashboard/inventory",
+        "visibleMs": "741ms",
+        "loadEventMs": "585ms",
+        "dclMs": "394ms",
+        "lcpMs": "700ms",
+        "networkIdleMs": "1326ms"
+      },
+      "sales": {
+        "path": "/dashboard/sales",
+        "visibleMs": "700ms",
+        "loadEventMs": "529ms",
+        "dclMs": "375ms",
+        "lcpMs": "716ms",
+        "networkIdleMs": "1305ms"
+      },
+      "expenses": {
+        "path": "/dashboard/expenses",
+        "visibleMs": "679ms",
+        "loadEventMs": "527ms",
+        "dclMs": "320ms",
+        "lcpMs": "652ms",
+        "networkIdleMs": "1293ms"
+      },
+      "settings": {
+        "path": "/dashboard/settings",
+        "visibleMs": "826ms",
+        "loadEventMs": "677ms",
+        "dclMs": "449ms",
+        "lcpMs": "512ms",
+        "networkIdleMs": "1337ms"
+      }
+    },
+    "warm": {
+      "dashboard": {
+        "path": "/dashboard",
+        "clickToVisibleMs": "684ms"
+      },
+      "assistant": {
+        "path": "/dashboard/assistant",
+        "clickToVisibleMs": "470ms"
+      },
+      "products": {
+        "path": "/dashboard/products",
+        "clickToVisibleMs": "495ms"
+      },
+      "customers": {
+        "path": "/dashboard/customers",
+        "clickToVisibleMs": "585ms"
+      },
+      "orders": {
+        "path": "/dashboard/orders",
+        "clickToVisibleMs": "647ms"
+      },
+      "inventory": {
+        "path": "/dashboard/inventory",
+        "clickToVisibleMs": "500ms"
+      },
+      "sales": {
+        "path": "/dashboard/sales",
+        "clickToVisibleMs": "788ms"
+      },
+      "expenses": {
+        "path": "/dashboard/expenses",
+        "clickToVisibleMs": "896ms"
+      },
+      "settings": {
+        "path": "/dashboard/settings",
+        "clickToVisibleMs": "562ms"
+      }
+    },
+    "modals": {
+      "products": {
+        "openMs": "530ms"
+      },
+      "customers": {
+        "openMs": "189ms"
+      },
+      "orders": {
+        "openMs": "121ms"
+      },
+      "expenses": {
+        "openMs": "126ms"
+      }
+    },
+    "ai": {
+      "message": "Apne products list karo",
+      "submitToFirstMs": "4407ms",
+      "submitToSettleMs": "5586ms",
+      "submitToSettleWallMs": "5595ms",
+      "firstTokenObserved": true,
+      "error": null
+    }
+  },
+  "issues": [
+    "requestfailed: http://localhost:3100/dashboard?_rsc=nmyFLQq3sV5huFjw net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=JSPWlhLC_u4jTVcV net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=JSPWlhLC_u4jTVcV net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=JSPWlhLC_u4jTVcV net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=JSPWlhLC_u4jTVcV net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=JSPWlhLC_u4jTVcV net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=JSPWlhLC_u4jTVcV net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=JSPWlhLC_u4jTVcV net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=JSPWlhLC_u4jTVcV net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=JSPWlhLC_u4jTVcV net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=CuyZcS7Rondf0yfO net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=CuyZcS7Rondf0yfO net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=CuyZcS7Rondf0yfO net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=CuyZcS7Rondf0yfO net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=CuyZcS7Rondf0yfO net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=CuyZcS7Rondf0yfO net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=CuyZcS7Rondf0yfO net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=CuyZcS7Rondf0yfO net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=ys_BncGK8AVIx6t0 net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=ys_BncGK8AVIx6t0 net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=ys_BncGK8AVIx6t0 net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=ys_BncGK8AVIx6t0 net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=ys_BncGK8AVIx6t0 net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=LpzpuWfanF5dKvrH net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=LpzpuWfanF5dKvrH net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=LpzpuWfanF5dKvrH net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=LpzpuWfanF5dKvrH net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=LpzpuWfanF5dKvrH net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=LpzpuWfanF5dKvrH net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=LpzpuWfanF5dKvrH net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=Mk3YIgxZDaD2Ln0F net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Mk3YIgxZDaD2Ln0F net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Mk3YIgxZDaD2Ln0F net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Mk3YIgxZDaD2Ln0F net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=XOSPJewFzl1um6dX net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=XOSPJewFzl1um6dX net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=XOSPJewFzl1um6dX net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=XOSPJewFzl1um6dX net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=4MlfBF4smORItqbu net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=4MlfBF4smORItqbu net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=4MlfBF4smORItqbu net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=4MlfBF4smORItqbu net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=4MlfBF4smORItqbu net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=4MlfBF4smORItqbu net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=4MlfBF4smORItqbu net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=4MlfBF4smORItqbu net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=Mk3YIgxZDaD2Ln0F net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "console.error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=gLSm9q1PAH_jbiuy net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=pl-Io9vafsTCDtPO net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=XbfwhSBP3ub9MqWG net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=mHXN56TO_UtY8jjW net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=M0nkD4kWzn4hDShq net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=JRpdHyiqwa6NOt5T net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=GFFTiwPwBkYBafHO net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=gLSm9q1PAH_jbiuy net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=t8OuW26VEYTRvoD4 net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=pl-Io9vafsTCDtPO net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=mHXN56TO_UtY8jjW net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=M0nkD4kWzn4hDShq net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=WKAHQgKgqoXbLGzW net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=mHXN56TO_UtY8jjW net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/assistant?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=Uj5fJzh3oSqZfPD_ net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=mHXN56TO_UtY8jjW net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/products?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/customers?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/orders?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/inventory?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/sales?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/expenses?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard/settings?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED",
+    "requestfailed: http://localhost:3100/dashboard?_rsc=hXWbTLI9oMbtXwWv net::ERR_ABORTED"
+  ],
+  "completedAt": "2026-08-27T20:20:52.544Z"
+}

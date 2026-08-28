@@ -1,0 +1,27 @@
+The migration has been applied via the Supabase Dashboard SQL Editor.
+
+Now do both of the following, and report both results together in one message:
+
+1. VERIFY THE FIX
+   Test the exact failing phrasing 3 separate times against the live 
+   server: "ayaz ka order 50 sheesha silk order complete krdo"
+   
+   For each of the 3 attempts, report:
+   - Whether the order was created successfully
+   - The resulting order status (must be "completed")
+   - The quantity and product recorded
+   - Whether stock was correctly deducted (show before/after stock value)
+   - Any error, if one occurs
+   
+   Paste the raw result for each attempt — do not summarize as "PASS."
+
+2. CONFIRM ERROR HANDLING IS SAFE
+   Confirm that the real database error (SQLERRM) from the fix is 
+   ONLY going to server-side logs, and is NOT exposed to the user in 
+   the chat UI or sent to the model. The user-facing message on any 
+   future failure should still be a generic, safe message (e.g. 
+   "order create nahi ho saka") — never raw SQL/table/column details. 
+   Show me the exact code where this boundary is enforced.
+
+Do not declare this complete until both parts have concrete evidence 
+attached.

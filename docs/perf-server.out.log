@@ -1,0 +1,70 @@
+   ▲ Next.js 15.5.23
+   - Local:        http://localhost:3100
+   - Network:      http://192.168.100.138:3100
+
+ ✓ Starting...
+ ✓ Ready in 1640ms
+[ai-chat] created conversation: cb3ffe73-0028-4d41-a0cf-026b21b2a740
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"cb3ffe73-0028-4d41-a0cf-026b21b2a740","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: cb3ffe73-0028-4d41-a0cf-026b21b2a740
+[ai-chat] created conversation: c92fe168-96f5-4ed7-94a5-4d51d76bc69b
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"c92fe168-96f5-4ed7-94a5-4d51d76bc69b","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: c92fe168-96f5-4ed7-94a5-4d51d76bc69b
+[ai-chat] created conversation: 5e8819d3-192f-4826-ac41-f320d8e29849
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"5e8819d3-192f-4826-ac41-f320d8e29849","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 5e8819d3-192f-4826-ac41-f320d8e29849
+[ai-chat] created conversation: 8cd16af8-2ac6-47c8-9d2f-2c77a1cd730b
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"8cd16af8-2ac6-47c8-9d2f-2c77a1cd730b","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 8cd16af8-2ac6-47c8-9d2f-2c77a1cd730b
+[ai-chat] created conversation: f4c0410a-7fdd-469e-8570-e9636113290e
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"f4c0410a-7fdd-469e-8570-e9636113290e","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: f4c0410a-7fdd-469e-8570-e9636113290e
+[ai-chat] created conversation: 894ed9df-cea8-4396-a93a-5d1ccc6cd0de
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"894ed9df-cea8-4396-a93a-5d1ccc6cd0de","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 894ed9df-cea8-4396-a93a-5d1ccc6cd0de
+[ai-chat] created conversation: ad24acbd-b04a-4138-9bb5-9146508f77d4
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"ad24acbd-b04a-4138-9bb5-9146508f77d4","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: ad24acbd-b04a-4138-9bb5-9146508f77d4
+[ai-chat] created conversation: 5a3bcb3e-d31f-4353-998f-3ba00cdeaafe
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"5a3bcb3e-d31f-4353-998f-3ba00cdeaafe","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 5a3bcb3e-d31f-4353-998f-3ba00cdeaafe
+[ai-chat] created conversation: ac7490b7-f249-4d12-a22b-b270a10294c5
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"ac7490b7-f249-4d12-a22b-b270a10294c5","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: ac7490b7-f249-4d12-a22b-b270a10294c5
+[ai-chat] created conversation: 4d62154d-4d8d-47d7-b904-ae7fab29e5a7
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"4d62154d-4d8d-47d7-b904-ae7fab29e5a7","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Total sale kitni hai?","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] sales_summary rawOutputType= string parsedStatus= ok raw= {"today":{"revenue":2900,"orderCount":4,"averageOrderValue":725},"yesterday":{"revenue":0,"orderCount":0,"averageOrderValue":0},"week":{"revenue":2900,"orderCount":4,"averageOrderValue":725},"lastWeek":{"revenue":0,"orderCount":0,"averageOrderValue":0},"month":{"revenue":2900,"orderCount":4,"average
+[ai-chat] settleDone — conversationId: 4d62154d-4d8d-47d7-b904-ae7fab29e5a7
+[ai-chat] created conversation: 76a3d2db-1875-4092-8d21-36527b08dfd2
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"76a3d2db-1875-4092-8d21-36527b08dfd2","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 76a3d2db-1875-4092-8d21-36527b08dfd2
+[ai-chat] created conversation: 7b96c473-e263-498d-aa6d-1c5d0a02155f
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"7b96c473-e263-498d-aa6d-1c5d0a02155f","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 7b96c473-e263-498d-aa6d-1c5d0a02155f
+[ai-chat] created conversation: caa26699-5312-4ff3-a7ad-4ff44b4b694f
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"caa26699-5312-4ff3-a7ad-4ff44b4b694f","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: caa26699-5312-4ff3-a7ad-4ff44b4b694f
+[ai-chat] created conversation: 8f17894b-e67e-4756-ac75-05f12972bb93
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"8f17894b-e67e-4756-ac75-05f12972bb93","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 8f17894b-e67e-4756-ac75-05f12972bb93
+[ai-chat] created conversation: c848f126-db9b-405d-af4b-095e6c1b65c5
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"c848f126-db9b-405d-af4b-095e6c1b65c5","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: c848f126-db9b-405d-af4b-095e6c1b65c5
+[ai-chat] created conversation: 2bd7dcad-ab2c-42b4-9388-6b4261a8776a
+[disambiguation] turn start -> pendingDisambiguation {"loadedConversationId":"2bd7dcad-ab2c-42b4-9388-6b4261a8776a","hasCandidates":false,"hasResolvedId":false,"pendingIsRelevant":false,"userMessage":"Apne products list karo","tool":"","candidateCount":0,"candidateIds":[],"resolvedId":null}
+[route][tool_output] list_products rawOutputType= string parsedStatus= ok raw= {"count":1,"truncated":false,"products":[{"id":"511f7892-593a-4576-80b7-f023ad68f7bd","name":"Lama Silk","category":"Silk","price":70,"stock":100,"lowStockThreshold":5,"sku":null,"description":null,"imageUrl":null}],"status":"ok"}
+[ai-chat] settleDone — conversationId: 2bd7dcad-ab2c-42b4-9388-6b4261a8776a

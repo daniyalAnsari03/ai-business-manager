@@ -1,0 +1,25 @@
+   ▲ Next.js 15.5.23
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.100.138:3001
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ✓ Ready in 4.8s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 890ms (172 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 6.6s (1298 modules)
+ GET / 200 in 10334ms
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 2.2s (750 modules)
+ GET /icon.svg?2d1d126332e5961d 200 in 3447ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 6.5s (1454 modules)
+ GET /login 200 in 8019ms
+ GET /login 200 in 522ms
+ GET /icon.svg?2d1d126332e5961d 200 in 110ms
+ ✓ Compiled in 1524ms (1365 modules)
+ ✓ Compiled in 820ms (1365 modules)
+ ✓ Compiled in 1327ms (1365 modules)

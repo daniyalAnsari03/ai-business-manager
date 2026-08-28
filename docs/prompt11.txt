@@ -1,0 +1,817 @@
+# PROMPT 11 — GROQ BACKUP PROVIDER INTEGRATION
+
+Read and follow `AGENTS.md` completely before doing anything.
+
+`AGENTS.md` is the project source of truth and is LOCKED.
+
+Do NOT modify, rewrite, replace, shorten, or restructure `AGENTS.md`.
+
+Work ONLY inside the existing:
+
+`AI-Business-Manager/`
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Continue from the current project state.
+
+---
+
+# OBJECTIVE
+
+Add **Groq as a backup AI provider** to the existing AI architecture.
+
+Groq must NOT replace Gemini.
+
+The existing Gemini 3.6 multi-project failover architecture is already working and MUST remain intact.
+
+The goal is:
+
+**OpenAI Agents SDK**
+↓
+**Existing AI Router**
+↓
+**Gemini 3.6 — Project/Key 1**
+↓
+**Gemini 3.6 — Project/Key 2**
+↓
+**Gemini 3.6 — Project/Key 3**
+↓
+**...**
+↓
+**Gemini 3.6 — Project/Key 8**
+↓
+**Groq backup provider**
+
+Groq should only be used when the existing Gemini failover chain cannot successfully handle the request according to the router's provider-failure rules.
+
+---
+
+# CRITICAL — DO NOT BREAK EXISTING SYSTEM
+
+The following are already working and MUST remain working:
+
+* Products
+* Customers
+* Orders
+* Sales
+* Inventory / Stock
+* Expenses
+* Settings
+* Dashboard
+* AI Business Manager
+* Voice AI
+* Authentication
+* Google OAuth
+* Supabase
+* RLS
+* English
+* Roman Urdu
+* Dark mode
+* Light mode
+* Responsive UI
+* Existing navigation performance optimizations
+* OpenAI Agents SDK
+* Gemini 3.6
+* 8-project Gemini failover
+
+Do NOT rebuild any of these.
+
+Do NOT replace Gemini with Groq.
+
+Do NOT create a second AI system.
+
+Do NOT create a second agent.
+
+Do NOT create a second chat endpoint.
+
+Do NOT duplicate existing AI tools.
+
+---
+
+# GROQ MODEL
+
+Use the Groq model:
+
+`openai/gpt-oss-120b`
+
+Do NOT silently substitute another model.
+
+Make the model configurable through an environment variable, with:
+
+`openai/gpt-oss-120b`
+
+as the default.
+
+If the currently available Groq model/API response indicates the configured model is unavailable, do NOT silently switch models.
+
+Report the issue clearly.
+
+---
+
+# GROQ API
+
+Use the official Groq OpenAI-compatible API.
+
+The existing project already uses OpenAI-compatible agent infrastructure.
+
+Reuse the existing provider/client abstraction where appropriate.
+
+Do NOT expose the Groq API key to the browser.
+
+The Groq API key must only be available server-side.
+
+Use environment variables.
+
+Expected configuration:
+
+`GROQ_API_KEY`
+
+`GROQ_MODEL`
+
+Do NOT hardcode API keys.
+
+Do NOT put real keys in:
+
+* source code
+* client components
+* public files
+* `.env.example`
+
+`.env.example` must contain placeholders only.
+
+---
+
+# STEP 1 — AUDIT EXISTING AI ARCHITECTURE
+
+Before modifying anything:
+
+Read:
+
+* `AGENTS.md`
+* existing AI router
+* Gemini router
+* agent configuration
+* AI chat route
+* AI provider/client code
+* AI tool registry
+* AI tool schemas
+* AI service layer
+* existing environment configuration
+
+Determine exactly how the current Gemini provider is connected to the OpenAI Agents SDK.
+
+Do NOT assume the architecture.
+
+Do NOT rewrite it unnecessarily.
+
+---
+
+# STEP 2 — PROVIDER ABSTRACTION
+
+If the existing architecture already has a provider abstraction:
+
+Reuse it.
+
+If a minimal provider abstraction is genuinely required to support Groq cleanly:
+
+Add the smallest possible abstraction.
+
+Do NOT refactor unrelated AI code.
+
+The architecture should conceptually support:
+
+`GeminiProvider`
+
+and
+
+`GroqProvider`
+
+without creating separate agent systems.
+
+---
+
+# STEP 3 — GEMINI MUST REMAIN PRIMARY
+
+Gemini remains the primary provider.
+
+The existing order must remain:
+
+```text
+Gemini Project 1
+↓
+Gemini Project 2
+↓
+Gemini Project 3
+↓
+Gemini Project 4
+↓
+Gemini Project 5
+↓
+Gemini Project 6
+↓
+Gemini Project 7
+↓
+Gemini Project 8
+↓
+Groq
+```
+
+Do NOT put Groq before Gemini.
+
+Do NOT randomly alternate between Gemini and Groq.
+
+Do NOT use Groq when a healthy Gemini project is available.
+
+---
+
+# STEP 4 — GEMINI FAILOVER PRESERVATION
+
+Preserve the existing Gemini failover behavior.
+
+Existing Gemini 3.6 configuration must remain unchanged.
+
+Do NOT:
+
+* change the model
+* remove Gemini projects
+* remove Gemini keys
+* remove cooldown logic
+* remove error classification
+* remove provider ordering
+
+Existing cooldown behavior must remain intact.
+
+For example, if an existing Gemini slot receives:
+
+* 429
+* authentication error
+* 5xx
+* network failure
+* timeout
+
+the existing router behavior should continue to work.
+
+Only after the Gemini chain reaches the conditions where it would otherwise fail should Groq be considered.
+
+---
+
+# STEP 5 — GROQ FALLBACK CONDITIONS
+
+Groq should be considered when Gemini cannot successfully complete the request.
+
+Examples include:
+
+* all usable Gemini projects are temporarily exhausted
+* Gemini provider failures
+* Gemini network failures
+* Gemini timeouts
+* Gemini provider errors classified as retryable
+* all Gemini slots are cooling down and no Gemini slot can successfully serve the request
+
+Do NOT treat every Gemini error as a reason to immediately use Groq.
+
+Do NOT hide permanent programming errors by blindly falling back.
+
+Classify errors correctly.
+
+---
+
+# STEP 6 — GROQ ERROR HANDLING
+
+Groq errors must be classified separately.
+
+Handle appropriately:
+
+* HTTP 429 / rate limit
+* authentication failure
+* 4xx provider errors
+* 5xx provider errors
+* network failures
+* timeout
+* unavailable model
+
+Do NOT treat a model-not-found error as a successful AI response.
+
+Do NOT send the provider's raw internal error JSON to the user.
+
+Return a safe user-facing error through the existing error handling system.
+
+---
+
+# STEP 7 — GROQ COOLDOWN
+
+Implement a small temporary cooldown mechanism for Groq if the existing router architecture supports provider cooldowns.
+
+Recommended behavior:
+
+* 429 → temporary cooldown
+* 5xx/network → short cooldown
+* authentication/configuration error → longer cooldown or disabled state until configuration changes
+
+Do NOT invent fake quota numbers.
+
+Do NOT pretend to know the user's remaining Groq quota.
+
+Do NOT repeatedly hammer Groq after a confirmed provider failure.
+
+---
+
+# STEP 8 — OPENAI AGENTS SDK COMPATIBILITY
+
+The AI Business Manager uses the existing OpenAI Agents SDK.
+
+Groq must work through the same agent/tool architecture.
+
+The same agent should continue using:
+
+* Products tools
+* Customers tools
+* Orders tools
+* Sales tools
+* Inventory tools
+* Expenses tools
+* Settings/business tools
+* existing confirmation rules
+
+Do NOT create:
+
+`GroqAgent`
+
+Do NOT create:
+
+`GroqChatAgent`
+
+Do NOT create a second conversation history.
+
+Do NOT create a second tool registry.
+
+The existing agent architecture must remain the source of truth.
+
+---
+
+# STEP 9 — TOOL CALLS
+
+Groq must support the existing AI tools where the provider/API compatibility allows it.
+
+Test tool-calling compatibility with the existing tools.
+
+At minimum verify representative tools from:
+
+### Products
+
+* list products
+* find product
+* update product
+
+### Customers
+
+* list customers
+* find customer
+
+### Orders
+
+* list orders
+* find order
+* create order where supported
+
+### Sales
+
+* sales summary
+
+### Inventory
+
+* low-stock products
+* stock information
+
+### Expenses
+
+* list expenses
+* create/update expenses where supported
+
+Do NOT duplicate any existing tool.
+
+---
+
+# STEP 10 — CONFIRMATION SAFETY
+
+Groq must follow exactly the same confirmation/security rules as Gemini.
+
+For example:
+
+User:
+
+"Ali ka order delete kar do"
+
+Groq must NOT bypass confirmation.
+
+User:
+
+"Ali ke liye 2 blue suits ka order bana do"
+
+If required information or confirmation is missing, Groq must follow the same agent rules.
+
+Provider selection must NEVER change authorization or confirmation behavior.
+
+---
+
+# STEP 11 — DATABASE SECURITY
+
+Groq must never receive:
+
+* Supabase service-role keys
+* database passwords
+* private environment variables
+* internal secrets
+
+The existing server-side tool/service layer remains responsible for database access.
+
+Groq only receives the information necessary for the agent interaction/tool execution.
+
+RLS and authenticated ownership remain unchanged.
+
+---
+
+# STEP 12 — LANGUAGE SUPPORT
+
+Groq must preserve the existing language behavior.
+
+Support:
+
+* English
+* Roman Urdu
+
+If the app is in English, follow the existing agent language instructions.
+
+If the app is in Roman Urdu, follow the existing Roman Urdu behavior.
+
+Do NOT create a separate Groq language system.
+
+---
+
+# STEP 13 — VOICE COMPATIBILITY
+
+The existing voice pipeline must remain:
+
+```text
+Speech Recognition
+↓
+AiChat
+↓
+Existing Agent
+↓
+Gemini Router
+↓
+Groq fallback if necessary
+↓
+AI Response
+↓
+Text-to-Speech
+```
+
+Do NOT create a separate voice endpoint for Groq.
+
+Do NOT change the existing voice architecture unless required for provider compatibility.
+
+Verify that a Groq-generated response can flow through the existing TTS system.
+
+---
+
+# STEP 14 — STREAMING
+
+Preserve the existing AI streaming behavior.
+
+If Gemini currently streams responses through the existing chat route, Groq fallback must integrate with the same response protocol.
+
+Do NOT create a separate response format.
+
+The frontend should NOT need to know whether the response came from:
+
+* Gemini Project 1
+* Gemini Project 2
+* ...
+* Gemini Project 8
+* Groq
+
+Provider switching must be transparent to the UI.
+
+---
+
+# STEP 15 — PROVIDER OBSERVABILITY
+
+Add safe internal logging/metadata only if the existing architecture supports it.
+
+It should be possible during development to determine:
+
+* which provider handled the request
+* whether Gemini failed over
+* whether Groq was used
+* why failover happened
+
+NEVER log:
+
+* API keys
+* authorization tokens
+* passwords
+* secrets
+* full sensitive user data
+
+Do NOT add noisy production console logging.
+
+---
+
+# STEP 16 — ENVIRONMENT FILES
+
+Add:
+
+`GROQ_API_KEY=your-groq-api-key`
+
+and:
+
+`GROQ_MODEL=openai/gpt-oss-120b`
+
+to `.env.example` as placeholders only.
+
+Never put the user's real Groq key into `.env.example`.
+
+The real key belongs only in local/private environment configuration such as `.env.local`.
+
+Do NOT expose it through `NEXT_PUBLIC_*`.
+
+---
+
+# STEP 17 — NO UI CHANGES UNLESS REQUIRED
+
+Do NOT redesign the AI Manager UI.
+
+Do NOT add a provider selector.
+
+The user should NOT have to manually choose Gemini or Groq.
+
+Provider selection must be automatic.
+
+Existing AI UI should continue working exactly as before.
+
+---
+
+# STEP 18 — PERFORMANCE
+
+Do NOT perform another general performance optimization.
+
+Do NOT modify the already-fixed dashboard navigation performance.
+
+Groq integration should not introduce:
+
+* unnecessary requests
+* duplicate AI requests
+* duplicate tool calls
+* long artificial delays
+* repeated retries
+
+Use sensible timeouts.
+
+---
+
+# STEP 19 — TESTING
+
+Run:
+
+`npm run typecheck`
+
+`npm run lint`
+
+`npm run build`
+
+Then test the provider integration.
+
+### Test A — Gemini healthy
+
+Verify:
+
+```text
+Request
+↓
+Gemini
+↓
+Response
+```
+
+Groq should NOT be called unnecessarily.
+
+---
+
+### Test B — Gemini 429
+
+Simulate a Gemini 429 using a mocked/stubbed provider transport.
+
+Expected:
+
+```text
+Gemini Project 1
+↓ 429
+next Gemini project
+↓
+...
+↓
+Groq only when Gemini chain cannot serve
+```
+
+---
+
+### Test C — All Gemini unavailable
+
+Simulate all Gemini slots failing.
+
+Expected:
+
+```text
+Gemini 1
+↓
+Gemini 2
+↓
+...
+↓
+Gemini 8
+↓
+Groq
+↓
+Response
+```
+
+---
+
+### Test D — Groq failure
+
+Simulate Groq 429/network/5xx.
+
+Expected:
+
+* no infinite retry
+* safe error handling
+* no leaked provider details
+* UI receives the existing safe AI error format
+
+---
+
+### Test E — Tool calling
+
+Verify Groq can use representative existing tools.
+
+Do not create fake database records solely for testing unless explicitly safe and isolated.
+
+---
+
+### Test F — Confirmation
+
+Verify Groq cannot bypass existing confirmation rules.
+
+---
+
+### Test G — Language
+
+Verify:
+
+* English
+* Roman Urdu
+
+---
+
+### Test H — Voice
+
+Verify the existing voice pipeline remains compatible.
+
+---
+
+# STEP 20 — LIVE GROQ TEST
+
+If `GROQ_API_KEY` exists in the local environment:
+
+Perform a minimal authenticated/provider test.
+
+Do NOT run destructive business actions.
+
+Do NOT create real customers/orders/products/expenses merely to test the provider.
+
+A simple harmless AI response is sufficient.
+
+If the key is missing:
+
+Do NOT fabricate a successful live Groq test.
+
+Report:
+
+`GROQ_API_KEY not configured; live Groq request was not executed.`
+
+---
+
+# STEP 21 — SECURITY AUDIT
+
+Before completion verify:
+
+* no Groq key in client bundle
+* no `NEXT_PUBLIC_GROQ_API_KEY`
+* no hardcoded API key
+* no key in `.env.example`
+* no key in source code
+* no key in logs
+* no provider secret returned by API
+
+---
+
+# STEP 22 — REGRESSION TEST
+
+Verify existing functionality remains intact:
+
+* Products
+* Customers
+* Orders
+* Sales
+* Inventory
+* Expenses
+* Settings
+* Dashboard
+* AI Manager
+* Voice
+* Authentication
+* Google OAuth
+* Supabase/RLS
+* English
+* Roman Urdu
+* Dark mode
+* Light mode
+* Responsive UI
+
+Do NOT rebuild any of these.
+
+---
+
+# STEP 23 — CLEANUP
+
+Remove:
+
+* temporary test files
+* temporary provider mocks
+* debug logs
+* unused imports
+* unused dependencies
+
+Do not remove legitimate production code.
+
+Do not modify unrelated features.
+
+---
+
+# FINAL REPORT
+
+Provide a concise implementation report containing:
+
+1. Groq integration status.
+2. Groq model used.
+3. Gemini 3.6 preservation status.
+4. Gemini 8-project failover preservation status.
+5. Gemini → Groq fallback behavior.
+6. Groq error handling.
+7. Groq cooldown behavior.
+8. OpenAI Agents SDK integration status.
+9. Existing AI tools compatibility status.
+10. Confirmation/security status.
+11. Voice compatibility status.
+12. English/Roman Urdu status.
+13. Environment variables added.
+14. Whether a real `GROQ_API_KEY` was detected.
+15. Whether a live Groq request was successfully tested.
+16. Number of mocked/stubbed failover scenarios tested.
+17. Typecheck result.
+18. Lint result.
+19. Production build result.
+20. Regression QA result.
+21. Any genuine blockers.
+
+IMPORTANT:
+
+Do NOT modify `AGENTS.md`.
+
+Do NOT create another project.
+
+Do NOT create another root folder.
+
+Do NOT rebuild existing modules.
+
+Do NOT replace Gemini.
+
+Do NOT remove the 8-project Gemini failover.
+
+Do NOT switch away from Gemini 3.6.
+
+Do NOT add a provider-selection UI.
+
+Do NOT expose the Groq API key.
+
+Do NOT fabricate live Groq tests.
+
+Do NOT create fake business data for testing.
+
+Do NOT redo the completed performance optimization.
+
+Complete the Groq integration fully, then provide the final report.

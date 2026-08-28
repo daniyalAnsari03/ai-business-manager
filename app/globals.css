@@ -1,0 +1,463 @@
+@import "tailwindcss";
+
+/* Class-based dark mode. Dark is the primary expression and is applied
+   by default before paint (see layout.tsx inline script). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+--------------------------------------------------------------------------- */
+
+@theme {
+  /* Typography stacks */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+
+  /* Brand display stack: licensed "Ferly" first when available. */
+  --font-display: "Ferly", var(--font-display-fallback), "Iowan Old Style",
+    Palatino, Georgia, serif;
+
+  /* Deep surfaces (used directly where a fixed dark surface is needed,
+     e.g. the phone preview) */
+  --color-obsidian-950: #040606;
+  --color-obsidian-900: #090c0c;
+  --color-obsidian-800: #0f1314;
+  --color-charcoal-700: #191e1f;
+  --color-charcoal-600: #222829;
+  --color-charcoal-500: #30373a;
+
+  /* Fluid display sizes keep typography scaling smooth across breakpoints */
+  --text-hero: clamp(2.55rem, 1.55rem + 4.4vw, 4.85rem);
+  --text-hero--line-height: 1.05;
+  --text-hero--letter-spacing: -0.02em;
+
+  --text-display-lg: clamp(2rem, 1.4rem + 2.7vw, 3.25rem);
+  --text-display-lg--line-height: 1.12;
+  --text-display-lg--letter-spacing: -0.015em;
+
+  --text-display-md: clamp(1.65rem, 1.25rem + 1.7vw, 2.25rem);
+  --text-display-md--line-height: 1.16;
+  --text-display-md--letter-spacing: -0.01em;
+
+  /* Motion */
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-float-delayed: float 8.5s ease-in-out -3s infinite;
+
+  /* Hero atmosphere (docs/css.txt): gentle glow breathing and faint
+     twinkling particles — long, low-amplitude, cinematic. The small double
+     halo behind the phone breathes with the same primitives. */
+  --animate-glow-breathe: glow-breathe 18s ease-in-out infinite;
+  --animate-glow-breathe-delayed: glow-breathe 21s ease-in-out -8s infinite;
+  --animate-twinkle: twinkle 9s ease-in-out infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+
+  @keyframes glow-breathe {
+    0%,
+    100% {
+      opacity: 0.8;
+      scale: 1;
+    }
+    50% {
+      opacity: 1;
+      scale: 1.045;
+    }
+  }
+
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 0.18;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  /* Button glow */
+  --shadow-glow-btn: 0 0 26px -10px rgb(16 185 129 / 0.6);
+  --shadow-glow-btn-hover: 0 0 40px -12px rgb(16 185 129 / 0.75);
+}
+
+/* Semantic theme colors/shadows resolve at runtime so both themes share
+   one set of component classes (maintainable strategy for the future
+   dashboard, forms, AI interface, etc.). */
+@theme inline {
+  --color-background: var(--abm-bg);
+  --color-surface: var(--abm-surface);
+  --color-surface-raised: var(--abm-surface-raised);
+  --color-foreground: var(--abm-fg);
+  --color-muted: var(--abm-fg-muted);
+  --color-faint: var(--abm-fg-faint);
+  --color-line: var(--abm-line);
+  --color-accent: var(--abm-accent);
+  --color-accent-strong: var(--abm-accent-strong);
+
+  --shadow-card: var(--abm-shadow-card);
+  --shadow-card-hover: var(--abm-shadow-card-hover);
+  --shadow-phone: var(--abm-shadow-phone);
+}
+
+/* Light theme — warm off-white, emerald accent preserved, never a generic
+   white/blue SaaS look. */
+:root {
+  color-scheme: light;
+
+  --abm-bg: #f7f6f2;
+  --abm-bg-deep: #efeee8;
+  --abm-surface: #fdfdfb;
+  --abm-surface-raised: #ffffff;
+  --abm-fg: #14181a;
+  --abm-fg-muted: #454f52;
+  --abm-fg-faint: #69747a;
+  --abm-line: rgb(16 24 26 / 0.09);
+  --abm-accent: #047857;
+  --abm-accent-strong: #065f46;
+  --abm-glow: rgb(5 150 105 / 0.14);
+
+  --abm-shadow-card: 0 1px 2px rgb(16 24 26 / 0.05),
+    0 10px 30px -12px rgb(16 24 26 / 0.12);
+  --abm-shadow-card-hover: 0 2px 4px rgb(16 24 26 / 0.06),
+    0 22px 44px -16px rgb(6 78 59 / 0.2);
+  --abm-shadow-phone: 0 40px 80px -24px rgb(16 24 26 / 0.28),
+    0 0 100px -30px rgb(5 150 105 / 0.35);
+
+  --abm-scrollbar-thumb: rgb(4 120 87 / 0.34);
+  --abm-scrollbar-thumb-hover: rgb(4 120 87 / 0.56);
+}
+
+/* Dark theme — obsidian primary expression, deep emerald lighting. */
+.dark {
+  color-scheme: dark;
+
+  --abm-bg: #050707;
+  --abm-bg-deep: #030505;
+  --abm-surface: #0b0e0f;
+  --abm-surface-raised: #101516;
+  --abm-fg: #f1f4f0;
+  --abm-fg-muted: #a1aca7;
+  --abm-fg-faint: #6d7873;
+  --abm-line: rgb(236 255 244 / 0.08);
+  --abm-accent: #34d399;
+  --abm-accent-strong: #6ee7b7;
+  --abm-glow: rgb(16 185 129 / 0.16);
+
+  --abm-shadow-card: 0 1px 2px rgb(0 0 0 / 0.5),
+    0 14px 34px -14px rgb(0 0 0 / 0.55);
+  --abm-shadow-card-hover: 0 2px 4px rgb(0 0 0 / 0.5),
+    0 24px 48px -16px rgb(0 0 0 / 0.65), 0 0 42px -18px rgb(16 185 129 / 0.35);
+  --abm-shadow-phone: 0 40px 90px -24px rgb(0 0 0 / 0.75),
+    0 0 130px -32px rgb(16 185 129 / 0.3);
+
+  --abm-scrollbar-thumb: rgb(52 211 153 / 0.28);
+  --abm-scrollbar-thumb-hover: rgb(52 211 153 / 0.5);
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--abm-bg);
+    color: var(--abm-fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background-color: rgb(16 185 129 / 0.28);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--abm-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Brand-themed scrollbars across every scrollable surface.
+     Firefox (no ::-webkit-scrollbar support) gets standard properties;
+     Chromium/Safari get a slim rounded emerald thumb with hover state. */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--abm-scrollbar-thumb) transparent;
+    }
+  }
+
+  /* Precise pointer devices only — touch devices keep native overlay
+     scrolling so nothing steals layout space on mobile. */
+  @media (hover: hover) and (pointer: fine) {
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: var(--abm-scrollbar-thumb);
+      border-radius: 9999px;
+      border: 3px solid transparent;
+      background-clip: content-box;
+      transition: background-color 200ms ease;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--abm-scrollbar-thumb-hover);
+    }
+  }
+
+  /* Reduced-motion preference wins over every decorative effect */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Reusable primitives
+--------------------------------------------------------------------------- */
+
+@layer components {
+  .container-page {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 76rem;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .container-page {
+      padding-inline: 1.75rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container-page {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  /* Lifted card surface used across marketing sections today and the
+     dashboard later. Hover lift is opt-in via .card-lift. */
+  .card-surface {
+    border-radius: 1.25rem;
+    border: 1px solid var(--abm-line);
+    background-color: var(--abm-surface);
+    box-shadow: var(--abm-shadow-card);
+  }
+
+  .card-lift {
+    transition-property: transform, box-shadow, border-color;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .card-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--abm-shadow-card-hover);
+    border-color: rgb(16 185 129 / 0.35);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-lift:hover {
+      transform: none;
+    }
+  }
+
+  /* Atmospheric emerald radial glow that fades into the background */
+  .ambient-glow {
+    position: absolute;
+    border-radius: 9999px;
+    pointer-events: none;
+    background: radial-gradient(closest-side, var(--abm-glow), transparent 72%);
+    filter: blur(56px);
+  }
+
+  /* Small double halo behind the hero phone (docs/css.txt): exactly two
+     thin, closed elliptical rings, only slightly larger than the device —
+     a compact premium halo the phone sits in front of. The wrapper defines
+     each ellipse's size/rotation; this class paints the ring + its soft
+     emerald glow. Outer ring is toned down via opacity in markup. */
+  .phone-halo-ring {
+    border-radius: 9999px;
+    pointer-events: none;
+    border: 1px solid rgb(5 150 105 / 0.26);
+    box-shadow:
+      inset 0 0 22px -12px rgb(5 150 105 / 0.4),
+      0 0 24px -10px rgb(5 150 105 / 0.35);
+  }
+
+  .dark .phone-halo-ring {
+    border-color: rgb(52 211 153 / 0.3);
+    box-shadow:
+      inset 0 0 26px -12px rgb(16 185 129 / 0.45),
+      0 0 30px -10px rgb(16 185 129 / 0.45);
+  }
+
+  /* Emerald backlight rim around the hero phone edge — the glow behind the
+     device kissing its silhouette. Painted ONLY on the 1px outer ring via
+     mask-composite, brightest on the edge facing the backlight (top-right),
+     fading out along the rest of the frame. */
+  .phone-rim {
+    position: absolute;
+    inset: -1px;
+    border-radius: calc(2.9rem + 1px);
+    padding: 1px;
+    pointer-events: none;
+    background: radial-gradient(
+      120% 95% at 72% 26%,
+      rgb(5 150 105 / 0.38),
+      rgb(5 150 105 / 0.12) 44%,
+      transparent 66%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+  }
+
+  .dark .phone-rim {
+    background: radial-gradient(
+      120% 95% at 74% 28%,
+      rgb(110 231 183 / 0.5),
+      rgb(16 185 129 / 0.16) 46%,
+      transparent 68%
+    );
+  }
+
+  /* Glowing particle dot used sparingly across the hero atmosphere.
+     Kept faint on purpose — atmospheric dust, not sparkle. */
+  .hero-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 9999px;
+    background: rgb(110 231 183 / 0.8);
+    box-shadow:
+      0 0 8px 1px rgb(52 211 153 / 0.35),
+      0 0 20px 5px rgb(16 185 129 / 0.15);
+    pointer-events: none;
+  }
+
+  :root:not(.dark) .hero-particle {
+    background: rgb(5 150 105 / 0.55);
+    box-shadow: 0 0 10px 2px rgb(5 150 105 / 0.25);
+  }
+
+  /* Cinematic film grain for the hero backdrop (docs/css.txt §4): a tiny
+     tiled SVG feTurbulence texture — no image file, no network cost.
+     Pair with low opacity + mix-blend-overlay so grain only surfaces in
+     the lit areas of the glow. */
+  .hero-noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 180px 180px;
+  }
+
+  /* Small uppercase eyebrow label above section headings */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid rgb(16 185 129 / 0.3);
+    background: linear-gradient(
+      to right,
+      rgb(16 185 129 / 0.08),
+      rgb(16 185 129 / 0.03)
+    );
+    padding: 0.375rem 0.875rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--abm-accent-strong);
+  }
+
+  /* Comfortable minimum touch target for icon-only controls */
+  .min-touch-target {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+
+  /* Compact minimum touch target for dense secondary controls */
+  .min-touch-target-sm {
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+  }
+
+  /* Soft divider line */
+  .hairline {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--abm-line),
+      transparent
+    );
+  }
+
+  /* Scoped visible scrollbar for the AI chat message list.
+     Uses the existing --abm-scrollbar-thumb tokens.
+     Only applies to pointer devices; touch keeps native overlay scroll. */
+  .chat-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--abm-scrollbar-thumb) transparent;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .chat-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .chat-scrollbar::-webkit-scrollbar-thumb {
+      background-color: var(--abm-scrollbar-thumb);
+      border-radius: 9999px;
+      border: none;
+      transition: background-color 200ms ease;
+    }
+
+    .chat-scrollbar::-webkit-scrollbar-thumb:hover {
+      background-color: var(--abm-scrollbar-thumb-hover);
+    }
+  }
+}
