@@ -10,6 +10,7 @@ import {
   type ProductServiceError,
 } from "@/lib/products/service";
 import type { Product } from "@/lib/products/types";
+import { createDraftForProduct } from "@/lib/marketing/social-posts";
 
 export type ProductActionState =
   | { ok: true; product: Product }
@@ -33,9 +34,26 @@ export async function createProductAction(
   input: unknown,
 ): Promise<ProductActionState> {
   const result = await createProduct(input);
-  return result.ok
-    ? { ok: true, product: result.data }
-    : { ok: false, reason: result.reason };
+  if (!result.ok) {
+    return { ok: false, reason: result.reason };
+  }
+
+  // Marketing hook (Phase 2, reduced): once a product exists, trigger the
+  // controlled service that generates a REAL AI caption and saves it as a
+  // "draft" social post in the business's marketing activity. This is
+  // best-effort — a caption-generation/provider failure must never block or
+  // break product creation, so we await then swallow the outcome. The draft
+  // is written through the same service the AI tool uses.
+  try {
+    await createDraftForProduct(result.data);
+  } catch (error) {
+    console.error(
+      "[products-action] draft post generation failed after product creation:",
+      error instanceof Error ? error.message : String(error),
+    );
+  }
+
+  return { ok: true, product: result.data };
 }
 
 export async function updateProductAction(

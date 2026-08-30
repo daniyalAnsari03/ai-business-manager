@@ -193,6 +193,16 @@ export function ChartIcon(props: IconProps) {
   );
 }
 
+export function MegaPhoneIcon(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="m3 11 18-6v13l-18-6Z" />
+      <path d="M6.5 11v3.5a2 2 0 0 0 2 2H11" />
+      <path d="M11 16.5V19a1 1 0 0 0 1 1h2" />
+    </Base>
+  );
+}
+
 export function SettingsIcon(props: IconProps) {
   return (
     <Base {...props}>

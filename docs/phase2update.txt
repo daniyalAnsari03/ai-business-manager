@@ -1,0 +1,75 @@
+UPDATE — Meta Developer App and WhatsApp credentials are NOT ready yet
+(the user is having trouble creating the Meta account and will do this
+later). Do not wait blocked on this. Instead, proceed with a reduced
+version of Phase 2 that does NOT require them, and leave the
+credential-dependent parts as clearly marked "not yet built."
+
+=== WHAT TO BUILD NOW (no external credentials needed) ===
+
+1. AI CAPTION/HASHTAG GENERATION (real, functional)
+
+- When a new product is created (existing product-creation flow,
+  unchanged), trigger a controlled tool — following the same
+  architecture as the rest of the app (Agent → Controlled Tool →
+  Server-side Service → Supabase → Verified Result) — that generates a
+  caption and relevant hashtags for that product using its name,
+  category, price, and photo, through the existing OpenAI Agents SDK
+  orchestration already used elsewhere (do not add a separate AI call
+  path).
+- Save this as a new row in social_posts with status = "draft". This
+  part needs no Meta/WhatsApp credentials at all — it only uses the
+  same AI provider chain already working for the AI Business Manager
+  chat.
+
+2. ACTIVITY FEED — SHOW REAL DRAFTS
+
+- The Activity feed (built as an empty-state shell in Phase 1) must
+  now show real draft rows from social_posts: product name, generated
+  caption preview, and a status of "Draft — not yet connected to
+  Instagram/Facebook."
+- Include a "Publish" button on each draft, but since there is no real
+  Instagram/Facebook connection yet, clicking it should show a clear,
+  honest message: "Instagram/Facebook account connect nahi hua hai.
+  Settings mein connect karein." (or correctly localized) — do NOT
+  fake a publish, do NOT mark it as published, do NOT silently fail.
+
+3. CONNECT BUTTON STATE — HONEST, NOT FUNCTIONAL YET
+
+- In Marketing settings, the Instagram/Facebook/WhatsApp "Connect"
+  buttons should remain in their Phase-1 shell state (or show
+  "Coming soon" / disabled with a tooltip explaining credentials
+  aren't configured yet) — do not attempt real OAuth without the App
+  ID/Secret, and do not fabricate a fake "connected" state.
+
+=== WHAT REMAINS BLOCKED (do not attempt) ===
+
+- Real Instagram/Facebook OAuth connection.
+- Real publishing to a live account.
+- Real WhatsApp notifications.
+
+These will be completed in a follow-up prompt once
+META_APP_ID/META_APP_SECRET and WHATSAPP_ACCESS_TOKEN/
+WHATSAPP_PHONE_NUMBER_ID/WHATSAPP_BUSINESS_ACCOUNT_ID are added to
+.env.local. Do not fabricate placeholder values for these under any
+circumstance, per the original phase2.txt rule.
+
+=== VERIFICATION ===
+
+1. Run typecheck, lint, build — paste actual output.
+2. Add a real test product live and confirm: a draft post is created
+   with a real AI-generated caption (paste the actual generated
+   caption text, not a description of it), it appears correctly in
+   the Activity feed, and clicking "Publish" shows the honest
+   "not connected" message rather than faking success.
+3. Confirm this works correctly in Roman Urdu (the caption generation
+   language, the draft status text, and the "not connected" message
+   must all appear in Roman Urdu since that's the test language).
+4. Confirm no existing feature was touched or broken.
+
+=== REPORT FORMAT ===
+
+- Files changed.
+- The real generated caption from your live test (paste it).
+- Screenshot/description of the Activity feed showing the draft.
+- Confirmation of what remains blocked and why (missing credentials),
+  so this is easy to resume once the user has them ready.

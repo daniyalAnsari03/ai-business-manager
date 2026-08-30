@@ -1,0 +1,168 @@
+AI MARKETING MANAGER — PHASE 2 OF 5: ORGANIC SOCIAL POSTING
+
+READ AGENTS.md COMPLETELY BEFORE STARTING. Every rule in it applies to
+this work exactly as it applies to the rest of the app.
+
+Before starting, inspect what Phase 1 already built (the
+social_posts, connected_accounts tables, the Marketing sidebar tab,
+and the Marketing settings section). Do NOT rebuild or recreate these
+— extend them. If Phase 1 is not actually complete or working, STOP
+and report that instead of proceeding on top of a broken foundation.
+
+=== PREREQUISITE — CHECK BEFORE WRITING CODE ===
+
+Real Instagram/Facebook posting requires a Meta Developer App (App ID
++ App Secret) that only the app owner can create at
+developers.facebook.com — this is a one-time, account-owner-level
+step, not something you can do from this environment.
+
+1. Check .env.local (or wherever project secrets live) for existing
+   Meta/Facebook App credentials (e.g. META_APP_ID, META_APP_SECRET,
+   or similarly named variables).
+2. If they do NOT exist: STOP before writing any OAuth code. Tell the
+   user exactly what is missing and exactly what they need to go
+   create (a Meta Developer App with Instagram Graph API + Facebook
+   Login permissions enabled) and what values to paste into
+   .env.local. Do not fabricate placeholder credentials or silently
+   build against values that don't exist.
+3. If they DO exist: proceed with the implementation below using
+   those real credentials, never hardcoded or committed to source
+   control (AGENTS.md Section 6).
+
+=== SCOPE OF THIS PHASE — READ CAREFULLY ===
+
+This is Phase 2 of 5. This phase makes real Instagram/Facebook
+connection work, and makes AI-generated organic posting work. It does
+NOT include paid ads, wallet/budget, or WhatsApp approval flows.
+
+DO NOT implement in this phase (later phases):
+- Do NOT implement Google Ads or any paid advertising.
+- Do NOT implement the wallet/payment/budget-spending system.
+- Do NOT implement "Needs approval" vs "Full auto" logic — for this
+  phase, every AI-generated post requires a manual "Publish" click
+  from the user inside the app (a simple, always-on approval step) —
+  do not build the WhatsApp approval flow yet, that's Phase 4.
+- Do NOT implement the weekly WhatsApp report — only the single
+  real-time "post published" notification described below.
+- Do NOT implement video upload/optimization yet.
+
+If you find yourself building any of the above, STOP — that is out of
+scope for Phase 2.
+
+=== WHAT TO BUILD IN THIS PHASE ===
+
+1. REAL INSTAGRAM/FACEBOOK CONNECTION
+
+- Implement the actual "Connect" button in Marketing settings (built
+  as a shell in Phase 1) using Meta's OAuth flow (Facebook Login for
+  Business / Instagram Graph API).
+- On successful connection, update the connected_accounts table
+  (status = connected, store the account_label for display, e.g. the
+  connected Page/Instagram username).
+- Access tokens must be stored securely server-side only (AGENTS.md
+  Section 6) — never sent to or stored in client-side code.
+- Handle and clearly surface connection errors (expired permission,
+  user cancels, wrong account type) with a plain, non-technical
+  message (AGENTS.md Section 27) — do not show raw Meta API errors to
+  the user.
+
+2. AI-GENERATED POST CREATION
+
+- When a new product is added (using the EXISTING product-creation
+  flow — do not duplicate or alter that flow), trigger a new
+  controlled tool (following the exact tool architecture in AGENTS.md
+  Section 8: Agent → Controlled Tool → Server-side Service → Supabase
+  → Verified Result) that:
+  - Generates a caption and relevant hashtags for that product using
+    its name, category, price, and photo.
+  - Saves this as a new row in social_posts with status = "draft".
+- This must go through the existing OpenAI Agents SDK orchestration
+  already used elsewhere in the app (AGENTS.md Section 4) — do not
+  introduce a separate/parallel AI call path outside that
+  architecture.
+- The draft must be reviewable in the Marketing tab's Activity feed
+  (built in Phase 1) with a "Publish" button — clicking it calls the
+  real Instagram/Facebook API to actually publish the post and
+  updates social_posts.status to "published" with a real
+  published_at timestamp, or "failed" with a real, honest reason if
+  it fails (AGENTS.md Section 26 — never fabricate success).
+
+3. REAL-TIME WHATSAPP NOTIFICATION (SINGLE EVENT TYPE ONLY)
+
+This requires a WhatsApp Business messaging provider (e.g. WhatsApp
+Cloud API via Meta, or a provider like Twilio) which also needs
+one-time developer-level setup by the app owner.
+
+1. Check for existing WhatsApp API credentials in the environment
+   (e.g. WHATSAPP_API_TOKEN, WHATSAPP_PHONE_NUMBER_ID or similar). If
+   missing, STOP and tell the user exactly what they need to set up
+   and what values you need — do not fabricate this integration.
+2. If present: when a post is successfully published (per step 2
+   above), send a single WhatsApp message to the business's connected
+   WhatsApp number confirming what was published (matching the
+   example format already agreed: "[Product] ka naya post [Platform]
+   pe publish ho gaya." or the correctly localized English/Roman Urdu
+   version per the user's language setting).
+3. Do not build any other WhatsApp message type in this phase (no
+   weekly report, no approval-request message — those are Phase 4).
+
+4. ACTIVITY FEED — MAKE IT REAL
+
+- The Activity feed shell from Phase 1 must now show real rows from
+  social_posts (draft awaiting publish, published, or failed) instead
+  of the empty state, in the user's selected language.
+
+=== DESIGN CONSISTENCY — NON-NEGOTIABLE ===
+
+Same as Phase 1: Ferly for headings, Inter for UI text, the existing
+obsidian/emerald color system, existing card/shadow/glow treatment,
+Framer Motion for any animation (subtle, reduced-motion aware), both
+dark and light mode working. Reuse existing components/styling from
+Phase 1's Marketing tab — do not introduce a different visual
+treatment for this phase's additions.
+
+=== WHAT NOT TO TOUCH ===
+
+- Do not modify AGENTS.md.
+- Do not modify the existing product-creation flow's core logic —
+  only hook into it to trigger the new marketing tool, without
+  changing its existing behavior for users who don't care about
+  marketing.
+- Do not modify any other existing working feature (customers,
+  orders, inventory, expenses, sales, existing AI Business Manager
+  chat).
+- Do not restructure the project or create new root folders (AGENTS.md
+  Section 2).
+
+=== VERIFICATION REQUIRED BEFORE YOU REPORT DONE ===
+
+1. Run typecheck, lint, and build — paste actual output.
+2. Reproduce the full flow live: add a real test product → confirm a
+   draft post is created with a real generated caption → click
+   Publish → confirm it actually appears on the connected
+   Instagram/Facebook account (paste the real post URL or a
+   screenshot of it live on the platform, not just a database row) →
+   confirm the WhatsApp message was actually received (paste it or
+   describe exactly what arrived).
+3. Test a failure path deliberately (e.g. revoke/expire the
+   connection, or use invalid data) and confirm the user sees an
+   honest failure message, not a false "published" claim.
+4. Confirm RLS still correctly isolates these new rows per business
+   (test with two different business accounts if possible).
+5. Confirm language switching correctly changes the caption
+   generation and notification language.
+
+=== REPORT FORMAT ===
+
+- Files created / modified with reason for each.
+- Confirmation of where Meta/WhatsApp credentials came from (env var
+  names only — never paste actual secret values in the report).
+- The real, live proof described in verification step 2 above.
+- Explicit list of what is intentionally NOT built yet (paid ads,
+  wallet, approval automation, weekly report, video) so Phase 3/4
+  scope stays clear.
+- Verification results with raw output, not summarized as "PASS".
+
+Do not report this phase complete without live proof that a real post
+was published to a real connected account and a real WhatsApp message
+was received. A database row alone is not sufficient evidence.

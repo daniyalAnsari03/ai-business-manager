@@ -39,6 +39,7 @@ import {
   updateExpenseTool,
 } from "@/lib/ai/tools/expense-tools";
 import { businessOverviewTool } from "@/lib/ai/tools/overview-tools";
+import { generateProductCaptionTool } from "@/lib/ai/tools/marketing-tools";
 import {
   getBusinessInfoTool,
   updateBusinessProfileTool,
@@ -83,6 +84,8 @@ export const businessTools: Tool<AgentRunContext>[] = [
   expenseSummaryTool,
   // Whole-business view
   businessOverviewTool,
+  // Marketing
+  generateProductCaptionTool,
   // Business settings (same capabilities as the Settings page)
   getBusinessInfoTool,
   updateBusinessProfileTool,

@@ -1,0 +1,162 @@
+AI MARKETING MANAGER — PHASE 1 OF 5: FOUNDATION
+
+READ AGENTS.md COMPLETELY BEFORE STARTING. Every rule in it applies to
+this work exactly as it applies to the rest of the app. Do not deviate
+from it, do not invent new patterns, do not skip it because this is a
+"new" module — it is not a new project, it is a new part of the SAME
+existing AI Business Manager application.
+
+=== SCOPE OF THIS PHASE — READ CAREFULLY ===
+
+This is Phase 1 of 5. This phase builds ONLY the foundation:
+database tables, the new sidebar tab shell, and the new Settings
+section shell.
+
+DO NOT implement in this phase (these come in later phases — do not
+build them now even partially):
+- Do NOT connect to Instagram/Facebook/Google Ads/WhatsApp for real.
+- Do NOT implement actual posting, ad creation, or budget spending.
+- Do NOT implement the payment gateway or wallet top-up flow.
+- Do NOT implement approval/automation-mode logic.
+- Do NOT implement WhatsApp notifications or weekly reports.
+- Do NOT write any AI agent tools for marketing yet.
+
+If you find yourself writing code for any of the above, STOP — that
+is out of scope for Phase 1.
+
+=== WHAT TO BUILD IN THIS PHASE ===
+
+1. DATABASE (Supabase migrations)
+
+Create new tables, following the exact same patterns already used in
+this project (same RLS approach as products/customers/orders — check
+those existing tables/migrations first and mirror the pattern exactly,
+do not invent a different security model):
+
+- `social_posts` — id, business_id, product_id (nullable), platform,
+  caption, media_url, status (draft/scheduled/published/failed),
+  scheduled_at, published_at, created_at, updated_at.
+- `ad_campaigns` — id, business_id, social_post_id (nullable),
+  platform, budget_amount, spent_amount, status
+  (draft/active/paused/completed), goal (whatsapp/website/profile),
+  created_at, updated_at.
+- `marketing_wallet` — id, business_id, balance, monthly_budget_cap,
+  created_at, updated_at. (Balance will start at 0 — no payment logic
+  yet, just the column existing.)
+- `connected_accounts` — id, business_id, platform
+  (instagram/facebook/google_ads/whatsapp), status
+  (not_connected/connected), account_label (nullable, for display),
+  created_at, updated_at. (No real OAuth tokens yet — just the
+  schema and a status field defaulting to not_connected.)
+
+Every table MUST have RLS policies scoped by business ownership,
+exactly matching the existing pattern used for products/customers/
+orders in this project. Do not weaken or skip RLS for these new
+tables under any circumstance — this violates AGENTS.md Section 10 and
+Section 24.
+
+2. SIDEBAR — NEW "MARKETING" TAB (SHELL ONLY)
+
+- Add "Marketing" to the existing sidebar navigation, in the same
+  style/position pattern as Products/Customers/Orders/Settings.
+- The page it links to should show:
+  - The 3 metric cards (Posts this week, Ad spend, Sale from ads) —
+    reading real values from the new tables (which will be empty/zero
+    right now — that is correct and expected for this phase, do NOT
+    fill them with fake/mock numbers).
+  - An empty-state "Activity" section with a proper empty state
+    message (per AGENTS.md Section 27 — clear, non-technical language,
+    in the user's selected language) since there is no activity data
+    yet.
+  - The "Automation mode" toggle UI (Needs approval / Full auto) —
+    visually present, but it does not need to do anything functional
+    yet (no backend behavior tied to it in this phase — note this
+    clearly in your report).
+- This page must respect the existing English/Roman Urdu language
+  switcher (AGENTS.md Section 19) — every label, heading, and empty
+  state message must pull from the same language system already used
+  elsewhere in the app. Do not hardcode English or Roman Urdu text
+  directly in components.
+
+3. SETTINGS — NEW "MARKETING SETTINGS" SECTION (SHELL ONLY)
+
+- Add a new section inside the existing Settings page: "Marketing
+  settings" (or the correctly localized label per the language
+  system).
+- List Instagram, Facebook Page, Google Ads, WhatsApp number — each
+  showing "Not connected" (reading from the connected_accounts table)
+  with a "Connect" button. The button does NOT need to perform a real
+  OAuth flow yet — clicking it in this phase can show a "Coming soon"
+  or disabled state, but must not throw errors or crash. Be explicit
+  in your report about what the button currently does.
+- Add a "Monthly ad budget cap" input field that reads/writes to the
+  marketing_wallet table's monthly_budget_cap column. This one CAN be
+  functional in this phase (it's just a number save, no payment logic
+  involved) — saving it should actually persist to Supabase.
+
+4. DESIGN CONSISTENCY — NON-NEGOTIABLE
+
+Every screen built in this phase must exactly follow AGENTS.md's
+locked design rules:
+- Fonts: Ferly for any large display heading, Inter for all normal UI
+  text (labels, buttons, body). No other fonts.
+- Colors: obsidian/deep black, deep charcoal, deep emerald, off-white,
+  with emerald-to-black glow accents — matching the existing app's
+  visual language exactly. Do not introduce new colors, gradients, or
+  a different visual style for this module.
+- Cards must have the same depth/shadow/glow treatment as existing
+  cards elsewhere in the app — not flat rectangles.
+- Both dark mode (primary) and light mode must work correctly and
+  maintain the same premium visual language (AGENTS.md Section 18).
+- Any animation must use Framer Motion, be subtle and purposeful, and
+  respect reduced-motion preference (AGENTS.md Section 22).
+
+Before writing any UI code, look at how the existing Products or
+Customers page is styled and literally reuse those same components/
+classes/patterns — do not create a parallel styling approach.
+
+=== WHAT NOT TO TOUCH ===
+
+- Do not modify AGENTS.md.
+- Do not modify any existing working feature (products, customers,
+  orders, inventory, expenses, sales, existing AI Business Manager
+  chat, existing settings sections).
+- Do not touch the homepage, navbar, or any of the performance/bug
+  fixes already completed in previous work.
+- Do not create a new project, new root folder, or restructure the
+  existing architecture (AGENTS.md Section 2).
+
+=== VERIFICATION REQUIRED BEFORE YOU REPORT DONE ===
+
+1. Run typecheck, lint, and build — paste the actual pass/fail output,
+   not just "PASS".
+2. Confirm RLS policies exist for all 4 new tables — paste the actual
+   policy SQL/definitions, not a description.
+3. Manually navigate to the new Marketing tab and Settings section in
+   a real running instance (dev server) and confirm:
+   - No console errors.
+   - Metric cards show 0/empty correctly (not fake numbers, not
+     crashes).
+   - Empty state renders correctly.
+   - Switching the language toggle actually changes the text on this
+     new page (paste a screenshot or describe exactly what changed).
+4. Confirm no existing page, route, or feature was modified or broken
+   — list every file you touched and confirm each one is new or is
+   the sidebar/settings file with only an addition, not a rewrite.
+
+=== REPORT FORMAT ===
+
+- Files created / files modified (with a one-line reason for each
+  modified file).
+- Migration SQL you ran, and confirmation it applied successfully.
+- Screenshot or exact description of the new Marketing tab and new
+  Settings section, in both English and Roman Urdu mode.
+- Explicit list of what is intentionally NOT functional yet (per the
+  out-of-scope list above) so it's clear what Phase 2 will build.
+- Verification results (typecheck/lint/build/manual test) with raw
+  output, not summarized as "PASS".
+
+Do not say this phase is complete without all of the above evidence.
+If anything in this phase turns out to require touching an unrelated
+existing file, stop and explain why before proceeding, rather than
+making the change silently.

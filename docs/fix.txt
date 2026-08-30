@@ -1,27 +1,56 @@
-The migration has been applied via the Supabase Dashboard SQL Editor.
+Phase 1 implementation looks complete, but DO NOT start Phase 2 yet.
 
-Now do both of the following, and report both results together in one message:
+Your current TODO still shows:
 
-1. VERIFY THE FIX
-   Test the exact failing phrasing 3 separate times against the live 
-   server: "ayaz ka order 50 sheesha silk order complete krdo"
-   
-   For each of the 3 attempts, report:
-   - Whether the order was created successfully
-   - The resulting order status (must be "completed")
-   - The quantity and product recorded
-   - Whether stock was correctly deducted (show before/after stock value)
-   - Any error, if one occurs
-   
-   Paste the raw result for each attempt — do not summarize as "PASS."
+[ ] Verify authenticated in-app rendering (needs user login)
 
-2. CONFIRM ERROR HANDLING IS SAFE
-   Confirm that the real database error (SQLERRM) from the fix is 
-   ONLY going to server-side logs, and is NOT exposed to the user in 
-   the chat UI or sent to the model. The user-facing message on any 
-   future failure should still be a generic, safe message (e.g. 
-   "order create nahi ho saka") — never raw SQL/table/column details. 
-   Show me the exact code where this boundary is enforced.
+Before declaring Phase 1 complete, finish the remaining verification requirements from the original Phase 1 prompt.
 
-Do not declare this complete until both parts have concrete evidence 
-attached.
+Do ONLY verification now. Do not modify unrelated features and do not start Phase 2.
+
+1. Run typecheck and paste the actual terminal output.
+2. Run lint and paste the actual terminal output.
+3. Run production build and paste the actual terminal output.
+4. Query/inspect Supabase and provide the actual RLS policy definitions for all 4 new tables:
+
+   * social_posts
+   * ad_campaigns
+   * marketing_wallet
+   * connected_accounts
+     Do not just say RLS is enabled. Show the actual policies/definitions.
+5. Using the running dev server, log in with a real authenticated user and manually verify:
+
+   * Marketing tab opens successfully.
+   * Posts this week = 0 / empty state as appropriate.
+   * Ad spend = 0.
+   * Sale from ads = 0 / empty as appropriate.
+   * Activity empty state renders correctly.
+   * Automation mode UI renders without errors.
+   * No browser console errors.
+6. Test the English/Roman Urdu language toggle on the Marketing page and record exactly what changes.
+7. Open Settings → Marketing:
+
+   * Instagram = Not connected
+   * Facebook Page = Not connected
+   * Google Ads = Not connected
+   * WhatsApp number = Not connected
+   * Connect buttons do not crash and show the intended coming-soon/disabled behavior.
+8. Test Monthly ad budget cap:
+
+   * enter a test amount
+   * save it
+   * verify it persists from Supabase / after refresh
+   * then clean up the test value if appropriate.
+9. Confirm no existing working feature was broken.
+10. Provide the final report exactly against the original Phase 1 verification requirements, including:
+
+* files created
+* files modified + reason
+* migrations applied
+* actual RLS policy definitions
+* raw typecheck/lint/build output
+* authenticated UI verification
+* English/Roman Urdu verification
+* what is intentionally NOT functional in Phase 1
+
+Do not report Phase 1 as complete until every verification item above has evidence.

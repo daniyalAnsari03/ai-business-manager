@@ -14,6 +14,7 @@ import {
   CartIcon,
   ChartIcon,
   GaugeIcon,
+  MegaPhoneIcon,
   MenuIcon,
   MessageCircleIcon,
   PackageIcon,
@@ -44,6 +45,7 @@ const MANAGE_ITEMS: NavItem[] = [
   { labelKey: "inventory", icon: ArchiveIcon, href: "/dashboard/inventory" },
   { labelKey: "sales", icon: ChartIcon, href: "/dashboard/sales" },
   { labelKey: "expenses", icon: WalletIcon, href: "/dashboard/expenses" },
+  { labelKey: "marketing", icon: MegaPhoneIcon, href: "/dashboard/marketing" },
   { labelKey: "settings", icon: SettingsIcon, href: "/dashboard/settings" },
 ];
 

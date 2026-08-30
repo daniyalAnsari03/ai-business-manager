@@ -1,0 +1,10 @@
+Understood — those two are leftover uncommitted changes from earlier 
+sessions, not part of your Phase 2 work. Leave both as they are 
+(don't revert either — both changes were intentional from earlier 
+work). 
+
+Now stage and commit everything together: git add -A && git commit -m 
+"Phase 1 + Phase 2 (reduced scope): marketing module foundation, 
+AI caption generation, dev/prod build separation, eslint config"
+
+Confirm the commit succeeded and paste the commit hash.
