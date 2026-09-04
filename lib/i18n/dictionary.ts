@@ -680,6 +680,10 @@ const en = {
     notConnectedMessage:
       "Instagram/Facebook account is not connected yet. Connect it in Settings first.",
     publishFailedMessage: "This post couldn't be published. Please try again.",
+    publishSuccessMessage: "Posted to Instagram successfully.",
+    tokenExpiredMessage:
+      "Your Instagram connection has expired. Reconnect it in Settings to publish again.",
+    noMediaMessage: "This post has no image, so it can't be published to Instagram.",
     activityLoadError: "Your activity feed couldn't be loaded right now.",
     automationLabel: "Automation mode",
     automationHint: "Choose how your AI Manager handles marketing tasks.",
@@ -1661,6 +1665,10 @@ const ur: Dictionary = {
     notConnectedMessage:
       "Instagram/Facebook account abhi connect nahi hua. Pehle Settings mein connect karein.",
     publishFailedMessage: "Ye post publish nahi ho saka. Dobara koshish karein.",
+    publishSuccessMessage: "Instagram par publish ho gaya.",
+    tokenExpiredMessage:
+      "Instagram ka connection expire ho gaya. Dobara publish karne ke liye Settings mein connect karein.",
+    noMediaMessage: "Is post mein koi image nahi hai, is liye ye Instagram par publish nahi ho sakta.",
     activityLoadError: "Aapki activity feed abhi load nahi ho saki.",
     automationLabel: "Automation mode",
     automationHint: "Batao ke apka AI Manager marketing ke kaam kaise kare.",

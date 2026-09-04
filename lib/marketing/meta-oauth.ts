@@ -31,11 +31,12 @@ export function isOAuthPlatform(value: string): value is OAuthPlatform {
  * 2026 note: The scopes differ by Meta product:
  *
  * - Instagram ("Instagram API with Instagram Login"):
- *     instagram_business_basic, instagram_business_content_publish
+ *     instagram_basic, instagram_content_publishing
  *   These are requested through www.instagram.com/oauth/authorize
  *   using the Instagram App ID (not the main Meta App ID).
- *   Old scope values (instagram_basic, instagram_content_publish) were
- *   deprecated on January 27, 2025.
+ *   The scope names match the Meta dashboard's required permissions for
+ *   this app's "Instagram API with Instagram Login" use case (no
+ *   "business_" prefix) and match what already works for basic connect.
  *
  * - Facebook ("Facebook Login for Business"):
  *     pages_show_list, pages_read_engagement, business_management
@@ -45,12 +46,12 @@ export function isOAuthPlatform(value: string): value is OAuthPlatform {
  *   entirely — the configuration defines which permissions are requested.
  *   `pages_manage_posts` is NOT used; the Configuration ID controls access.
  *
- * `instagram_content_publish` is NOT a valid Facebook Login scope and must
+ * Instagram content scopes are NOT valid Facebook Login scopes and must
  * never appear in the Facebook OAuth URL.
  */
 const PLATFORM_SCOPES: Record<OAuthPlatform, string> = {
   facebook: "pages_show_list,pages_read_engagement,business_management",
-  instagram: "instagram_business_basic,instagram_business_content_publish",
+  instagram: "instagram_basic,instagram_content_publishing",
 };
 
 const STATE_TTL_MS = 10 * 60 * 1000; // 10 minutes — long enough for Meta login.

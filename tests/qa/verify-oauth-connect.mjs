@@ -171,9 +171,10 @@ try {
   console.log(`  redirect_uri_is_callback=${redirectUri === `${BASE}/api/marketing/oauth/callback`}`);
   console.log(`  state_is_signed=${stateIsSigned}`);
   console.log(`  state_binds_platform_instagram=${statePlatformOk}`);
-  // Instagram Login scopes use instagram_business_* prefix (old values deprecated Jan 2025).
-  console.log(`  scope_has_instagram_business_basic=${(scope ?? "").includes("instagram_business_basic")}`);
-  console.log(`  scope_has_instagram_business_content_publish=${(scope ?? "").includes("instagram_business_content_publish")}`);
+  // Instagram Login scopes use instagram_* (no "business_" prefix), matching the
+  // Meta dashboard permissions for "Instagram API with Instagram Login".
+  console.log(`  scope_has_instagram_basic=${(scope ?? "").includes("instagram_basic")}`);
+  console.log(`  scope_has_instagram_content_publishing=${(scope ?? "").includes("instagram_content_publishing")}`);
   console.log(`  scope_no_pages_manage_posts=${!(scope ?? "").includes("pages_manage_posts")}`);
   console.log(`  platform_is_instagram=${statePlatformOk}`);
 

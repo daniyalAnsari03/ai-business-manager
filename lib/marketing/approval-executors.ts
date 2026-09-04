@@ -2,6 +2,7 @@ import "server-only";
 
 import type { ApprovalAction, ApprovalActionType } from "@/lib/marketing/approval-types";
 import { registerExecutors } from "@/lib/marketing/approval-service";
+import { publishSocialPost } from "@/lib/marketing/instagram-publish";
 
 /**
  * Real executors for each approval action type.
@@ -12,11 +13,13 @@ import { registerExecutors } from "@/lib/marketing/approval-service";
  *   - { ok: false, error }  when it failed (e.g. no platform connection),
  *                           which the engine records as a `failed` execution.
  *
- * Phase 4 has no real Meta/WhatsApp publishing credentials configured, so the
- * publish-spoke executors honestly report that the target channel is not yet
- * connected rather than pretending to publish. The approval framework itself
- * is fully real: actions are created, reviewed, approved/rejected and
- * executed exactly once through the idempotent engine.
+ * The publish executor now performs REAL Instagram publishing via the two-step
+ * Content Publishing API. On success the social_posts row is updated to
+ * "published" with a real timestamp and Instagram post ID. On failure it is
+ * updated to "failed" with the honest error reason logged server-side.
+ *
+ * Token lifetime note: Instagram/Facebook long-lived tokens last ~60 days.
+ * When a token expires the user must re-connect via Settings → Connect.
  */
 
 export type ApprovalExecutor = (
@@ -27,48 +30,63 @@ export type ApprovalExecutorRegistry = Partial<
   Record<ApprovalActionType, ApprovalExecutor>
 >;
 
-/** Whether a real publishing connection exists. */
-function isPlatformConnected(): boolean {
-  // Phase 4: no real channel credentials are configured, so publishing is
-  // never claimed. This is intentionally honest — a follow-up phase wires a
-  // real connection and flips this check to a live lookup.
-  return false;
-}
+const USER_FRIENDLY_ERRORS: Record<string, string> = {
+  no_connection:
+    "Your Instagram account is not connected yet, so the post could not be published. Please connect it in Settings first.",
+  token_expired:
+    "Your Instagram connection has expired. Please reconnect your account in Settings to publish again.",
+  no_media:
+    "This post has no image attached, so it cannot be published to Instagram.",
+  not_draft:
+    "This post has already been published or is no longer a draft.",
+  not_found:
+    "The post could not be found. It may have been deleted.",
+  publish_failed:
+    "Instagram rejected the publish request. The image or caption may not meet Instagram's requirements.",
+  no_business:
+    "Could not determine your business. Please try again.",
+  unauthenticated:
+    "You are not signed in. Please sign in and try again.",
+  not_configured:
+    "Publishing is not available right now. Please try again later.",
+  database_error:
+    "A system error occurred while saving the result. The post may or may not be live on Instagram.",
+};
 
 const executors: ApprovalExecutorRegistry = {
   publish_social_post: async (action) => {
     const payload = action.actionPayload as Record<string, unknown>;
-    const platform = typeof payload.platform === "string" ? payload.platform : "instagram";
-    if (!isPlatformConnected()) {
+    const postId = typeof payload.post_id === "string" ? payload.post_id : null;
+    if (!postId) {
+      return { ok: false, error: "This post could not be identified for publishing." };
+    }
+
+    const result = await publishSocialPost(postId);
+
+    if (result.ok) {
       return {
-        ok: false,
-        error: `Your ${platform} account is not connected yet, so the post could not be published.`,
+        ok: true,
+        result: { published: true, instagramPostId: result.instagramPostId, actionId: action.id },
       };
     }
-    return {
-      ok: true,
-      result: { published: true, platform, actionId: action.id },
-    };
+
+    const friendlyMessage =
+      USER_FRIENDLY_ERRORS[result.error] ??
+      "The post could not be published. Please try again later.";
+
+    return { ok: false, error: friendlyMessage };
   },
 
   publish_video: async (action) => {
     const payload = action.actionPayload as Record<string, unknown>;
     const platform = typeof payload.platform === "string" ? payload.platform : "instagram";
-    if (!isPlatformConnected()) {
-      return {
-        ok: false,
-        error: `Your ${platform} account is not connected yet, so the video could not be published.`,
-      };
-    }
     return {
-      ok: true,
-      result: { published: true, platform, actionId: action.id },
+      ok: false,
+      error: `Video publishing to ${platform} is not yet supported. Coming soon.`,
     };
   },
 
   create_ad_campaign: async () => {
-    // Sensitive (money) action — always routed through approval. No real ad
-    // platform connection exists, so creating a live campaign is not possible.
     return {
       ok: false,
       error: "No ads account is connected yet, so the campaign could not be created.",
@@ -76,8 +94,6 @@ const executors: ApprovalExecutorRegistry = {
   },
 
   spend_wallet: async () => {
-    // Wallet spend must respect the existing budget/balance ledger. Phase 4
-    // does not auto-debit; real ad spend arrives with a connected ads account.
     return {
       ok: false,
       error: "Ad spend cannot be deducted until a live ads account is connected.",

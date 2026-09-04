@@ -100,7 +100,7 @@ export function MarketingView({
   const [refreshFailed, setRefreshFailed] = useState(false);
   const [publishingId, setPublishingId] = useState<string | null>(null);
   const [publishMessage, setPublishMessage] = useState<{
-    kind: "error" | "info";
+    kind: "error" | "info" | "success";
     text: string;
   } | null>(null);
   const [regeneratingId, setRegeneratingId] = useState<string | null>(null);
@@ -131,8 +131,31 @@ export function MarketingView({
     try {
       const result = await publishSocialPostAction(post.id);
       if (result.ok) {
-        // Honest "not connected" path — publishing is not faked.
-        setPublishMessage({ kind: "info", text: t.marketing.notConnectedMessage });
+        if (result.published) {
+          // Real publish succeeded — update the post in local state.
+          setPosts((prev) =>
+            prev.map((p) =>
+              p.id === post.id
+                ? { ...p, status: "published" as const, publishedAt: new Date().toISOString() }
+                : p,
+            ),
+          );
+          setPublishMessage({ kind: "success", text: t.marketing.publishSuccessMessage });
+        } else {
+          // Honest specific failure — map code to the correct message.
+          const messageMap: Record<string, string> = {
+            not_connected: t.marketing.notConnectedMessage,
+            token_expired: t.marketing.tokenExpiredMessage,
+            no_media: t.marketing.noMediaMessage,
+            not_draft: t.marketing.publishFailedMessage,
+            publish_failed: t.marketing.publishFailedMessage,
+            not_found: t.marketing.publishFailedMessage,
+          };
+          setPublishMessage({
+            kind: "error",
+            text: messageMap[result.code] ?? t.marketing.publishFailedMessage,
+          });
+        }
       } else {
         setPublishMessage({ kind: "error", text: t.marketing.publishFailedMessage });
       }
@@ -625,7 +648,13 @@ function ActivityPostCard({
             {post.productName ?? t.marketing.activityTitle}
           </p>
           <p className="mt-0.5 text-xs text-faint">
-            {draft ? t.marketing.postDraftStatus : null}
+            {draft
+              ? t.marketing.postDraftStatus
+              : post.status === "published"
+                ? t.marketing.postPublishedStatus
+                : post.status === "failed"
+                  ? t.marketing.postFailedStatus
+                  : null}
           </p>
         </div>
         {draft ? (

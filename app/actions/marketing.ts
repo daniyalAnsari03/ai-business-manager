@@ -11,6 +11,7 @@ import {
   type BackfillResult,
   type SocialPostServiceError,
 } from "@/lib/marketing/social-posts";
+import { publishSocialPost } from "@/lib/marketing/instagram-publish";
 
 export type MarketingBudgetCapActionState =
   | { ok: true; monthlyBudgetCap: number | null }
@@ -44,29 +45,48 @@ export async function listSocialPostsAction(): Promise<SocialPostListActionState
 }
 
 export type PublishPostActionState =
-  | { ok: true; published: false; code: "not_connected" }
+  | { ok: true; published: true; instagramPostId: string }
+  | { ok: true; published: false; code: "not_connected" | "token_expired" | "no_media" | "not_draft" | "publish_failed" | "not_found" }
   | { ok: false; reason: SocialPostServiceError };
 
 /**
- * Publish button on a draft. There is NO real Instagram/Facebook connection
- * yet (Meta credentials are not configured — see docs/phase2update.txt), so
- * this NEVER fakes a publish. It always returns the stable `not_connected`
- * code; the client maps that to the correctly localized "connect first"
- * message for the currently selected language.
+ * Publish button on a draft. Delegates to the real Instagram Content
+ * Publishing API via `publishSocialPost`. The business and its connection
+ * state are resolved server-side from the authenticated session; no
+ * client-supplied id is trusted for authorization.
  *
- * The business and its connection state are resolved server-side from the
- * authenticated session; no client-supplied id is trusted for authorization.
+ * Returns honest status codes the UI maps to localized messages:
+ *   - "not_connected": no Instagram account is connected
+ *   - "token_expired":  connection exists but the token expired (~60 days)
+ *   - "no_media":       the post has no image
+ *   - "not_draft":      already published or not a draft
+ *   - "publish_failed": Instagram rejected the request
+ *   - "not_found":      post does not exist or not owned by this business
  */
 export async function publishSocialPostAction(
   postId: string,
 ): Promise<PublishPostActionState> {
-  // Phase 2 (reduced): publishing is intentionally blocked until a real
-  // Meta connection is configured. This returns an honest status for the UI
-  // to display — it does NOT write a "published" row and does NOT call any
-  // fake API. A follow-up implementation will use `postId` to target the
-  // exact draft once META_APP_ID / META_APP_SECRET are available.
-  void postId;
-  return { ok: true, published: false, code: "not_connected" };
+  const result = await publishSocialPost(postId);
+
+  if (result.ok) {
+    return { ok: true, published: true, instagramPostId: result.instagramPostId };
+  }
+
+  // Map instagram-publish error codes to the client-recognised codes.
+  const codeMap: Record<string, PublishPostActionState> = {
+    no_connection: { ok: true, published: false, code: "not_connected" },
+    token_expired: { ok: true, published: false, code: "token_expired" },
+    no_media: { ok: true, published: false, code: "no_media" },
+    not_draft: { ok: true, published: false, code: "not_draft" },
+    publish_failed: { ok: true, published: false, code: "publish_failed" },
+    not_found: { ok: true, published: false, code: "not_found" },
+  };
+
+  if (result.error in codeMap) {
+    return codeMap[result.error];
+  }
+
+  return { ok: false, reason: "database_error" };
 }
 
 export type BackfillActionState =
