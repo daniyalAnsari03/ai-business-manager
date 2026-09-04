@@ -174,9 +174,28 @@ export function MarketingSettings({
             // Meta Ads is shown but its real OAuth is pending Meta permission
             // approval — the Connect button honestly reads "Coming soon".
             const metaAdsSoon = platform === "meta_ads" && !connected;
+            // Instagram/Facebook re-run the SAME authorize flow on reconnect,
+            // so Meta shows the full consent screen (including any newly added
+            // scopes) and the callback upserts the fresh token over the old row.
+            const canReconnect =
+              (OAUTH_PLATFORMS as readonly string[]).includes(platform);
             const isConnecting = connectingPlatform === platform;
+            // Connected accounts that have no OAuth reconnect path (Meta Ads)
+            // stay as a readable status row; everything else gets an action
+            // button that is never blocked by the connected state.
             const buttonDisabled =
-              connected || metaAdsSoon || connectingPlatform !== null;
+              metaAdsSoon ||
+              (connected && !canReconnect) ||
+              connectingPlatform !== null;
+            const buttonLabel = isConnecting
+              ? t.settings.connectingButton
+              : connected
+                ? canReconnect
+                  ? t.settings.reconnectButton
+                  : t.settings.statusConnected
+                : metaAdsSoon
+                  ? t.settings.metaAdsSoonButton
+                  : t.settings.connectButton;
             return (
               <div
                 key={platform}
@@ -197,17 +216,21 @@ export function MarketingSettings({
                   variant={connected ? "secondary" : "primary"}
                   disabled={buttonDisabled}
                   onClick={() => handleConnectClick(platform)}
-                  aria-label={`${t.settings.connectButton} — ${platformLabel(t, platform)}`}
+                  aria-label={`${buttonLabel} — ${platformLabel(t, platform)}`}
                 >
-                  {connected ? (
-                    t.settings.statusConnected
-                  ) : metaAdsSoon ? (
-                    t.settings.metaAdsSoonButton
-                  ) : isConnecting ? (
+                  {isConnecting ? (
                     <>
                       <Spinner />
                       {t.settings.connectingButton}
                     </>
+                  ) : connected ? (
+                    canReconnect ? (
+                      t.settings.reconnectButton
+                    ) : (
+                      t.settings.statusConnected
+                    )
+                  ) : metaAdsSoon ? (
+                    t.settings.metaAdsSoonButton
                   ) : (
                     t.settings.connectButton
                   )}
