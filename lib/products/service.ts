@@ -143,6 +143,14 @@ export async function getProducts(
 
   let products = ((data ?? []) as ProductRow[]).map(mapProduct);
 
+  console.log(
+    "[product-service] getProducts for business_id:",
+    context.business.id,
+    "found",
+    products.length,
+    "active products",
+  );
+
   if (options.status && options.status !== "all") {
     products = products.filter(
       (product) =>

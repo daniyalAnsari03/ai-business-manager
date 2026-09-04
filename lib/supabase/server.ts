@@ -1,5 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { getSupabasePublicConfig } from "@/lib/supabase/config";
@@ -27,6 +27,28 @@ export async function getSupabaseServerClient(): Promise<SupabaseClient> {
           // handled by middleware instead.
         }
       },
+    },
+  });
+}
+
+/**
+ * A server-side Supabase client authenticated with the service-role key
+ * (bypasses RLS). Used ONLY for deliberate, isolated admin operations that
+ * must span every business — e.g. the global marketing-draft backfill
+ * (docs/phase0.txt). Returns null when no service-role key is configured so
+ * callers can degrade gracefully instead of crashing.
+ *
+ * SECURITY: the service-role key must never leave the server. It is read
+ * here from the server-side environment only, never exposed to the client.
+ */
+export async function getSupabaseAdminClient(): Promise<SupabaseClient | null> {
+  const { url } = getSupabasePublicConfig();
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceRoleKey) return null;
+  return createClient(url, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
     },
   });
 }

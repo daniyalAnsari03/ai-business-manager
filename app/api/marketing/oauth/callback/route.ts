@@ -8,6 +8,7 @@ import {
   discoverPage,
   discoverInstagramUser,
   resolveOAuthRedirectUri,
+  resolveOAuthBaseUrl,
 } from "@/lib/marketing/meta-oauth";
 import { connectMetaAccount } from "@/lib/marketing/service";
 
@@ -32,7 +33,14 @@ export async function GET(request: Request) {
     url.searchParams.get("error");
 
   const redirect = (query: string) => {
-    const target = new URL(SETTINGS_PATH, url);
+    // Always return the result on the canonical public origin
+    // (META_OAUTH_REDIRECT_URL) rather than the request's own origin. The OAuth
+    // callback arrives through the public tunnel (e.g. ngrok) even when the dev
+    // server resolves request.url to localhost. Redirecting to that private
+    // origin would trigger ERR_SSL_PROTOCOL_ERROR and leave the browser on a
+    // different host than the session cookie's, making the connection look
+    // unauthorized.
+    const target = new URL(SETTINGS_PATH, resolveOAuthBaseUrl(url));
     target.search = query;
     return NextResponse.redirect(target.toString());
   };

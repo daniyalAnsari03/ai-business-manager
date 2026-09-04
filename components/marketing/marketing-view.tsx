@@ -4,7 +4,10 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
+  listSocialPostsAction,
   publishSocialPostAction,
+  regeneratePostAction,
+  updatePostLanguageAction,
 } from "@/app/actions/marketing";
 import { Spinner } from "@/components/customers/customer-form-modal";
 import { useI18n } from "@/components/i18n/language-provider";
@@ -14,8 +17,11 @@ import {
   AlertCircleIcon,
   AlertTriangleIcon,
   CheckCircleIcon,
+  ImageIcon,
   MegaPhoneIcon,
+  RefreshCwIcon,
   SettingsIcon,
+  ShieldCheckIcon,
   TrendingUpIcon,
   WalletIcon,
   ZapIcon,
@@ -26,8 +32,11 @@ import type { Business } from "@/lib/business/types";
 import { formatMoney } from "@/lib/format/currency";
 import type { MarketingMetrics } from "@/lib/marketing/types";
 import type { ActivityPost } from "@/lib/marketing/social-posts";
+import type { WalletTransaction } from "@/lib/marketing/types";
 import { cn } from "@/lib/utils";
 import { EASE_PREMIUM, fadeUp, staggerContainer } from "@/components/motion/presets";
+import { WalletSection } from "@/components/marketing/wallet-section";
+import { setAutomationModeAction } from "@/app/actions/automation";
 
 type MarketingViewProps = {
   business: Business;
@@ -38,14 +47,31 @@ type MarketingViewProps = {
   postsLoadFailed: boolean;
   /** True when the server-side fetch failed — show an honest error. */
   loadFailed?: boolean;
+  /** Wallet balance read from the real marketing_wallet table. */
+  initialWalletBalance: number;
+  /** Monthly ad budget cap from the wallet, or null. */
+  initialWalletMonthlyBudgetCap: number | null;
+  /** Real wallet_transactions ledger rows. */
+  initialWalletTransactions: WalletTransaction[];
+  /** Whether the server-side wallet load failed. */
+  walletLoadFailed?: boolean;
+  /** Whether a real payment provider is configured. */
+  paymentProviderAvailable: boolean;
+  /** Whether to show the debug test-spend tool. */
+  showTestSpend?: boolean;
+  /** The business's persisted automation mode (needs_approval | full_auto). */
+  initialAutomationMode?: "needs_approval" | "full_auto";
+  /** True when the automation mode could not be loaded server-side. */
+  automationLoadFailed?: boolean;
 };
 
 type AutomationMode = "needsApproval" | "fullAuto";
 
 /**
- * Marketing tab — Phase 1 shell. Metric cards read real values from the new
- * tables (0/empty now, which is correct). The automation toggle is UI-only
- * in this phase: it has no backend behaviour yet (noted in the phase report).
+ * Marketing tab — Phase 1 shell + Phase 4. Metric cards read real values from
+ * the new tables (0/empty now, which is correct). The automation mode is now
+ * FULLY functional (Phase 4): it persists to Supabase and governs whether the
+ * AI Manager needs approval before publishing/spending.
  */
 export function MarketingView({
   business,
@@ -53,19 +79,36 @@ export function MarketingView({
   initialPosts,
   postsLoadFailed = false,
   loadFailed = false,
+  initialWalletBalance,
+  initialWalletMonthlyBudgetCap,
+  initialWalletTransactions,
+  walletLoadFailed = false,
+  paymentProviderAvailable,
+  showTestSpend = false,
+  initialAutomationMode = "needs_approval",
+  automationLoadFailed = false,
 }: MarketingViewProps) {
   const { t } = useI18n();
   const reducedMotion = useReducedMotion();
   const [automationMode, setAutomationMode] = useState<AutomationMode>(
-    "needsApproval",
+    initialAutomationMode === "full_auto" ? "fullAuto" : "needsApproval",
   );
+  const [automationSaving, setAutomationSaving] = useState(false);
+  const [automationSaveError, setAutomationSaveError] = useState(false);
+  const [posts, setPosts] = useState<ActivityPost[]>(initialPosts);
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshFailed, setRefreshFailed] = useState(false);
   const [publishingId, setPublishingId] = useState<string | null>(null);
   const [publishMessage, setPublishMessage] = useState<{
     kind: "error" | "info";
     text: string;
   } | null>(null);
+  const [regeneratingId, setRegeneratingId] = useState<string | null>(null);
+  const [regenerateMessage, setRegenerateMessage] = useState<{
+    kind: "error" | "info";
+    text: string;
+  } | null>(null);
 
-  const posts = initialPosts;
   const postsLoadError = postsLoadFailed;
 
   // Auto-dismiss the publish/not-connected message.
@@ -74,6 +117,13 @@ export function MarketingView({
     const timer = window.setTimeout(() => setPublishMessage(null), 6000);
     return () => window.clearTimeout(timer);
   }, [publishMessage]);
+
+  // Auto-dismiss the regenerate message.
+  useEffect(() => {
+    if (!regenerateMessage) return;
+    const timer = window.setTimeout(() => setRegenerateMessage(null), 6000);
+    return () => window.clearTimeout(timer);
+  }, [regenerateMessage]);
 
   async function handlePublish(post: ActivityPost) {
     setPublishingId(post.id);
@@ -90,6 +140,89 @@ export function MarketingView({
       setPublishMessage({ kind: "error", text: t.marketing.publishFailedMessage });
     } finally {
       setPublishingId(null);
+    }
+  }
+
+  async function handleRegenerate(post: ActivityPost) {
+    setRegeneratingId(post.id);
+    setRegenerateMessage(null);
+    try {
+      const result = await regeneratePostAction(post.id);
+      if (result.ok) {
+        // Replace the post in local state with the updated version.
+        setPosts((prev) =>
+          prev.map((p) => (p.id === result.post.id ? result.post : p)),
+        );
+      } else {
+        setRegenerateMessage({ kind: "error", text: t.marketing.regenerateFailedMessage });
+      }
+    } catch {
+      setRegenerateMessage({ kind: "error", text: t.marketing.regenerateFailedMessage });
+    } finally {
+      setRegeneratingId(null);
+    }
+  }
+
+  async function handleLanguageToggle(post: ActivityPost, language: "en" | "ur") {
+    // Optimistic local update: swap the displayed caption immediately.
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id !== post.id) return p;
+        const caption = language === "ur" ? p.captionUr : p.captionEn;
+        return { ...p, selectedLanguage: language, caption };
+      }),
+    );
+    // Persist to server (best-effort — no loading state for a fast toggle).
+    try {
+      await updatePostLanguageAction(post.id, language);
+    } catch {
+      // Silently fail — the local state is already updated for responsive UX.
+      // The next refresh will re-sync from the server.
+    }
+  }
+
+  /**
+   * Re-reads the activity feed from the server. This is the escape hatch for
+   * the honest "I created/backfilled posts elsewhere but the open tab hasn't
+   * re-rendered" case: the feed is otherwise server-rendered from the page
+   * props, so without this a backfill (docs/phase0.txt) run in another request
+   * stays invisible until a full reload.
+   */
+  async function handleRefresh() {
+    setRefreshing(true);
+    setRefreshFailed(false);
+    try {
+      const result = await listSocialPostsAction();
+      if (result.ok) {
+        setPosts(result.posts);
+      } else {
+        setRefreshFailed(true);
+      }
+    } catch {
+      setRefreshFailed(true);
+    } finally {
+      setRefreshing(false);
+    }
+  }
+
+  /**
+   * Persists the automation mode through the guarded server action so it is
+   * stored in Supabase (not localStorage). The UI reflects the optimistic
+   * choice immediately; a save failure is surfaced honestly.
+   */
+  async function handleAutomationChange(mode: AutomationMode) {
+    setAutomationMode(mode);
+    setAutomationSaveError(false);
+    setAutomationSaving(true);
+    try {
+      const result = await setAutomationModeAction(
+        mode === "fullAuto" ? "full_auto" : "needs_approval",
+      );
+      if (!result.ok) setAutomationSaveError(true);
+    } catch {
+      setAutomationSaveError(true);
+    } finally {
+      setAutomationSaving(false);
     }
   }
 
@@ -145,6 +278,36 @@ export function MarketingView({
 
   const content = (
     <>
+      {/* Phase 4 — Approvals + Video sub-navigation */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Link href="/dashboard/marketing/approvals">
+          <Card lift className="relative flex items-center gap-3 !p-5">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-accent">
+              <ShieldCheckIcon className="size-[18px]" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-medium">{t.marketing.approvalsNav}</p>
+              <p className="mt-0.5 truncate text-xs text-faint">
+                {t.marketing.approvalsNeedsSubtitle}
+              </p>
+            </div>
+          </Card>
+        </Link>
+        <Link href="/dashboard/marketing/video">
+          <Card lift className="relative flex items-center gap-3 !p-5">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-accent">
+              <ImageIcon className="size-[18px]" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-medium">{t.marketing.videoNav}</p>
+              <p className="mt-0.5 truncate text-xs text-faint">
+                {t.marketing.videoSubtitle}
+              </p>
+            </div>
+          </Card>
+        </Link>
+      </div>
+
       {/* Real summary — empty/zero right now, which is honest for Phase 1 */}
       <div className="grid gap-4 sm:grid-cols-3">
         {metricCards.map((card) => (
@@ -157,8 +320,19 @@ export function MarketingView({
         ))}
       </div>
 
-      {/* Automation mode — UI present, functional wiring arrives in a later
-          phase (2/5). No backend behaviour is attached to this toggle yet. */}
+      {/* Wallet dashboard — real balance + transaction ledger */}
+      <WalletSection
+        business={business}
+        initialBalance={initialWalletBalance}
+        monthlyBudgetCap={initialWalletMonthlyBudgetCap}
+        initialTransactions={initialWalletTransactions}
+        paymentProviderAvailable={paymentProviderAvailable}
+        walletLoadFailed={walletLoadFailed}
+        showTestSpend={showTestSpend}
+      />
+
+      {/* Automation mode — Phase 4: persists to Supabase and governs whether
+          the AI Manager needs approval before publishing/spending. */}
       <Card lift={false} className="relative overflow-hidden !p-6">
         <div aria-hidden className="ambient-glow -right-16 -top-24 size-[260px]" />
         <div className="relative">
@@ -194,11 +368,12 @@ export function MarketingView({
                   type="button"
                   role="radio"
                   aria-checked={selected}
-                  onClick={() => setAutomationMode(mode)}
+                  onClick={() => handleAutomationChange(mode)}
+                  disabled={automationSaving}
                   className={
                     selected
                       ? "rounded-xl border border-emerald-500/50 bg-emerald-500/[0.1] p-4 text-left transition-colors"
-                      : "rounded-xl border border-line bg-surface p-4 text-left transition-colors hover:border-emerald-500/30"
+                      : "rounded-xl border border-line bg-surface p-4 text-left transition-colors hover:border-emerald-500/30 disabled:opacity-60"
                   }
                 >
                   <span
@@ -218,9 +393,28 @@ export function MarketingView({
             })}
           </div>
 
-          <p className="mt-4 text-xs leading-relaxed text-faint">
-            {t.marketing.automationNote}
-          </p>
+          {automationLoadFailed ? (
+            <p className="mt-4 flex items-center gap-1.5 text-xs leading-relaxed text-muted">
+              <AlertTriangleIcon className="size-3.5 shrink-0" />
+              {t.marketing.approvalsGenericError}
+            </p>
+          ) : automationSaveError ? (
+            <p className="mt-4 flex items-center gap-1.5 text-xs leading-relaxed text-muted">
+              <AlertTriangleIcon className="size-3.5 shrink-0" />
+              {t.marketing.automationSaveFailed}
+            </p>
+          ) : automationSaving ? (
+            <p className="mt-4 flex items-center gap-1.5 text-xs leading-relaxed text-muted">
+              <Spinner />
+              {t.common.loading}
+            </p>
+          ) : (
+            <p className="mt-4 text-xs leading-relaxed text-faint">
+              {automationMode === "fullAuto"
+                ? t.marketing.automationFullAutoHint
+                : t.marketing.automationNeedsApprovalHint}
+            </p>
+          )}
         </div>
       </Card>
 
@@ -229,48 +423,76 @@ export function MarketingView({
         <Card lift={false} className="relative overflow-hidden">
           <div aria-hidden className="ambient-glow -left-16 -top-20 size-[280px]" />
           <div className="relative">
-            <h2
-              id="marketing-activity-title"
-              className="text-sm font-medium uppercase tracking-widest text-faint"
-            >
-              {t.marketing.activityTitle}
-            </h2>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2
+                id="marketing-activity-title"
+                className="text-sm font-medium uppercase tracking-widest text-faint"
+              >
+                {t.marketing.activityTitle}
+              </h2>
+              <Button
+                size="md"
+                variant="ghost"
+                className="min-h-9 px-3 text-xs"
+                disabled={refreshing}
+                onClick={handleRefresh}
+                aria-label={t.marketing.activityRefresh}
+              >
+                <RefreshCwIcon className="size-3.5" />
+                {refreshing
+                  ? t.marketing.activityRefreshing
+                  : t.marketing.activityRefresh}
+              </Button>
+            </div>
 
             {postsLoadError ? (
               <div className="mt-5 flex items-start gap-2.5 rounded-xl border border-line bg-surface-raised px-4 py-3 text-sm leading-relaxed text-muted">
                 <AlertTriangleIcon className="mt-0.5 size-4 shrink-0" />
                 {t.marketing.activityLoadError}
               </div>
-            ) : posts.length > 0 ? (
-              <ul className="mt-5 space-y-3">
-                {posts.map((post) => (
-                  <li key={post.id}>
-                    <ActivityPostCard
-                      post={post}
-                      publishing={publishingId === post.id}
-                      onPublish={() => handlePublish(post)}
-                    />
-                  </li>
-                ))}
-              </ul>
             ) : (
-              <div className="flex flex-col items-center py-12 text-center">
-                <span className="flex size-14 items-center justify-center rounded-2xl bg-emerald-500/10 text-accent">
-                  <MegaPhoneIcon className="size-6" />
-                </span>
-                <h3 className="mt-5 font-display text-2xl font-light">
-                  {t.marketing.activityEmptyTitle}
-                </h3>
-                <p className="mt-2 max-w-md text-sm leading-relaxed text-muted">
-                  {t.marketing.activityEmptyBody}
-                </p>
-                <Link href="/dashboard/settings" className="mt-7">
-                  <Button size="lg" variant="secondary">
-                    <SettingsIcon className="size-[18px]" />
-                    {t.marketing.activityAction}
-                  </Button>
-                </Link>
-              </div>
+              <>
+                {refreshFailed ? (
+                  <div className="mt-5 flex items-start gap-2.5 rounded-xl border border-line bg-surface-raised px-4 py-3 text-sm leading-relaxed text-muted">
+                    <AlertTriangleIcon className="mt-0.5 size-4 shrink-0" />
+                    {t.marketing.activityLoadError}
+                  </div>
+                ) : null}
+                {posts.length > 0 ? (
+                  <ul className="mt-5 space-y-3">
+                    {posts.map((post) => (
+                      <li key={post.id}>
+                        <ActivityPostCard
+                          post={post}
+                          publishing={publishingId === post.id}
+                          onPublish={() => handlePublish(post)}
+                          regenerating={regeneratingId === post.id}
+                          onRegenerate={() => handleRegenerate(post)}
+                          onLanguageToggle={(lang) => handleLanguageToggle(post, lang)}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="flex flex-col items-center py-12 text-center">
+                    <span className="flex size-14 items-center justify-center rounded-2xl bg-emerald-500/10 text-accent">
+                      <MegaPhoneIcon className="size-6" />
+                    </span>
+                    <h3 className="mt-5 font-display text-2xl font-light">
+                      {t.marketing.activityEmptyTitle}
+                    </h3>
+                    <p className="mt-2 max-w-md text-sm leading-relaxed text-muted">
+                      {t.marketing.activityEmptyBody}
+                    </p>
+                    <Link href="/dashboard/settings" className="mt-7">
+                      <Button size="lg" variant="secondary">
+                        <SettingsIcon className="size-[18px]" />
+                        {t.marketing.activityAction}
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Publish / not-connected feedback */}
@@ -295,6 +517,32 @@ export function MarketingView({
                     <CheckCircleIcon className="mt-0.5 size-4 shrink-0" />
                   )}
                   {publishMessage.text}
+                </motion.p>
+              ) : null}
+            </AnimatePresence>
+
+            {/* Regenerate feedback */}
+            <AnimatePresence>
+              {regenerateMessage ? (
+                <motion.p
+                  role="status"
+                  initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reducedMotion ? undefined : { opacity: 0 }}
+                  transition={{ duration: 0.25, ease: EASE_PREMIUM }}
+                  className={cn(
+                    "mt-4 flex items-start gap-1.5 text-sm leading-relaxed",
+                    regenerateMessage.kind === "error"
+                      ? "text-muted"
+                      : "font-medium text-emerald-700 dark:text-emerald-300",
+                  )}
+                >
+                  {regenerateMessage.kind === "error" ? (
+                    <AlertCircleIcon className="mt-0.5 size-4 shrink-0" />
+                  ) : (
+                    <CheckCircleIcon className="mt-0.5 size-4 shrink-0" />
+                  )}
+                  {regenerateMessage.text}
                 </motion.p>
               ) : null}
             </AnimatePresence>
@@ -342,14 +590,32 @@ function ActivityPostCard({
   post,
   publishing,
   onPublish,
+  regenerating,
+  onRegenerate,
+  onLanguageToggle,
 }: {
   post: ActivityPost;
   publishing: boolean;
   onPublish: () => void;
+  regenerating: boolean;
+  onRegenerate: () => void;
+  onLanguageToggle: (lang: "en" | "ur") => void;
 }) {
   const { t } = useI18n();
-  const captionPreview = post.caption ? post.caption.slice(0, 160) : "";
   const draft = post.status === "draft";
+
+  // Local toggle state: which language is displayed on THIS card only.
+  const [displayLang, setDisplayLang] = useState<"en" | "ur">(post.selectedLanguage);
+  const captionPreview = (() => {
+    const caption = displayLang === "ur" ? post.captionUr : post.captionEn;
+    return caption ? caption.slice(0, 160) : "";
+  })();
+  const fullCaption = displayLang === "ur" ? post.captionUr : post.captionEn;
+
+  function handleToggle(lang: "en" | "ur") {
+    setDisplayLang(lang);
+    onLanguageToggle(lang);
+  }
 
   return (
     <div className="rounded-xl border border-line bg-surface px-4 py-3.5">
@@ -363,27 +629,78 @@ function ActivityPostCard({
           </p>
         </div>
         {draft ? (
-          <Button
-            size="md"
-            variant="secondary"
-            disabled={publishing}
-            onClick={onPublish}
-          >
-            {publishing ? (
-              <>
-                <Spinner />
-                {t.marketing.publishingButton}
-              </>
-            ) : (
-              t.marketing.publishButton
-            )}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              size="md"
+              variant="ghost"
+              className="min-h-9 px-3 text-xs"
+              disabled={regenerating}
+              onClick={onRegenerate}
+            >
+              {regenerating ? (
+                <>
+                  <Spinner />
+                  {t.marketing.regeneratingButton}
+                </>
+              ) : (
+                <>
+                  <RefreshCwIcon className="size-3.5" />
+                  {t.marketing.regenerateButton}
+                </>
+              )}
+            </Button>
+            <Button
+              size="md"
+              variant="secondary"
+              disabled={publishing}
+              onClick={onPublish}
+            >
+              {publishing ? (
+                <>
+                  <Spinner />
+                  {t.marketing.publishingButton}
+                </>
+              ) : (
+                t.marketing.publishButton
+              )}
+            </Button>
+          </div>
         ) : null}
       </div>
+
+      {/* Per-draft language toggle — only shown when both captions exist */}
+      {draft && (post.captionUr || post.captionEn) ? (
+        <div
+          role="group"
+          aria-label={t.marketing.languageEnglish}
+          className="mt-3 inline-flex items-center rounded-full border border-line bg-surface-raised p-0.5"
+        >
+          {(["en", "ur"] as const).map((lang) => {
+            const active = displayLang === lang;
+            return (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => handleToggle(lang)}
+                aria-pressed={active}
+                className={cn(
+                  "min-h-7 rounded-full px-2.5 text-[11px] font-medium transition-colors duration-200",
+                  active
+                    ? "bg-emerald-500/15 text-accent"
+                    : "text-muted hover:text-foreground",
+                )}
+              >
+                {lang === "en" ? t.marketing.languageEnglish : t.marketing.languageRomanUrdu}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+
       {captionPreview ? (
         <p className="mt-2.5 text-sm leading-relaxed text-muted">
           {captionPreview}
-          {post.caption && post.caption.length > 160 ? "…" : ""}
+          {fullCaption && fullCaption.length > 160 ? "…" : ""}
         </p>
       ) : null}
     </div>

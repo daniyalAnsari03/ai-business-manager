@@ -140,6 +140,36 @@ export function resolveOAuthRedirectUri(requestOrUrl: string | URL): string {
   return new URL("/api/marketing/oauth/callback", requestOrUrl).toString();
 }
 
+/**
+ * The canonical public base (scheme + host) that the app is reachable at from
+ * Meta's redirect. This mirrors `resolveOAuthRedirectUri` so that every hop of
+ * the OAuth round trip — the authorize step, the token exchange and the
+ * post-callback redirect back into the app — stays on ONE public HTTPS origin.
+ *
+ * In dev it is common for the request to arrive through a public tunnel (e.g.
+ * ngrok) while `request.url` still resolves to `localhost:<port>`. Redirecting
+ * back to that private origin would (a) drop the browser onto a host that has
+ * no HTTPS cert (`ERR_SSL_PROTOCOL_ERROR`) and (b) leave the user on a
+ * different origin than the one holding their session cookie, making the
+ * callback appear `unauthorized`. Pinning the redirect to the configured
+ * public origin avoids both.
+ */
+export function resolveOAuthBaseUrl(requestOrUrl: string | URL): string {
+  const canonical = process.env.META_OAUTH_REDIRECT_URL?.trim();
+  if (canonical) {
+    try {
+      return new URL("/", canonical).origin;
+    } catch {
+      // Fall through to the request-derived origin on a malformed value.
+    }
+  }
+  try {
+    return new URL("/", requestOrUrl).origin;
+  } catch {
+    return "/";
+  }
+}
+
 export interface AuthorizeUrlOptions {
   platform: OAuthPlatform;
   businessId: string;

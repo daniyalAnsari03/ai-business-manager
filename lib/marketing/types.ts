@@ -5,6 +5,7 @@ export const MARKETING_PLATFORMS = [
   "facebook",
   "google_ads",
   "whatsapp",
+  "meta_ads",
 ] as const;
 export type MarketingPlatform = (typeof MARKETING_PLATFORMS)[number];
 
@@ -32,6 +33,7 @@ export type SocialPostStatus = (typeof SOCIAL_POST_STATUSES)[number];
 
 export const AD_CAMPAIGN_STATUSES = [
   "draft",
+  "pending_connection",
   "active",
   "paused",
   "completed",
@@ -47,12 +49,13 @@ export const CONNECTED_ACCOUNT_STATUSES = [
 ] as const;
 export type ConnectedAccountStatus = (typeof CONNECTED_ACCOUNT_STATUSES)[number];
 
-/** The four channels the Settings section always lists. */
+/** The channels the Settings section always lists (Phase 0 adds Meta Ads). */
 export const SETTINGS_PLATFORMS: readonly MarketingPlatform[] = [
   "instagram",
   "facebook",
   "google_ads",
   "whatsapp",
+  "meta_ads",
 ];
 
 export interface SocialPost {
@@ -60,7 +63,14 @@ export interface SocialPost {
   businessId: string;
   productId: string | null;
   platform: SocialPostPlatform;
+  /** Currently selected caption (mirrors caption_ur or caption_en). */
   caption: string | null;
+  /** Roman Urdu caption variant (Phase 2.5). */
+  captionUr: string | null;
+  /** English caption variant (Phase 2.5). */
+  captionEn: string | null;
+  /** Which language variant is selected for this post ("en" | "ur"). */
+  selectedLanguage: "en" | "ur";
   mediaUrl: string | null;
   status: SocialPostStatus;
   scheduledAt: string | null;
@@ -76,6 +86,12 @@ export interface AdCampaign {
   platform: MarketingPlatform;
   budget: number;
   spent: number;
+  /** Suggested per-day budget for the current month (Phase 0 budget planner). */
+  dailyBudget: number;
+  /** Owner-set monthly cap this campaign should respect. Null = no cap. */
+  monthlyBudgetCap: number | null;
+  /** Live spend so far on this campaign. */
+  spendToDate: number;
   status: AdCampaignStatus;
   goal: AdCampaignGoal;
   createdAt: string;
@@ -102,6 +118,23 @@ export interface ConnectedAccount {
 }
 
 /**
+ * A business's linked Meta Ad Account (Phase 0, reduced scope). The status in
+ * `connected_accounts` (platform "meta_ads") is the authoritative connection
+ * flag; this row carries the account identity (id/name) the owner connected.
+ * No ad money ever flows through here — Meta handles the ad account funding.
+ */
+export interface MetaAdAccount {
+  id: string;
+  businessId: string;
+  adAccountId: string | null;
+  adAccountName: string | null;
+  status: ConnectedAccountStatus;
+  connectedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
  * Real metric values shown on the Marketing tab. Every number is read from
  * the marketing tables (0/empty while there is no activity — never mock).
  */
@@ -115,4 +148,35 @@ export interface MarketingMetrics {
    * the honest value is 0 whenever campaign spend is 0 — never fabricated.
    */
   salesFromAds: number;
+}
+
+// ---------------------------------------------------------------------------
+// Wallet transaction ledger — Phase 3
+// ---------------------------------------------------------------------------
+
+export const WALLET_TRANSACTION_TYPES = ["topup", "spend", "adjustment"] as const;
+export type WalletTransactionType = (typeof WALLET_TRANSACTION_TYPES)[number];
+
+export const WALLET_TRANSACTION_STATUSES = [
+  "pending",
+  "completed",
+  "failed",
+] as const;
+export type WalletTransactionStatus =
+  (typeof WALLET_TRANSACTION_STATUSES)[number];
+
+/**
+ * Immutable ledger row. Every change to marketing_wallet.balance must have
+ * a corresponding completed row here — the balance alone is not sufficient.
+ */
+export interface WalletTransaction {
+  id: string;
+  businessId: string;
+  type: WalletTransactionType;
+  amount: number;
+  balanceAfter: number;
+  gatewayReference: string | null;
+  description: string | null;
+  status: WalletTransactionStatus;
+  createdAt: string;
 }

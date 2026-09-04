@@ -3,8 +3,12 @@
 import { updateMarketingBudgetCap } from "@/lib/marketing/service";
 import type { MarketingServiceError } from "@/lib/marketing/service";
 import {
+  backfillMissingProductDrafts,
   listSocialPosts,
+  regeneratePostCaption,
+  updatePostLanguage,
   type ActivityPost,
+  type BackfillResult,
   type SocialPostServiceError,
 } from "@/lib/marketing/social-posts";
 
@@ -63,4 +67,60 @@ export async function publishSocialPostAction(
   // exact draft once META_APP_ID / META_APP_SECRET are available.
   void postId;
   return { ok: true, published: false, code: "not_connected" };
+}
+
+export type BackfillActionState =
+  | { ok: true; data: BackfillResult }
+  | { ok: false; reason: SocialPostServiceError };
+
+/**
+ * One-time, on-demand backfill (docs/phase0.txt) — triggers a draft for every
+ * active product that predates automatic caption generation and therefore has
+ * no `social_posts` row yet. Purposefully NOT a recurring job: it only runs
+ * when called and is idempotent (already-drafted products are skipped, so a
+ * second run creates no duplicates). Ownership, per-business language and RLS
+ * are all handled server-side inside the service.
+ */
+export async function backfillProductDraftsAction(): Promise<BackfillActionState> {
+  const result = await backfillMissingProductDrafts();
+  return result.ok
+    ? { ok: true, data: result.data }
+    : { ok: false, reason: result.reason };
+}
+
+export type RegeneratePostActionState =
+  | { ok: true; post: ActivityPost }
+  | { ok: false; reason: SocialPostServiceError };
+
+/**
+ * Regenerates both bilingual captions for an existing draft post. The AI
+ * call and DB update happen server-side; ownership is resolved from the
+ * authenticated session. If regeneration fails, the existing captions are
+ * left intact (never wiped).
+ */
+export async function regeneratePostAction(
+  postId: string,
+): Promise<RegeneratePostActionState> {
+  const result = await regeneratePostCaption(postId);
+  return result.ok
+    ? { ok: true, post: result.data }
+    : { ok: false, reason: result.reason };
+}
+
+export type UpdatePostLanguageActionState =
+  | { ok: true; post: ActivityPost }
+  | { ok: false; reason: SocialPostServiceError };
+
+/**
+ * Updates the per-draft selected language (the language toggle on each card).
+ * Only changes that one card's display; does not affect the global language.
+ */
+export async function updatePostLanguageAction(
+  postId: string,
+  selectedLanguage: "en" | "ur",
+): Promise<UpdatePostLanguageActionState> {
+  const result = await updatePostLanguage(postId, selectedLanguage);
+  return result.ok
+    ? { ok: true, post: result.data }
+    : { ok: false, reason: result.reason };
 }

@@ -12,6 +12,7 @@ import {
   adjustProductStock,
   updateProduct,
 } from "@/lib/products/service";
+import { createDraftForProduct } from "@/lib/marketing/social-posts";
 import type { Product } from "@/lib/products/types";
 import type { AgentRunContext } from "@/lib/ai/context";
 
@@ -178,6 +179,24 @@ export const createProductTool = tool({
           : "Could not create the product. Tell the user it failed; do not pretend success.",
       );
     }
+
+    // Marketing hook (Phase 2, reduced — same behaviour as createProductAction):
+    // once a product exists, trigger the controlled service that generates a
+    // REAL AI caption and saves it as a "draft" social post in the business's
+    // marketing activity. This is best-effort — a caption-generation/provider
+    // failure must never block or break product creation, so we await then
+    // swallow the outcome. The draft is written through the same service the
+    // dedicated marketing tool uses.
+    try {
+      await createDraftForProduct(result.data);
+      console.log("[product-tools] draft post created for new product:", result.data.id);
+    } catch (error) {
+      console.error(
+        "[product-tools] draft post generation failed after product creation:",
+        error instanceof Error ? error.message : String(error),
+      );
+    }
+
     return toolOk({ created: true, product: productSummary(result.data) });
   },
 });

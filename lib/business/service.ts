@@ -54,7 +54,10 @@ function mapBusiness(row: BusinessRow): Business {
  */
 export const getUserBusiness = cache(async (): Promise<Business | null> => {
   const user = await getServerUser();
-  if (!user) return null;
+  if (!user) {
+    console.log("[business-service] getUserBusiness: no authenticated user");
+    return null;
+  }
 
   const supabase = await getSupabaseServerClient();
   const { data, error } = await supabase
@@ -63,8 +66,26 @@ export const getUserBusiness = cache(async (): Promise<Business | null> => {
     .eq("owner_id", user.id)
     .maybeSingle();
 
-  if (error || !data) return null;
-  return mapBusiness(data as BusinessRow);
+  if (error || !data) {
+    console.log(
+      "[business-service] getUserBusiness: no business found for user_id:",
+      user.id,
+      "error:",
+      error?.message,
+    );
+    return null;
+  }
+
+  const business = mapBusiness(data as BusinessRow);
+  console.log(
+    "[business-service] getUserBusiness resolved business_id:",
+    business.id,
+    "name:",
+    business.name,
+    "for user_id:",
+    user.id,
+  );
+  return business;
 });
 
 export interface ServiceResult<T> {

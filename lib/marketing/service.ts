@@ -11,6 +11,7 @@ import {
   type ConnectedAccountStatus,
   type MarketingMetrics,
   type MarketingWallet,
+  type MetaAdAccount,
 } from "@/lib/marketing/types";
 
 /**
@@ -29,6 +30,22 @@ export type MarketingServiceError =
   | "not_configured"
   | "invalid_input"
   | "database_error";
+
+/**
+ * A fully-validated Meta connection ready to persist. All discovery and code
+ * exchange happens server-side before this is ever called, so the persisted
+ * values are trusted outputs of our own OAuth flow — never raw user input.
+ */
+export interface MetaConnectionInput {
+  platform: ConnectedAccountPlatform;
+  accountLabel: string;
+  accessToken: string;
+  tokenExpiresAt: string | null;
+  externalAccountId: string;
+}
+
+/** The two channels that can be connected via Meta OAuth. */
+export type ConnectedAccountPlatform = "instagram" | "facebook";
 
 export type MarketingServiceResult<T> =
   | { ok: true; data: T }
@@ -255,4 +272,116 @@ export async function getConnectedAccounts(): Promise<
     .filter((account): account is ConnectedAccount => account !== null);
 
   return { ok: true, data: accounts };
+}
+
+const META_ADS_PLATFORM = "meta_ads" as const;
+
+interface MetaAdAccountRow {
+  id: string;
+  business_id: string;
+  ad_account_id: string | null;
+  ad_account_name: string | null;
+  status: string;
+  connected_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+function mapMetaAdAccount(row: MetaAdAccountRow): MetaAdAccount {
+  return {
+    id: row.id,
+    businessId: row.business_id,
+    adAccountId: row.ad_account_id,
+    adAccountName: row.ad_account_name,
+    status:
+      row.status === "connected" ? "connected" : "not_connected",
+    connectedAt: row.connected_at,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+/**
+ * The Meta Ads connection state for this business (Phase 0, reduced scope).
+ *
+ * The authoritative flag is the `connected_accounts` row with platform
+ * "meta_ads" (identical to how Instagram/Facebook connection is represented).
+ * `meta_ad_accounts` then carries the linked account identity (id/name) once
+ * connected. Returns:
+ *   connected=true  -> the business has linked a Meta Ad Account.
+ *   connected=false -> no connection; honest "connect first" is the correct UI.
+ * The `account` (meta_ad_accounts row) is null until a row exists.
+ */
+export async function getMetaAdsConnection(): Promise<
+  MarketingServiceResult<{ connected: boolean; account: MetaAdAccount | null }>
+> {
+  const context = await requireBusinessContext();
+  if (!context.ok) return context;
+
+  const [connectedResult, accountResult] = await Promise.all([
+    context.supabase
+      .from("connected_accounts")
+      .select("*")
+      .eq("business_id", context.business.id)
+      .eq("platform", META_ADS_PLATFORM)
+      .maybeSingle(),
+    context.supabase
+      .from("meta_ad_accounts")
+      .select("*")
+      .eq("business_id", context.business.id)
+      .maybeSingle(),
+  ]);
+
+  if (connectedResult.error || accountResult.error) {
+    return { ok: false, reason: "database_error" };
+  }
+
+  const connectedRow = connectedResult.data as ConnectedAccountRow | null;
+  const connected = connectedRow?.status === "connected";
+
+  const account = accountResult.data
+    ? mapMetaAdAccount(accountResult.data as MetaAdAccountRow)
+    : null;
+
+  return { ok: true, data: { connected, account } };
+}
+
+/**
+ * Persists a successfully-verified Meta connection to connected_accounts
+ * (one row per business + platform). Called only after the server has
+ * validated OAuth state and exchanged the code — the caller owns that trust;
+ * this function only writes the resulting row. Returns the stored account.
+ */
+export async function connectMetaAccount(
+  input: MetaConnectionInput,
+): Promise<MarketingServiceResult<ConnectedAccount>> {
+  const context = await requireBusinessContext();
+  if (!context.ok) return context;
+
+  const { data, error } = await context.supabase
+    .from("connected_accounts")
+    .upsert(
+      {
+        business_id: context.business.id,
+        platform: input.platform,
+        status: "connected",
+        account_label: input.accountLabel,
+        access_token: input.accessToken,
+        token_expires_at: input.tokenExpiresAt,
+        external_account_id: input.externalAccountId,
+      },
+      { onConflict: "business_id,platform" },
+    )
+    .select("*")
+    .single();
+
+  if (error || !data) {
+    console.error("[connectMetaAccount] FAILED:", JSON.stringify(error));
+    return { ok: false, reason: "database_error" };
+  }
+
+  const mapped = mapConnectedAccount(data as ConnectedAccountRow);
+  if (!mapped) return { ok: false, reason: "database_error" };
+
+  return { ok: true, data: mapped };
 }

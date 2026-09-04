@@ -70,6 +70,9 @@ const EXPECTED_TOOLS = [
   "expense_summary",
   // Whole-business view
   "business_overview",
+  // Marketing
+  "generate_product_caption",
+  "create_ad_campaign",
   // Business settings (same capabilities as the Settings page)
   "get_business_info",
   "update_business_profile",

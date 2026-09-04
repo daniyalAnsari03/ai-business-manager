@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { updateMarketingBudgetCapAction } from "@/app/actions/marketing";
 import { Spinner } from "@/components/customers/customer-form-modal";
 import { useI18n } from "@/components/i18n/language-provider";
@@ -18,6 +18,8 @@ import type { MarketingPlatform } from "@/lib/marketing/types";
 import { SETTINGS_PLATFORMS } from "@/lib/marketing/types";
 import type { ConnectedAccount } from "@/lib/marketing/types";
 import type { Dictionary } from "@/lib/i18n/dictionary";
+
+const OAUTH_PLATFORMS = ["instagram", "facebook"] as const;
 
 type MarketingSettingsProps = {
   business: Business;
@@ -45,6 +47,7 @@ export function MarketingSettings({
 }: MarketingSettingsProps) {
   const { t } = useI18n();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const accountsByPlatform = new Map(
     initialAccounts.map((account) => [account.platform, account]),
@@ -57,13 +60,59 @@ export function MarketingSettings({
   const [budgetSaved, setBudgetSaved] = useState(false);
   const [budgetError, setBudgetError] = useState<string | null>(null);
   const [connectNoteFor, setConnectNoteFor] = useState<MarketingPlatform | null>(null);
+  const [connectingPlatform, setConnectingPlatform] = useState<MarketingPlatform | null>(null);
+  const [connectError, setConnectError] = useState<string | null>(null);
+  const [connectSuccess, setConnectSuccess] = useState(false);
 
   const budgetDisabled = budgetSaving || walletLoadFailed;
 
-  function handleConnectClick(platform: MarketingPlatform) {
-    // Phase 1: OAuth joining arrives in a later phase. Show the localized
-    // note and no-op — never throw.
-    setConnectNoteFor(platform);
+  // Read the OAuth callback result (`?connect=...`) rendered by the callback
+  // route after a Meta round trip, then clear it so it shows just once.
+  const connectResult = useMemo(() => searchParams.get("connect"), [searchParams]);
+  useEffect(() => {
+    if (!connectResult) return;
+    if (connectResult === "success") {
+      setConnectSuccess(true);
+      router.refresh();
+    } else if (connectResult === "unauthorized") {
+      setConnectError(t.settings.connectUnauthorized);
+    } else if (connectResult === "denied") {
+      setConnectError(t.settings.connectDenied);
+    } else {
+      setConnectError(t.settings.connectErrorNote);
+    }
+    const next = new URLSearchParams(searchParams.toString());
+    next.delete("connect");
+    next.delete("reason");
+    router.replace(`?${next.toString()}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connectResult]);
+
+  async function handleConnectClick(platform: MarketingPlatform) {
+    // Meta Ads, Google Ads and WhatsApp are intentionally not part of this
+    // OAuth flow yet — keep the honest localized "coming soon" note.
+    if (!(OAUTH_PLATFORMS as readonly string[]).includes(platform)) {
+      setConnectNoteFor(platform);
+      return;
+    }
+
+    setConnectError(null);
+    setConnectingPlatform(platform);
+    try {
+      const response = await fetch(
+        `/api/marketing/oauth/connect?platform=${encodeURIComponent(platform)}`,
+      );
+      if (!response.ok) {
+        throw new Error("connect_failed");
+      }
+      const data = (await response.json()) as { url?: string };
+      if (!data.url) throw new Error("connect_failed");
+      // Navigate to Facebook's dialog/oauth; the callback brings us back.
+      window.location.assign(data.url);
+    } catch {
+      setConnectingPlatform(null);
+      setConnectError(t.settings.connectErrorNote);
+    }
   }
 
   async function handleBudgetSubmit(event: FormEvent<HTMLFormElement>) {
@@ -122,6 +171,12 @@ export function MarketingSettings({
           {SETTINGS_PLATFORMS.map((platform) => {
             const account = accountsByPlatform.get(platform);
             const connected = account?.status === "connected";
+            // Meta Ads is shown but its real OAuth is pending Meta permission
+            // approval — the Connect button honestly reads "Coming soon".
+            const metaAdsSoon = platform === "meta_ads" && !connected;
+            const isConnecting = connectingPlatform === platform;
+            const buttonDisabled =
+              connected || metaAdsSoon || connectingPlatform !== null;
             return (
               <div
                 key={platform}
@@ -140,11 +195,22 @@ export function MarketingSettings({
                 <Button
                   size="md"
                   variant={connected ? "secondary" : "primary"}
-                  disabled={connected}
+                  disabled={buttonDisabled}
                   onClick={() => handleConnectClick(platform)}
                   aria-label={`${t.settings.connectButton} — ${platformLabel(t, platform)}`}
                 >
-                  {connected ? t.settings.statusConnected : t.settings.connectButton}
+                  {connected ? (
+                    t.settings.statusConnected
+                  ) : metaAdsSoon ? (
+                    t.settings.metaAdsSoonButton
+                  ) : isConnecting ? (
+                    <>
+                      <Spinner />
+                      {t.settings.connectingButton}
+                    </>
+                  ) : (
+                    t.settings.connectButton
+                  )}
                 </Button>
               </div>
             );
@@ -158,7 +224,30 @@ export function MarketingSettings({
             className="mt-3 flex items-center gap-1.5 text-xs leading-relaxed text-faint"
           >
             <AlertCircleIcon className="size-3.5 shrink-0" />
-            {platformLabel(t, connectNoteFor)}: {t.settings.connectSoonNote}
+            {platformLabel(t, connectNoteFor)}:{" "}
+            {connectNoteFor === "meta_ads"
+              ? t.settings.metaAdsPendingNote
+              : t.settings.connectSoonNote}
+          </p>
+        ) : null}
+
+        {connectError ? (
+          <p
+            role="alert"
+            className="mt-3 flex items-start gap-1.5 text-xs leading-relaxed text-red-600 dark:text-red-400"
+          >
+            <AlertCircleIcon className="mt-px size-3.5 shrink-0" />
+            {connectError}
+          </p>
+        ) : null}
+
+        {connectSuccess ? (
+          <p
+            role="status"
+            className="mt-3 flex items-start gap-1.5 text-xs font-medium leading-relaxed text-emerald-700 dark:text-emerald-300"
+          >
+            <CheckCircleIcon className="mt-px size-3.5 shrink-0" />
+            {t.settings.connectSuccess}
           </p>
         ) : null}
 
@@ -242,5 +331,7 @@ function platformLabel(t: Dictionary, platform: MarketingPlatform): string {
       return t.settings.platformGoogleAds;
     case "whatsapp":
       return t.settings.platformWhatsapp;
+    case "meta_ads":
+      return t.settings.platformMetaAds;
   }
 }

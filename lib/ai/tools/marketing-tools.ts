@@ -80,7 +80,9 @@ export const generateProductCaptionTool = tool({
       created: true,
       status: "draft",
       product: productSummary(match.item),
-      caption: draftResult.data.caption,
+      caption_en: draftResult.data.captionEn,
+      caption_ur: draftResult.data.captionUr,
+      selected_language: draftResult.data.selectedLanguage,
       postId: draftResult.data.id,
     });
   },

@@ -7,22 +7,20 @@ import { getCurrency } from "@/lib/business/constants";
 import type { Language } from "@/lib/business/types";
 
 /**
- * AI caption generator — Phase 2 (reduced, per docs/phase2update.txt).
+ * AI caption generator — Phase 2.5 (bilingual captions).
  *
- * This produces the caption + hashtags behind an automatically created social
- * "draft" post, through the SAME OpenAI Agents SDK orchestration the AI
- * Business Manager chat uses. It reuses the shared model binding
- * (createBusinessManagerModel) so provider failover and switching behaviour
- * stay identical to the rest of the app — there is deliberately NO separate
- * or parallel AI call path.
+ * Produces BOTH Roman Urdu and English captions for a product in a single AI
+ * call, so the two versions share the same creative context and represent the
+ * same caption just in each language. This avoids two independent calls that
+ * could produce inconsistent content.
  *
- * The agent is told to return PLAIN TEXT (a caption followed by a line of
- * hashtags). This keeps output provider-robust — no structured-output schema
- * that the OpenAI/Gemini/Groq failover chain could reject with format errors.
+ * The agent returns PLAIN TEXT with a clear delimiter between languages.
+ * This keeps output provider-robust — no structured-output schema that the
+ * OpenAI/Gemini/Groq failover chain could reject with format errors.
  */
 
 export type CaptionGeneratorResult =
-  | { ok: true; data: { caption: string } }
+  | { ok: true; data: { captionUr: string; captionEn: string } }
   | { ok: false; reason: "not_configured" | "ai_failed" | "empty" };
 
 export interface CaptionProductContext {
@@ -34,43 +32,90 @@ export interface CaptionProductContext {
   language: Language;
 }
 
-/** Builds the language-aware caption writing instructions. */
-function buildCaptionInstructions(params: CaptionProductContext): string {
-  const { language } = params;
-  if (language === "ur") {
-    return [
-      "You write Instagram marketing captions for a small business owner.",
-      "Rule 1 — write the caption ONLY in simple Roman Urdu (Urdu in English letters), warm and easy for a non-technical customer, e.g. 'Black Kurta ab fresh stock mein maujood hai!'.",
-      "Rule 2 — keep it short (2-4 short sentences).",
-      "Rule 3 — end with 4-6 relevant hashtags on their own line (hashtags stay in English as-is, e.g. #Kurta #Fashion).",
-      "Output ONLY the finished caption text with the hashtag line at the end. Nothing else — no explanations, no quotes, no labels.",
-    ].join("\n");
-  }
+/**
+ * Builds the bilingual caption writing instructions. The agent writes BOTH
+ * languages in a single response, separated by a clear delimiter.
+ */
+function buildBilingualCaptionInstructions(): string {
   return [
     "You write Instagram marketing captions for a small business owner.",
-    "Rule 1 — write the caption ONLY in clear, simple English, warm and friendly for customers.",
-    "Rule 2 — keep it short (2-4 short sentences).",
-    "Rule 3 — end with 4-6 relevant hashtags on their own line (e.g. #Fashion #NewArrivals).",
-    "Output ONLY the finished caption text with the hashtag line at the end. Nothing else — no explanations, no quotes, no labels.",
+    "You must produce TWO versions of the same caption for this product:",
+    "",
+    "1. ENGLISH version — clear, simple English, warm and friendly for customers.",
+    "2. ROMAN URDU version — simple Roman Urdu (Urdu in English letters), warm and easy for a non-technical customer, e.g. 'Black Kurta ab fresh stock mein maujood hai!'.",
+    "",
+    "Both versions must convey the same message/idea, just in different languages.",
+    "",
+    "RULES for BOTH versions:",
+    "- Keep each caption short (2-4 short sentences).",
+    "- End each caption with 4-6 relevant hashtags on their own line (hashtags stay in English as-is, e.g. #Kurta #Fashion).",
+    "- The two versions should NOT be exact word-for-word translations — adapt the tone naturally for each language.",
+    "",
+    "OUTPUT FORMAT (exactly this structure):",
+    "###EN###",
+    "(English caption here)",
+    "###UR###",
+    "(Roman Urdu caption here)",
+    "",
+    "Nothing else — no explanations, no quotes, no labels outside the delimiter sections.",
   ].join("\n");
 }
 
+/** Delimiters used to separate the two language captions in the AI output. */
+const EN_DELIMITER = "###EN###";
+const UR_DELIMITER = "###UR###";
+
 /**
- * Parses the agent's plain-text output into a caption. Hashtags are appended
- * to the caption as a final line (the `social_posts` table stores the whole
- * caption; there is no separate hashtags column).
+ * Parses the agent's plain-text output into two caption strings.
+ * Extracts the English and Roman Urdu sections from the delimited output.
  */
-function parseCaption(raw: string): string {
+function parseBilingualCaptions(raw: string): { captionUr: string; captionEn: string } | null {
   const trimmed = raw.trim();
-  if (!trimmed) return "";
+  if (!trimmed) return null;
+
   const cleaned = trimmed
-    // Strip leading/trailing markdown-style quotes the model sometimes adds.
     .replace(/^```/, "")
     .replace(/```$/, "")
     .trim();
+  if (!cleaned) return null;
+
+  const enIdx = cleaned.indexOf(EN_DELIMITER);
+  const urIdx = cleaned.indexOf(UR_DELIMITER);
+
+  // If both delimiters are present, extract each section.
+  if (enIdx !== -1 && urIdx !== -1) {
+    const enSection = cleaned.slice(enIdx + EN_DELIMITER.length, urIdx).trim();
+    const urSection = cleaned.slice(urIdx + UR_DELIMITER.length).trim();
+    const captionEn = normaliseCaption(enSection);
+    const captionUr = normaliseCaption(urSection);
+    if (captionEn && captionUr) return { captionEn, captionUr };
+  }
+
+  // Fallback: try to find one or the other, or split on ### markers.
+  const sections = cleaned.split(/###\w+###/).map((s) => s.trim()).filter(Boolean);
+  if (sections.length >= 2) {
+    // Heuristic: first section is English, second is Roman Urdu (matches the
+    // instruction order).
+    const captionEn = normaliseCaption(sections[0]);
+    const captionUr = normaliseCaption(sections[1]);
+    if (captionEn && captionUr) return { captionEn, captionUr };
+  }
+
+  // Last resort: if no delimiters found, treat the whole output as both
+  // languages (identical — not ideal but preserves backward compat for a
+  // single-language generation edge case).
+  const fallback = normaliseCaption(cleaned);
+  if (fallback) return { captionEn: fallback, captionUr: fallback };
+
+  return null;
+}
+
+function normaliseCaption(text: string): string {
+  if (!text) return "";
+  // Strip wrapping markdown fences the model sometimes adds.
+  const cleaned = text.replace(/^```/, "").replace(/```$/, "").trim();
   if (!cleaned) return "";
-  // Normalise a trailing hashtag run: ensure exactly one blank line bound
-  // between the body and the hashtags where the model wrote them inline.
+  // Normalise a trailing hashtag run.
   const tagsMatch = cleaned.match(/(?:^|\s)(#[A-Za-z0-9_]+(?:\s+#[A-Za-z0-9_]+){1,5})$/);
   let caption = cleaned;
   if (tagsMatch) {
@@ -82,9 +127,9 @@ function parseCaption(raw: string): string {
 }
 
 /**
- * Generates a caption + hashtags for a product using the shared Agents SDK
- * orchestration. Runs a focused, tools-less agent so the output is pure text
- * and the same model/failover chain is reused. Safe to call server-side only.
+ * Generates BOTH English and Roman Urdu captions in a single AI call, so the
+ * two versions represent the same caption in each language. Returns both
+ * versions. Safe to call server-side only.
  */
 export async function generateProductCaption(
   params: CaptionProductContext,
@@ -94,41 +139,39 @@ export async function generateProductCaption(
 
   const agent = new Agent({
     name: "Product Caption Writer",
-    instructions: buildCaptionInstructions(params),
+    instructions: buildBilingualCaptionInstructions(),
     model: createBusinessManagerModel(),
     modelSettings: {
       // No temperature is set on purpose: the resolved provider model defines
       // its own default, and some models in the failover chain only accept the
       // default value. Setting a custom temperature here risks a request-shape
       // rejection that the router treats as futile (no backup engaged).
-      maxTokens: 512,
+      maxTokens: 1024,
     },
   });
 
   const prompt = [
-    `Write a short marketing caption for this product:`,
+    `Write a short marketing caption for this product in BOTH English and Roman Urdu.`,
     `- Name: ${params.productName}`,
     `- Category: ${params.category}`,
     `- Price: ${priceText}`,
     params.imageUrl
       ? `- An image of the product is available (you can describe it in the caption if helpful): ${params.imageUrl}`
       : "- No image is attached.",
+    "",
+    "Produce both language versions using the required output format.",
   ].join("\n");
 
   try {
     const result = await run(agent, [user(prompt)], {
       maxTurns: 2,
     });
-    const caption = parseCaption(String(result.finalOutput ?? "").trim());
-    if (!caption) return { ok: false, reason: "empty" };
-    return { ok: true, data: { caption } };
+    const parsed = parseBilingualCaptions(String(result.finalOutput ?? "").trim());
+    if (!parsed) return { ok: false, reason: "empty" };
+    return { ok: true, data: parsed };
   } catch (error) {
-    // The shared model chain can fail (rate limits, provider errors). Log a
-    // secret-free diagnostic and report `ai_failed` so the caller can decide
-    // whether to block the underlying flow. `not_configured` originates only
-    // from createBusinessManagerModel when no provider key exists.
     console.error(
-      "[caption-generator] caption generation failed:",
+      "[caption-generator] bilingual caption generation failed:",
       error instanceof Error ? error.message : String(error),
     );
     return { ok: false, reason: "ai_failed" };

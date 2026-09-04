@@ -7,6 +7,7 @@ import { createBusinessManagerModel } from "@/lib/ai/model-provider";
 import { businessTools } from "@/lib/ai/tools";
 import { getCurrency } from "@/lib/business/constants";
 import { dictionaries } from "@/lib/i18n/dictionary";
+import { configureApprovalExecutors } from "@/lib/marketing/approval-executors";
 
 /**
  * The AI Business Manager agent.
@@ -101,6 +102,9 @@ export function buildBusinessManagerInstructions(
 export function createBusinessManagerAgent(
   context: AgentRunContext,
 ): Agent<AgentRunContext> {
+  // Ensure the Phase 4 approval executors are wired server-side so approved
+  // actions have a real implementation to run (idempotent).
+  configureApprovalExecutors();
   return new Agent<AgentRunContext>({
     name: "AI Business Manager",
     instructions: buildBusinessManagerInstructions(context),

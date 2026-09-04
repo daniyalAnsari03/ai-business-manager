@@ -40,10 +40,15 @@ import {
 } from "@/lib/ai/tools/expense-tools";
 import { businessOverviewTool } from "@/lib/ai/tools/overview-tools";
 import { generateProductCaptionTool } from "@/lib/ai/tools/marketing-tools";
+import { createAdCampaignTool } from "@/lib/ai/tools/ad-campaign-tools";
 import {
   getBusinessInfoTool,
   updateBusinessProfileTool,
 } from "@/lib/ai/tools/business-tools";
+import {
+  getAutomationModeTool,
+  publishSocialPostTool,
+} from "@/lib/ai/tools/approval-tools";
 
 /**
  * The complete controlled tool surface of the AI Business Manager. Every
@@ -86,7 +91,11 @@ export const businessTools: Tool<AgentRunContext>[] = [
   businessOverviewTool,
   // Marketing
   generateProductCaptionTool,
+  createAdCampaignTool,
   // Business settings (same capabilities as the Settings page)
   getBusinessInfoTool,
   updateBusinessProfileTool,
+  // Phase 4 approval-aware marketing
+  getAutomationModeTool,
+  publishSocialPostTool,
 ];
