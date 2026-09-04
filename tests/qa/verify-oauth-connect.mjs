@@ -15,11 +15,14 @@ const PASSWORD = gv("password:", "password: ");
 const SUPABASE_URL = gv("NEXT_PUBLIC_SUPABASE_URL");
 const SUPABASE_KEY = gv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
 const META_ID = gv("META_APP_ID");
-const META_IG_ID = gv("META_INSTAGRAM_APP_ID");
 const META_FB_CONFIG_ID = gv("META_FACEBOOK_CONFIG_ID");
-// Facebook scope fallback (used only when no config_id is set) — must match the
-// `facebook` entry in PLATFORM_SCOPES in lib/marketing/meta-oauth.ts.
+// Scope fallbacks (used when no config_id is set) — must match the
+// `facebook` and `instagram` entries in PLATFORM_SCOPES in
+// lib/marketing/meta-oauth.ts. Instagram uses "Instagram API with Facebook
+// Login", so its client_id is the MAIN Meta App ID and its scopes are the
+// FB-Login permission names.
 const PLATFORM_FB_SCOPE_STRING = "pages_show_list,pages_read_engagement,business_management";
+const PLATFORM_IG_SCOPE_STRING = "instagram_basic,instagram_content_publish,pages_read_engagement";
 
 async function supabaseSession() {
   return fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
@@ -162,24 +165,25 @@ try {
   const stateIsSigned = stateParts.length === 4;
   // The state's businessId is a uuid; platform is the 2nd part.
   const statePlatformOk = stateParts.length === 4 && stateParts[1] === "instagram";
+  // Instagram must NOT use config_id (that is the Facebook path).
+  const configId = d.searchParams.get("config_id");
 
   console.log("[checks]");
   console.log(`  reached_facebook_or_instagram=${u.hostname.includes("facebook.com") || u.hostname.includes("instagram.com")}`);
-  // Instagram OAuth requires the Instagram App ID, not the main Meta App ID.
-  const expectedIgClientId = META_IG_ID || META_ID;
-  console.log(`  client_id_matches_instagram_app_id=${clientId === expectedIgClientId}`);
+  // Instagram uses the MAIN Meta App ID (Facebook Login), never the separate
+  // Instagram-login app id — using the standalone id causes "Invalid platform app".
+  const expectedIgClientId = META_ID;
+  console.log(`  client_id_is_main_meta_app=${clientId === expectedIgClientId}`);
   console.log(`  redirect_uri_is_callback=${redirectUri === `${BASE}/api/marketing/oauth/callback`}`);
   console.log(`  state_is_signed=${stateIsSigned}`);
   console.log(`  state_binds_platform_instagram=${statePlatformOk}`);
-  // Instagram Login scopes use instagram_* (no "business_" prefix), matching the
-  // Meta dashboard permissions for "Instagram API with Instagram Login".
+  // Instagram (Facebook Login) scopes: instagram_basic + instagram_content_publish
+  // (the standalone "instagram_content_publishing" name is NOT valid here and
+  // makes the dialog return a 500 Error page).
   console.log(`  scope_has_instagram_basic=${(scope ?? "").includes("instagram_basic")}`);
-  console.log(`  scope_has_instagram_content_publishing=${(scope ?? "").includes("instagram_content_publishing")}`);
-  console.log(`  scope_no_pages_manage_posts=${!(scope ?? "").includes("pages_manage_posts")}`);
-  console.log(`  platform_is_instagram=${statePlatformOk}`);
+  console.log(`  scope_has_instagram_content_publish=${(scope ?? "").includes("instagram_content_publish")}`);
+  console.log(`  scope_matches_platform_instagram=${(scope ?? "") === PLATFORM_IG_SCOPE_STRING && configId === null}`);
 
-  // Instagram must NOT use config_id (that is the Facebook path).
-  const configId = d.searchParams.get("config_id");
   console.log(`  instagram_has_no_config_id=${configId === null}`);
   // Cross-check: prove the Facebook fallback scope no longer contains
   // pages_manage_posts, and report whether the env supplies a config ID.

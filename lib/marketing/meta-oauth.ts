@@ -13,6 +13,13 @@
  *   5. discoverPage() / discoverInstagram() read the owner's Page (and the
  *      Instagram business account linked to it) so the right account_label
  *      and external ids can be persisted.
+ *
+ * Instagram uses the SAME flow as Facebook ("Instagram API with Facebook
+ * Login"): authorize with the main Meta App ID on facebook.com/dialog/oauth,
+ * exchange on graph.facebook.com, then read the connected Instagram business
+ * account through the owner's Page. The standalone Instagram-login product
+ * (www.instagram.com/oauth/authorize + graph.instagram.com + its own App ID)
+ * is intentionally NOT used.
  */
 
 import { createHmac, timingSafeEqual } from "node:crypto";
@@ -26,32 +33,32 @@ export function isOAuthPlatform(value: string): value is OAuthPlatform {
 }
 
 /**
- * Scopes required to read (and later publish to) each channel.
+ * Scopes required to read (and publish to) each channel.
  *
- * 2026 note: The scopes differ by Meta product:
+ * 2026 note: Both channels use the MAIN Meta App ID through the Facebook
+ * Login dialog (facebook.com/dialog/oauth). This mirrors the app's actual
+ * Meta dashboard configuration ("Instagram API with Facebook Login").
  *
- * - Instagram ("Instagram API with Instagram Login"):
- *     instagram_basic, instagram_content_publishing
- *   These are requested through www.instagram.com/oauth/authorize
- *   using the Instagram App ID (not the main Meta App ID).
- *   The scope names match the Meta dashboard's required permissions for
- *   this app's "Instagram API with Instagram Login" use case (no
- *   "business_" prefix) and match what already works for basic connect.
+ * - Instagram ("Instagram API with Facebook Login"):
+ *     instagram_basic, instagram_content_publish, pages_read_engagement
+ *   These are the exact permission names Meta's Content Publishing guide
+ *   requires for this product (the standalone "Instagram API with Instagram
+ *   Login" names — instagram_business_basic / instagram_content_publishing —
+ *   are a DIFFERENT app class and are NOT valid here; using them makes the
+ *   Facebook dialog return a 500 "Error" page).
+ *   Token exchange and all IG publishing API calls run on graph.facebook.com.
  *
  * - Facebook ("Facebook Login for Business"):
  *     pages_show_list, pages_read_engagement, business_management
- *   These are requested through facebook.com/dialog/oauth.
  *   When a Facebook Login for Business Configuration ID is provided
  *   (META_FACEBOOK_CONFIG_ID), the `config_id` parameter replaces `scope`
  *   entirely — the configuration defines which permissions are requested.
  *   `pages_manage_posts` is NOT used; the Configuration ID controls access.
- *
- * Instagram content scopes are NOT valid Facebook Login scopes and must
- * never appear in the Facebook OAuth URL.
  */
 const PLATFORM_SCOPES: Record<OAuthPlatform, string> = {
   facebook: "pages_show_list,pages_read_engagement,business_management",
-  instagram: "instagram_basic,instagram_content_publishing",
+  instagram:
+    "instagram_basic,instagram_content_publish,pages_read_engagement",
 };
 
 const STATE_TTL_MS = 10 * 60 * 1000; // 10 minutes — long enough for Meta login.
@@ -182,10 +189,12 @@ export interface AuthorizeUrlOptions {
  * is our callback route; the state binds this connection attempt to the
  * current authenticated business so the callback can safely finish it.
  *
- * For Instagram ("Instagram API with Instagram Login"), the Instagram App ID
- * (META_INSTAGRAM_APP_ID) is used as client_id — NOT the main Meta App ID.
- * For Facebook with a Login for Business Configuration ID
- * (META_FACEBOOK_CONFIG_ID), the `config_id` parameter replaces `scope`.
+ * BOTH Instagram and Facebook authorize through facebook.com/dialog/oauth
+ * with the MAIN Meta App ID (META_APP_ID). This app's Meta dashboard is set
+ * up for "Instagram API with Facebook Login", so the Instagram scopes live on
+ * the same dialog as the Facebook scopes. For Facebook with a Login for
+ * Business Configuration ID (META_FACEBOOK_CONFIG_ID), the `config_id`
+ * parameter replaces `scope`.
  */
 export function buildAuthorizeUrl(options: AuthorizeUrlOptions): string {
   const cfg = getMetaAppConfig();
@@ -193,20 +202,8 @@ export function buildAuthorizeUrl(options: AuthorizeUrlOptions): string {
     throw new Error("Meta is not configured; cannot build authorize URL.");
   }
 
-  // Instagram content-publishing permissions belong to the "Instagram API with
-  // Instagram Login" product and must be requested through Instagram's own
-  // OAuth entry point.  Facebook Login's dialog/oauth does not recognise them.
-  const oauthBase =
-    options.platform === "instagram" ? cfg.instagramOauthBase : cfg.dialogOauthBase;
-
-  const url = new URL(oauthBase);
-
-  // Instagram OAuth requires the Instagram App ID, not the main Meta App ID.
-  const clientId =
-    options.platform === "instagram" && cfg.instagramAppId
-      ? cfg.instagramAppId
-      : cfg.appId;
-  url.searchParams.set("client_id", clientId);
+  const url = new URL(cfg.dialogOauthBase);
+  url.searchParams.set("client_id", cfg.appId);
   url.searchParams.set("redirect_uri", options.redirectUri);
   url.searchParams.set("state", createState(cfg, options.businessId, options.platform));
   url.searchParams.set("response_type", "code");
@@ -438,138 +435,5 @@ export async function discoverInstagram(
     ok: true,
     pageId,
     instagram: { id: ig.id, username: ig.username },
-  };
-}
-
-/**
- * Exchanges the authorization code for a short-lived Instagram User Access
- * Token.  Instagram Login uses POST to api.instagram.com/oauth/access_token
- * (not the Graph API endpoint used by Facebook Login).
- */
-export async function exchangeInstagramCodeForToken(
-  code: string,
-  redirectUri: string,
-): Promise<
-  { ok: true; accessToken: string; userId?: string; expiresIn?: number } | { ok: false; message: string }
-> {
-  const cfg = getMetaAppConfig();
-  if (!cfg) return { ok: false, message: "Meta not configured." };
-
-  const clientId = cfg.instagramAppId ?? cfg.appId;
-  const clientSecret = cfg.instagramAppSecret ?? cfg.appSecret;
-
-  const body = new URLSearchParams({
-    client_id: clientId,
-    client_secret: clientSecret,
-    grant_type: "authorization_code",
-    redirect_uri: redirectUri,
-    code,
-  });
-
-  let res: Response;
-  try {
-    res = await fetch(cfg.instagramTokenUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
-    });
-  } catch (e) {
-    console.log("[IG-OAuth-Token] FETCH ERROR:", e);
-    return { ok: false, message: "Could not reach Instagram." };
-  }
-
-  let json: {
-    access_token?: string;
-    user_id?: string;
-    expires_in?: number;
-    error?: { message?: string; type?: string; code?: number };
-  };
-  try {
-    json = (await res.json()) as typeof json;
-  } catch (e) {
-    console.log("[IG-OAuth-Token] JSON PARSE ERROR:", e);
-    return { ok: false, message: "Unexpected response from Instagram." };
-  }
-
-  console.log(
-    `[IG-OAuth-Token] HTTP status=${res.status} has_access_token=${!!json.access_token} expires_in=${json.expires_in}`,
-  );
-  if (json.error) console.log("[IG-OAuth-Token] error=", JSON.stringify(json.error));
-
-  if (res.ok && json.access_token) {
-    return {
-      ok: true,
-      accessToken: json.access_token,
-      userId: json.user_id,
-      expiresIn: json.expires_in,
-    };
-  }
-
-  return { ok: false, message: json.error?.message ?? "Instagram rejected the code." };
-}
-
-export interface InstagramUserInfo {
-  id: string;
-  username: string;
-  name?: string;
-  account_type?: string;
-}
-
-/**
- * Reads the authenticated Instagram professional account's info via the
- * Instagram Graph API.  Returns the user ID and username directly — no
- * Facebook Page discovery is needed for Instagram Login.
- */
-export async function discoverInstagramUser(
-  accessToken: string,
-): Promise<{ ok: true; user: InstagramUserInfo } | { ok: false; message: string }> {
-  const cfg = getMetaAppConfig();
-  if (!cfg) return { ok: false, message: "Meta not configured." };
-
-  const url = new URL(`${cfg.instagramGraphApiBase}/me`);
-  url.searchParams.set("fields", "id,username,name,account_type");
-  url.searchParams.set("access_token", accessToken);
-
-  let res: Response;
-  try {
-    res = await fetch(url.toString());
-  } catch (e) {
-    console.log("[IG-OAuth-User] FETCH ERROR:", e);
-    return { ok: false, message: "Could not reach Instagram." };
-  }
-
-  let json: {
-    id?: string;
-    username?: string;
-    name?: string;
-    account_type?: string;
-    error?: { message?: string };
-  };
-  try {
-    json = (await res.json()) as typeof json;
-  } catch (e) {
-    console.log("[IG-OAuth-User] JSON PARSE ERROR:", e);
-    return { ok: false, message: "Unexpected response from Instagram." };
-  }
-
-  console.log("[IG-OAuth-User] HTTP status:", res.status);
-  console.log("[IG-OAuth-User] has_user:", !!json.id);
-  if (json.error) console.log("[IG-OAuth-User] error:", JSON.stringify(json.error));
-
-  if (!json.id || !json.username) {
-    return {
-      ok: false,
-      message: json.error?.message ?? "Could not retrieve Instagram account info.",
-    };
-  }
-
-  return {
-    ok: true,
-    user: {
-      id: json.id,
-      username: json.username,
-      name: json.name,
-      account_type: json.account_type,
-    },
   };
 }

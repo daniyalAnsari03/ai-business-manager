@@ -4,9 +4,8 @@ import { getUserBusiness } from "@/lib/business/service";
 import {
   verifyState,
   exchangeCodeForToken,
-  exchangeInstagramCodeForToken,
   discoverPage,
-  discoverInstagramUser,
+  discoverInstagram,
   resolveOAuthRedirectUri,
   resolveOAuthBaseUrl,
 } from "@/lib/marketing/meta-oauth";
@@ -112,29 +111,37 @@ export async function GET(request: Request) {
     return redirect(`?connect=success&platform=facebook`);
   }
 
-  // Instagram ("Instagram API with Instagram Login"): uses Instagram App ID,
-  // Instagram token endpoint, and Instagram Graph API directly.  No Facebook
-  // Page discovery is needed.
-  const igToken = await exchangeInstagramCodeForToken(code, redirectUri);
+  // Instagram via "Instagram API with Facebook Login": the same Facebook Login
+  // round trip as the facebook branch — exchange on graph.facebook.com, then
+  // read the Instagram business account linked to the owner's Page. The token
+  // and all IG publishing calls therefore share ONE app vault (the main Meta
+  // App) and one host (graph.facebook.com).
+  const igToken = await exchangeCodeForToken(code, redirectUri);
   if (!igToken.ok) {
     console.error("[oauth/callback] IG token exchange failed:", igToken.message);
     return redirect("?connect=error&reason=token");
   }
 
-  const igUser = await discoverInstagramUser(igToken.accessToken);
+  const igPage = await discoverPage(igToken.accessToken);
+  if (!igPage.ok) {
+    console.error("[oauth/callback] IG page discovery failed:", igPage.message);
+    return redirect("?connect=error&reason=page");
+  }
+
+  const igUser = await discoverInstagram(igToken.accessToken, igPage.page.id);
   if (!igUser.ok) {
-    console.error("[oauth/callback] IG user discovery failed:", igUser.message);
+    console.error("[oauth/callback] IG account discovery failed:", igUser.message);
     return redirect("?connect=error&reason=instagram");
   }
 
   const persisted = await connectMetaAccount({
     platform,
-    accountLabel: igUser.user.username,
+    accountLabel: igUser.instagram.username,
     accessToken: igToken.accessToken,
     tokenExpiresAt: igToken.expiresIn
       ? new Date(Date.now() + igToken.expiresIn * 1000).toISOString()
       : null,
-    externalAccountId: igUser.user.id,
+    externalAccountId: igUser.instagram.id,
   });
   if (!persisted.ok) {
     console.error("[oauth/callback] IG save failed:", persisted.reason);

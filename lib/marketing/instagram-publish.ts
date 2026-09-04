@@ -14,6 +14,10 @@ import { getMetaAppConfig } from "@/lib/marketing/meta-config";
  *   Step A: POST /{ig-user-id}/media  → creates a media container, returns id
  *   Step B: POST /{ig-user-id}/media_publish with that id → publishes live
  *
+ * The token comes from "Instagram API with Facebook Login" (see
+ * lib/marketing/meta-oauth.ts), so every call runs on graph.facebook.com — the
+ * host Meta requires for Facebook-Login-issued Instagram tokens.
+ *
  * Only reached when a connected Instagram account exists with a valid token.
  * Token lifetime: ~60 days for long-lived tokens — reconnection eventually
  * needed.
@@ -132,7 +136,7 @@ async function publishToInstagram(
   if (!cfg) return { ok: false, error: "Meta not configured." };
 
   // Step A — create media container
-  const containerUrl = new URL(`${cfg.instagramGraphApiBase}/${igUserId}/media`);
+  const containerUrl = new URL(`${cfg.graphApiBase}/${igUserId}/media`);
   containerUrl.searchParams.set("image_url", imageUrl);
   containerUrl.searchParams.set("caption", caption);
   containerUrl.searchParams.set("access_token", accessToken);
@@ -168,7 +172,7 @@ async function publishToInstagram(
   }
 
   // Step B — publish the container
-  const publishUrl = new URL(`${cfg.instagramGraphApiBase}/${igUserId}/media_publish`);
+  const publishUrl = new URL(`${cfg.graphApiBase}/${igUserId}/media_publish`);
   publishUrl.searchParams.set("creation_id", containerJson.id);
   publishUrl.searchParams.set("access_token", accessToken);
 
