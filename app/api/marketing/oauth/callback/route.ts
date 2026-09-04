@@ -44,6 +44,15 @@ export async function GET(request: Request) {
     return NextResponse.redirect(target.toString());
   };
 
+  // Every step failure emits ONE dense, greppable line so the failing phase of
+  // a real callback round trip is unambiguous in server logs.
+  const failStep = (platform: string, step: string, detail: string) => {
+    console.error(
+      `[oauth/callback] FAIL platform=${platform} step=${step} message=${detail}`,
+    );
+    return redirect(`?connect=error&reason=${step}`);
+  };
+
   if (fbError) {
     console.error(
       "[oauth/callback] Facebook denied. error:",
@@ -84,14 +93,12 @@ export async function GET(request: Request) {
   if (platform === "facebook") {
     const token = await exchangeCodeForToken(code, redirectUri);
     if (!token.ok) {
-      console.error("[oauth/callback] FB token exchange failed:", token.message);
-      return redirect("?connect=error&reason=token");
+      return failStep(platform, "token", token.message);
     }
 
     const page = await discoverPage(token.accessToken);
     if (!page.ok) {
-      console.error("[oauth/callback] Facebook page discovery failed:", page.message);
-      return redirect("?connect=error&reason=page");
+      return failStep(platform, "page", page.message);
     }
 
     const persisted = await connectMetaAccount({
@@ -104,8 +111,7 @@ export async function GET(request: Request) {
       externalAccountId: page.page.id,
     });
     if (!persisted.ok) {
-      console.error("[oauth/callback] Facebook save failed:", persisted.reason);
-      return redirect("?connect=error&reason=save");
+      return failStep(platform, "save", persisted.reason);
     }
 
     return redirect(`?connect=success&platform=facebook`);
@@ -118,20 +124,17 @@ export async function GET(request: Request) {
   // App) and one host (graph.facebook.com).
   const igToken = await exchangeCodeForToken(code, redirectUri);
   if (!igToken.ok) {
-    console.error("[oauth/callback] IG token exchange failed:", igToken.message);
-    return redirect("?connect=error&reason=token");
+    return failStep(platform, "token", igToken.message);
   }
 
   const igPage = await discoverPage(igToken.accessToken);
   if (!igPage.ok) {
-    console.error("[oauth/callback] IG page discovery failed:", igPage.message);
-    return redirect("?connect=error&reason=page");
+    return failStep(platform, "page", igPage.message);
   }
 
   const igUser = await discoverInstagram(igToken.accessToken, igPage.page.id);
   if (!igUser.ok) {
-    console.error("[oauth/callback] IG account discovery failed:", igUser.message);
-    return redirect("?connect=error&reason=instagram");
+    return failStep(platform, "instagram", igUser.message);
   }
 
   const persisted = await connectMetaAccount({
@@ -144,8 +147,7 @@ export async function GET(request: Request) {
     externalAccountId: igUser.instagram.id,
   });
   if (!persisted.ok) {
-    console.error("[oauth/callback] IG save failed:", persisted.reason);
-    return redirect("?connect=error&reason=save");
+    return failStep(platform, "save", persisted.reason);
   }
 
   return redirect(`?connect=success&platform=instagram`);

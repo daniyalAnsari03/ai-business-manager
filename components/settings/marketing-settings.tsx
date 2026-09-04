@@ -67,8 +67,11 @@ export function MarketingSettings({
   const budgetDisabled = budgetSaving || walletLoadFailed;
 
   // Read the OAuth callback result (`?connect=...`) rendered by the callback
-  // route after a Meta round trip, then clear it so it shows just once.
+  // route after a Meta round trip, then clear it so it shows just once. The
+  // `reason` code names the exact step that failed server-side so the user sees
+  // an actionable message instead of the generic fallback.
   const connectResult = useMemo(() => searchParams.get("connect"), [searchParams]);
+  const connectReason = useMemo(() => searchParams.get("reason"), [searchParams]);
   useEffect(() => {
     if (!connectResult) return;
     if (connectResult === "success") {
@@ -78,6 +81,14 @@ export function MarketingSettings({
       setConnectError(t.settings.connectUnauthorized);
     } else if (connectResult === "denied") {
       setConnectError(t.settings.connectDenied);
+    } else if (connectReason === "token") {
+      setConnectError(t.settings.connectErrorToken);
+    } else if (connectReason === "page") {
+      setConnectError(t.settings.connectErrorPage);
+    } else if (connectReason === "instagram") {
+      setConnectError(t.settings.connectErrorInstagram);
+    } else if (connectReason === "save") {
+      setConnectError(t.settings.connectErrorSave);
     } else {
       setConnectError(t.settings.connectErrorNote);
     }

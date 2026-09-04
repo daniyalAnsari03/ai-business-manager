@@ -924,6 +924,12 @@ const en = {
     connectSoonNote: "Connecting accounts is coming in an upcoming update.",
     connectingButton: "Connecting…",
     connectErrorNote: "We couldn't start the connection. Please try again.",
+    connectErrorToken: "We couldn't finish the sign-in at Facebook. Please try again.",
+    connectErrorPage:
+      "We couldn't find a Facebook Page you manage. Check that the account you connected with manages the page, then try again.",
+    connectErrorInstagram:
+      "This Facebook Page has no Instagram Business account linked to it. Connect your Instagram Business account to the page in Meta's settings, then reconnect.",
+    connectErrorSave: "We couldn't save the connection. Please try again.",
     connectUnauthorized: "That connection doesn't belong to your business.",
     connectDenied: "Connection cancelled — you can try again anytime.",
     connectSuccess: "Channel connected.",
@@ -1912,6 +1918,12 @@ const ur: Dictionary = {
     connectSoonNote: "Accounts connect karna aane wale update mein aayega.",
     connectingButton: "Connect ho raha hai…",
     connectErrorNote: "Connection shuru nahi ho saki. Meherbani kar ke dobara koshish karein.",
+    connectErrorToken: "Facebook ke sign-in par connection mukammal nahi ho paya. Meherbani kar ke dobara koshish karein.",
+    connectErrorPage:
+      "Aapka koi Facebook Page nahi mila. Jis account se connect kar rahe hain us ke pas page hone ka zaroori hai, phir dobara koshish karein.",
+    connectErrorInstagram:
+      "Is Facebook Page ke sath koi Instagram Business account link nahi hai. Meta ki settings mein apna Instagram Business account page ke sath connect kar ke dobara connect karein.",
+    connectErrorSave: "Connection save nahi ho paya. Meherbani kar ke dobara koshish karein.",
     connectUnauthorized: "Ye connection apke business ka nahi hai.",
     connectDenied: "Connection cancel ho gayi — aap kabhi bhi dobara koshish kar sakte hain.",
     connectSuccess: "Channel connect ho gaya.",

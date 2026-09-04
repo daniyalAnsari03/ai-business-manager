@@ -40,12 +40,19 @@ export function isOAuthPlatform(value: string): value is OAuthPlatform {
  * Meta dashboard configuration ("Instagram API with Facebook Login").
  *
  * - Instagram ("Instagram API with Facebook Login"):
- *     instagram_basic, instagram_content_publish, pages_read_engagement
- *   These are the exact permission names Meta's Content Publishing guide
- *   requires for this product (the standalone "Instagram API with Instagram
- *   Login" names — instagram_business_basic / instagram_content_publishing —
- *   are a DIFFERENT app class and are NOT valid here; using them makes the
- *   Facebook dialog return a 500 "Error" page).
+ *     instagram_basic, instagram_content_publish, pages_read_engagement,
+ *     pages_show_list
+ *   The first three are the exact permission names Meta's Content Publishing
+ *   guide requires for this product (the standalone "Instagram API with
+ *   Instagram Login" names — instagram_business_basic /
+ *   instagram_content_publishing — are a DIFFERENT app class and are NOT
+ *   valid here; using them makes the Facebook dialog return a 500 "Error"
+ *   page).
+ *   `pages_show_list` is REQUIRED for the discovery step: the callback reads
+ *   the connected Page through GET /me/accounts, and Meta returns an empty
+ *   list for that edge unless the user has granted `pages_show_list`. Without
+ *   it the IG connect flow always fails with "No Facebook Page found" at the
+ *   exact discovery step even when the user fully consents.
  *   Token exchange and all IG publishing API calls run on graph.facebook.com.
  *
  * - Facebook ("Facebook Login for Business"):
@@ -58,7 +65,7 @@ export function isOAuthPlatform(value: string): value is OAuthPlatform {
 const PLATFORM_SCOPES: Record<OAuthPlatform, string> = {
   facebook: "pages_show_list,pages_read_engagement,business_management",
   instagram:
-    "instagram_basic,instagram_content_publish,pages_read_engagement",
+    "instagram_basic,instagram_content_publish,pages_read_engagement,pages_show_list",
 };
 
 const STATE_TTL_MS = 10 * 60 * 1000; // 10 minutes — long enough for Meta login.

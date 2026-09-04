@@ -22,7 +22,7 @@ const META_FB_CONFIG_ID = gv("META_FACEBOOK_CONFIG_ID");
 // Login", so its client_id is the MAIN Meta App ID and its scopes are the
 // FB-Login permission names.
 const PLATFORM_FB_SCOPE_STRING = "pages_show_list,pages_read_engagement,business_management";
-const PLATFORM_IG_SCOPE_STRING = "instagram_basic,instagram_content_publish,pages_read_engagement";
+const PLATFORM_IG_SCOPE_STRING = "instagram_basic,instagram_content_publish,pages_read_engagement,pages_show_list";
 
 async function supabaseSession() {
   return fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
@@ -178,8 +178,10 @@ try {
   console.log(`  state_is_signed=${stateIsSigned}`);
   console.log(`  state_binds_platform_instagram=${statePlatformOk}`);
   // Instagram (Facebook Login) scopes: instagram_basic + instagram_content_publish
-  // (the standalone "instagram_content_publishing" name is NOT valid here and
-  // makes the dialog return a 500 Error page).
+  // + pages_show_list (pages_show_list is required so the callback can list
+  // the connected Page via /me/accounts — the standalone
+  // "instagram_content_publishing" name is NOT valid here and makes the dialog
+  // return a 500 Error page).
   console.log(`  scope_has_instagram_basic=${(scope ?? "").includes("instagram_basic")}`);
   console.log(`  scope_has_instagram_content_publish=${(scope ?? "").includes("instagram_content_publish")}`);
   console.log(`  scope_matches_platform_instagram=${(scope ?? "") === PLATFORM_IG_SCOPE_STRING && configId === null}`);
