@@ -10,9 +10,14 @@
  *   3. verifyState() re-derives and checks the signature, expiry and that
  *      the state matches the authenticated business + platform.
  *   4. exchangeCodeForToken() swaps the short-lived code for an access token.
- *   5. discoverPage() / discoverInstagram() read the owner's Page (and the
- *      Instagram business account linked to it) so the right account_label
- *      and external ids can be persisted.
+ *   5. discoverPage() reads the owner's Pages (me/accounts), requesting each
+ *      Page's `instagram_business_account` up front, and selects the FIRST
+ *      Page that actually has a linked Instagram Business account (a plain
+ *      Facebook connect accepts any Page). The right account_label and
+ *      external ids can then be persisted.
+ *   6. discoverInstagram() remains available to verify the Instagram Business
+ *      account of ONE specific Page when callers do not use the discovery
+ *      selection above.
  *
  * Instagram uses the SAME flow as Facebook ("Instagram API with Facebook
  * Login"): authorize with the main Meta App ID on facebook.com/dialog/oauth,
@@ -332,17 +337,56 @@ async function exchangeWithOptions(
 export interface PageInfo {
   id: string;
   name: string;
+  /**
+   * The Instagram Business account linked to this Page, when it has one.
+   * Requested as part of /me/accounts discovery so a single call already shows
+   * which Page owns a linked IG account without a per-Page round trip.
+   */
+  instagram?: { id: string; username: string };
 }
 
-/** Reads the owner's Facebook Pages (me/accounts) and returns the first one. */
+type RawPage = {
+  id: string;
+  name: string;
+  instagram_business_account?: { id?: string; username?: string } | null;
+};
+
+function toInstagram(
+  value?: RawPage["instagram_business_account"],
+): { id: string; username: string } | null {
+  const id = value?.id?.trim();
+  const username = value?.username?.trim();
+  return id && username ? { id, username } : null;
+}
+
+export interface DiscoverPageOptions {
+  /**
+   * When true, only a Page that has a linked Instagram Business account is
+   * accepted and the FIRST such Page is selected. When false (the default,
+   * used by the plain Facebook connect flow) any managed Page works, so the
+   * first Page in the list is used — IG linkage is reported but not required.
+   */
+  requireInstagram?: boolean;
+}
+
+/**
+ * Reads the owner's Facebook Pages (me/accounts) and selects one.
+ *
+ * Every Page's `instagram_business_account{id,username}` is requested
+ * up-front, so discovering the first Page that actually has a linked
+ * Instagram Business account costs no extra round trip. This replaces the old
+ * behaviour of blindly using the first Page in the list, which picked the
+ * wrong Page (one with NO linked IG) for owners who manage several Pages.
+ */
 export async function discoverPage(
   accessToken: string,
+  options: DiscoverPageOptions = {},
 ): Promise<{ ok: true; page: PageInfo } | { ok: false; message: string }> {
   const cfg = getMetaAppConfig();
   if (!cfg) return { ok: false, message: "Meta not configured." };
 
   const url = new URL(`${cfg.graphApiBase}/me/accounts`);
-  url.searchParams.set("fields", "id,name");
+  url.searchParams.set("fields", "id,name,instagram_business_account{id,username}");
   url.searchParams.set("access_token", accessToken);
 
   let res: Response;
@@ -353,7 +397,10 @@ export async function discoverPage(
     return { ok: false, message: "Could not reach Meta." };
   }
 
-  let json: { data?: Array<{ id: string; name: string }>; error?: { message?: string } };
+  let json: {
+    data?: Array<RawPage>;
+    error?: { message?: string };
+  };
   try {
     json = (await res.json()) as typeof json;
   } catch (e) {
@@ -365,7 +412,9 @@ export async function discoverPage(
   console.log("[FB-OAuth-Page] data_count:", (json.data ?? []).length);
   if (json.error) console.log("[FB-OAuth-Page] error:", JSON.stringify(json.error));
 
-  const pages = (json.data ?? []).filter((p) => p.id && p.name);
+  const pages = (json.data ?? []).filter(
+    (p): p is RawPage => Boolean(p.id && p.name),
+  );
   if (pages.length === 0) {
     return {
       ok: false,
@@ -375,9 +424,74 @@ export async function discoverPage(
     };
   }
 
+  const describe = (page: RawPage) => {
+    const ig = toInstagram(page.instagram_business_account);
+    return ig
+      ? `${page.name} (has linked IG @${ig.username})`
+      : `${page.name} (no linked IG)`;
+  };
+
+  // Iterate ALL managed Pages and pick the first one that actually has a
+  // linked Instagram Business account — never settle for the first Page.
+  if (options.requireInstagram) {
+    const firstWithInstagram = pages.find(
+      (page) => toInstagram(page.instagram_business_account) !== null,
+    );
+    if (!firstWithInstagram) {
+      console.log(
+        `[FB-OAuth-Page] Rejected: no Page has a linked Instagram Business account. pages=${pages
+          .map(describe)
+          .join(", ")}`,
+      );
+      return {
+        ok: false,
+        message:
+          "No Instagram Business account is linked to any of your Facebook Pages. Connect your Instagram Business account to a Page in Meta's settings, then reconnect.",
+      };
+    }
+
+    const skipped = pages
+      .filter((page) => page.id !== firstWithInstagram.id)
+      .map(describe)
+      .join(", ");
+    console.log(
+      `[FB-OAuth-Page] Selected page: ${describe(firstWithInstagram)}; skipped: ${
+        skipped || "none"
+      }`,
+    );
+
+    return {
+      ok: true,
+      page: {
+        id: firstWithInstagram.id,
+        name: firstWithInstagram.name,
+        instagram:
+          toInstagram(firstWithInstagram.instagram_business_account) ?? undefined,
+      },
+    };
+  }
+
+  // Plain Facebook connect: any managed Page works, take the first one and
+  // report IG linkage so the caller and logs stay descriptive.
+  const firstPage = pages[0];
+  const skipped = pages
+    .filter((page) => page.id !== firstPage.id)
+    .map(describe)
+    .join(", ");
+  console.log(
+    `[FB-OAuth-Page] Selected page: ${describe(firstPage)}; skipped: ${
+      skipped || "none"
+    }`,
+  );
+
   return {
     ok: true,
-    page: { id: pages[0].id, name: pages[0].name },
+    page: {
+      id: firstPage.id,
+      name: firstPage.name,
+      instagram:
+        toInstagram(firstPage.instagram_business_account) ?? undefined,
+    },
   };
 }
 
@@ -387,8 +501,14 @@ export interface InstagramInfo {
 }
 
 /**
- * Reads the Instagram business account linked to a Facebook Page. Returns the
- * Page too so the caller can store both the IG id and the parent page id.
+ * Reads the Instagram business account linked to ONE specific Facebook Page.
+ * Returns the Page too so the caller can store both the IG id and the parent
+ * page id.
+ *
+ * The OAuth callback prefers the one-shot /me/accounts discovery in
+ * discoverPage({ requireInstagram: true }) which already resolves the correct
+ * Page with a linked IG account; this helper remains for callers that hold a
+ * pageId and want to verify that single Page's IG linkage.
  */
 export async function discoverInstagram(
   accessToken: string,

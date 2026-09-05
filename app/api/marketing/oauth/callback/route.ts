@@ -5,7 +5,6 @@ import {
   verifyState,
   exchangeCodeForToken,
   discoverPage,
-  discoverInstagram,
   resolveOAuthRedirectUri,
   resolveOAuthBaseUrl,
 } from "@/lib/marketing/meta-oauth";
@@ -127,24 +126,33 @@ export async function GET(request: Request) {
     return failStep(platform, "token", igToken.message);
   }
 
-  const igPage = await discoverPage(igToken.accessToken);
+  // Select the FIRST managed Page that actually has a linked Instagram
+  // Business account — never settle for the first Page in the list, which is
+  // how the wrong Page (one with NO linked IG) used to get picked.
+  const igPage = await discoverPage(igToken.accessToken, { requireInstagram: true });
   if (!igPage.ok) {
-    return failStep(platform, "page", igPage.message);
+    return failStep(platform, "instagram", igPage.message);
   }
 
-  const igUser = await discoverInstagram(igToken.accessToken, igPage.page.id);
-  if (!igUser.ok) {
-    return failStep(platform, "instagram", igUser.message);
+  const igUser = igPage.page.instagram;
+  if (!igUser) {
+    // Defensive: requireInstagram above guarantees a linked IG account, but
+    // never claim success without the ids that are about to be persisted.
+    return failStep(
+      platform,
+      "instagram",
+      "Selected Page has no Instagram Business account to persist.",
+    );
   }
 
   const persisted = await connectMetaAccount({
     platform,
-    accountLabel: igUser.instagram.username,
+    accountLabel: igUser.username,
     accessToken: igToken.accessToken,
     tokenExpiresAt: igToken.expiresIn
       ? new Date(Date.now() + igToken.expiresIn * 1000).toISOString()
       : null,
-    externalAccountId: igUser.instagram.id,
+    externalAccountId: igUser.id,
   });
   if (!persisted.ok) {
     return failStep(platform, "save", persisted.reason);
