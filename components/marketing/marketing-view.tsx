@@ -140,12 +140,24 @@ export function MarketingView({
                 : p,
             ),
           );
-          setPublishMessage({ kind: "success", text: t.marketing.publishSuccessMessage });
+          setPublishMessage({
+            kind: "success",
+            text:
+              result.platform === "facebook"
+                ? t.marketing.publishSuccessMessageFb
+                : t.marketing.publishSuccessMessage,
+          });
         } else {
-          // Honest specific failure — map code to the correct message.
+          // Honest specific failure — map code to the correct message using
+          // the platform that was actually attempted (the router resolves it
+          // from the connected account, which may differ from the draft's
+          // legacy platform label).
+          const isFacebook = result.platform === "facebook";
           const messageMap: Record<string, string> = {
             not_connected: t.marketing.notConnectedMessage,
-            token_expired: t.marketing.tokenExpiredMessage,
+            token_expired: isFacebook
+              ? t.marketing.tokenExpiredMessageFb
+              : t.marketing.tokenExpiredMessage,
             no_media: t.marketing.noMediaMessage,
             not_draft: t.marketing.publishFailedMessage,
             publish_failed: t.marketing.publishFailedMessage,

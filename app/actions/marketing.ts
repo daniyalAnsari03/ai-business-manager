@@ -11,7 +11,7 @@ import {
   type BackfillResult,
   type SocialPostServiceError,
 } from "@/lib/marketing/social-posts";
-import { publishSocialPost } from "@/lib/marketing/instagram-publish";
+import { publishPost } from "@/lib/marketing/publish";
 
 export type MarketingBudgetCapActionState =
   | { ok: true; monthlyBudgetCap: number | null }
@@ -45,41 +45,53 @@ export async function listSocialPostsAction(): Promise<SocialPostListActionState
 }
 
 export type PublishPostActionState =
-  | { ok: true; published: true; instagramPostId: string }
-  | { ok: true; published: false; code: "not_connected" | "token_expired" | "no_media" | "not_draft" | "publish_failed" | "not_found" }
+  | PublishAttemptedActionState
   | { ok: false; reason: SocialPostServiceError };
 
+/** Successfully published, or honestly not published (with the failed code). */
+export type PublishAttemptedActionState =
+  | { ok: true; published: true; platform: "instagram" | "facebook"; externalPostId: string }
+  | { ok: true; published: false; platform: "instagram" | "facebook"; code: "not_connected" | "token_expired" | "no_media" | "not_draft" | "publish_failed" | "not_found" };
+
 /**
- * Publish button on a draft. Delegates to the real Instagram Content
- * Publishing API via `publishSocialPost`. The business and its connection
- * state are resolved server-side from the authenticated session; no
- * client-supplied id is trusted for authorization.
+ * Publish button on a draft. Routes to the real publisher for the post's own
+ * platform — Instagram (two-step Content Publishing API) or Facebook (single-
+ * step Page feed/photos API) — via `publishPost`. The business, its platform
+ * and its connection state are resolved server-side from the authenticated
+ * session and the post row; no client-supplied id is trusted for authorization.
  *
  * Returns honest status codes the UI maps to localized messages:
- *   - "not_connected": no Instagram account is connected
+ *   - "not_connected": no account is connected for this platform
  *   - "token_expired":  connection exists but the token expired (~60 days)
- *   - "no_media":       the post has no image
+ *   - "no_media":       the post has no image (Instagram-only requirement)
  *   - "not_draft":      already published or not a draft
- *   - "publish_failed": Instagram rejected the request
+ *   - "publish_failed": the platform rejected the request
  *   - "not_found":      post does not exist or not owned by this business
  */
 export async function publishSocialPostAction(
   postId: string,
 ): Promise<PublishPostActionState> {
-  const result = await publishSocialPost(postId);
+  const result = await publishPost(postId);
 
   if (result.ok) {
-    return { ok: true, published: true, instagramPostId: result.instagramPostId };
+    return {
+      ok: true,
+      published: true,
+      platform: result.platform,
+      externalPostId: result.externalPostId,
+    };
   }
 
-  // Map instagram-publish error codes to the client-recognised codes.
-  const codeMap: Record<string, PublishPostActionState> = {
-    no_connection: { ok: true, published: false, code: "not_connected" },
-    token_expired: { ok: true, published: false, code: "token_expired" },
-    no_media: { ok: true, published: false, code: "no_media" },
-    not_draft: { ok: true, published: false, code: "not_draft" },
-    publish_failed: { ok: true, published: false, code: "publish_failed" },
-    not_found: { ok: true, published: false, code: "not_found" },
+  // Map publish error codes to the client-recognised codes. Carry the
+  // platform that was actually attempted (resolved from connected account) so
+  // the UI can show the right localized message even on the failure path.
+  const codeMap: Record<string, PublishAttemptedActionState> = {
+    no_connection: { ok: true, published: false, platform: result.platform ?? "facebook", code: "not_connected" },
+    token_expired: { ok: true, published: false, platform: result.platform ?? "facebook", code: "token_expired" },
+    no_media: { ok: true, published: false, platform: result.platform ?? "instagram", code: "no_media" },
+    not_draft: { ok: true, published: false, platform: result.platform ?? "facebook", code: "not_draft" },
+    publish_failed: { ok: true, published: false, platform: result.platform ?? "facebook", code: "publish_failed" },
+    not_found: { ok: true, published: false, platform: result.platform ?? "facebook", code: "not_found" },
   };
 
   if (result.error in codeMap) {

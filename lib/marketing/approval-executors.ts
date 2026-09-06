@@ -2,7 +2,7 @@ import "server-only";
 
 import type { ApprovalAction, ApprovalActionType } from "@/lib/marketing/approval-types";
 import { registerExecutors } from "@/lib/marketing/approval-service";
-import { publishSocialPost } from "@/lib/marketing/instagram-publish";
+import { publishPost } from "@/lib/marketing/publish";
 
 /**
  * Real executors for each approval action type.
@@ -13,9 +13,10 @@ import { publishSocialPost } from "@/lib/marketing/instagram-publish";
  *   - { ok: false, error }  when it failed (e.g. no platform connection),
  *                           which the engine records as a `failed` execution.
  *
- * The publish executor now performs REAL Instagram publishing via the two-step
- * Content Publishing API. On success the social_posts row is updated to
- * "published" with a real timestamp and Instagram post ID. On failure it is
+ * The publish executor now performs REAL publishing via the post's own
+ * platform — Instagram (two-step Content Publishing API) or Facebook (single-
+ * step Page feed/photos API). On success the social_posts row is updated to
+ * "published" with a real timestamp and the platform post id. On failure it is
  * updated to "failed" with the honest error reason logged server-side.
  *
  * Token lifetime note: Instagram/Facebook long-lived tokens last ~60 days.
@@ -32,9 +33,9 @@ export type ApprovalExecutorRegistry = Partial<
 
 const USER_FRIENDLY_ERRORS: Record<string, string> = {
   no_connection:
-    "Your Instagram account is not connected yet, so the post could not be published. Please connect it in Settings first.",
+    "Your Instagram or Facebook account is not connected, so the post could not be published. Please connect it in Settings first.",
   token_expired:
-    "Your Instagram connection has expired. Please reconnect your account in Settings to publish again.",
+    "Your Instagram or Facebook connection has expired. Please reconnect your account in Settings to publish again.",
   no_media:
     "This post has no image attached, so it cannot be published to Instagram.",
   not_draft:
@@ -42,7 +43,7 @@ const USER_FRIENDLY_ERRORS: Record<string, string> = {
   not_found:
     "The post could not be found. It may have been deleted.",
   publish_failed:
-    "Instagram rejected the publish request. The image or caption may not meet Instagram's requirements.",
+    "Instagram or Facebook rejected the publish request. The image or caption may not meet the platform's requirements.",
   no_business:
     "Could not determine your business. Please try again.",
   unauthenticated:
@@ -50,7 +51,7 @@ const USER_FRIENDLY_ERRORS: Record<string, string> = {
   not_configured:
     "Publishing is not available right now. Please try again later.",
   database_error:
-    "A system error occurred while saving the result. The post may or may not be live on Instagram.",
+    "A system error occurred while saving the result. The post may or may not be live on the platform.",
 };
 
 const executors: ApprovalExecutorRegistry = {
@@ -61,12 +62,17 @@ const executors: ApprovalExecutorRegistry = {
       return { ok: false, error: "This post could not be identified for publishing." };
     }
 
-    const result = await publishSocialPost(postId);
+    const result = await publishPost(postId);
 
     if (result.ok) {
       return {
         ok: true,
-        result: { published: true, instagramPostId: result.instagramPostId, actionId: action.id },
+        result: {
+          published: true,
+          platform: result.platform,
+          externalPostId: result.externalPostId,
+          actionId: action.id,
+        },
       };
     }
 
