@@ -10,11 +10,14 @@
  *   3. verifyState() re-derives and checks the signature, expiry and that
  *      the state matches the authenticated business + platform.
  *   4. exchangeCodeForToken() swaps the short-lived code for an access token.
- *   5. discoverPage() reads the owner's Pages (me/accounts), requesting each
- *      Page's `instagram_business_account` up front, and selects the FIRST
- *      Page that actually has a linked Instagram Business account (a plain
- *      Facebook connect accepts any Page). The right account_label and
- *      external ids can then be persisted.
+ *   5. discoverPage() reads the owner's Pages (me/accounts), and selects the
+ *      FIRST Page that actually has a linked Instagram Business account (a
+ *      plain Facebook connect accepts any Page). Meta does not reliably
+ *      return the nested `instagram_business_account` edge from /me/accounts,
+ *      so each Page that lacks the nested edge is probed directly on the Page
+ *      node (GET /{page-id}?fields=instagram_business_account{id,username}),
+ *      the method Meta's "Instagram API with Facebook Login" guide documents.
+ *      The right account_label and external ids can then be persisted.
  *   6. discoverInstagram() remains available to verify the Instagram Business
  *      account of ONE specific Page when callers do not use the discovery
  *      selection above.
@@ -422,10 +425,13 @@ export interface DiscoverPageOptions {
  * Reads the owner's Facebook Pages (me/accounts) and selects one.
  *
  * Every Page's `instagram_business_account{id,username}` is requested
- * up-front, so discovering the first Page that actually has a linked
- * Instagram Business account costs no extra round trip. This replaces the old
- * behaviour of blindly using the first Page in the list, which picked the
- * wrong Page (one with NO linked IG) for owners who manage several Pages.
+ * up-front on /me/accounts, and each Page that Meta returns WITHOUT the
+ * nested edge is probed directly on its Page node (the documented way to read
+ * a Page's linked Instagram account), before deciding it has no linked IG.
+ * This replaces the old behaviour of relying solely on the nested edge (Meta
+ * often omits it from /me/accounts for Pages that ARE linked to Instagram)
+ * and of blindly using the first Page, which picked the wrong Page (one with
+ * NO linked IG) for owners who manage several Pages.
  */
 export async function discoverPage(
   accessToken: string,
@@ -476,12 +482,65 @@ export async function discoverPage(
     };
   }
 
-  const describe = (page: RawPage) => {
-    const ig = toInstagram(page.instagram_business_account);
+  const describe = (page: RawPage, igOverride?: InstagramIdentity | null) => {
+    const ig =
+      igOverride !== undefined
+        ? igOverride
+        : toInstagram(page.instagram_business_account);
     if (!ig) return `${page.name} (no linked IG)`;
     return ig.username
       ? `${page.name} (has linked IG @${ig.username})`
       : `${page.name} (has linked IG account ${ig.id})`;
+  };
+
+  // Root cause of the production reconnect failure: Meta does NOT reliably
+  // return the nested `instagram_business_account` edge when Pages are listed
+  // through /me/accounts with a User access token, even for Pages that ARE
+  // linked to an Instagram Business account (a documented Graph API gotcha;
+  // the page simply comes back without the field). The reliable method, per
+  // Meta's "Instagram API with Facebook Login" getting-started guide, is to
+  // query the Page node directly:
+  //   GET /{page-id}?fields=instagram_business_account{id,username}
+  // So each Page that lacks the nested edge is probed on its own node BEFORE
+  // being declared to have no linked Instagram account. The probe reuses the
+  // SAME user access token and the scopes the OAuth dialog already requested
+  // (instagram_basic + pages_read_engagement + pages_show_list), so no scope
+  // or Meta App setting changes are required. Selection still keys on a valid
+  // `instagram_business_account.id`; `username` stays optional.
+  const linkedInstagram = async (
+    page: RawPage,
+  ): Promise<InstagramIdentity | null> => {
+    const nested = toInstagram(page.instagram_business_account);
+    if (nested) return nested;
+
+    const pageUrl = new URL(`${cfg.graphApiBase}/${page.id}`);
+    pageUrl.searchParams.set(
+      "fields",
+      "id,instagram_business_account{id,username}",
+    );
+    pageUrl.searchParams.set("access_token", accessToken);
+    try {
+      const probe = await fetch(pageUrl.toString());
+      const body = (await probe.json()) as {
+        instagram_business_account?: {
+          id?: string;
+          username?: string;
+        } | null;
+        error?: { message?: string };
+      };
+      const probed = probe.ok
+        ? toInstagram(body.instagram_business_account)
+        : null;
+      if (probed) {
+        console.log(
+          `[FB-OAuth-Page] Page node probe found linked IG for ${page.name}`,
+        );
+        return probed;
+      }
+    } catch {
+      // Best-effort probe; the Page simply has no linked IG as far as we know.
+    }
+    return null;
   };
 
   // Iterate ALL managed Pages and pick the first one that actually has a
@@ -489,45 +548,41 @@ export async function discoverPage(
   // Selection keys on the linked IG `id` (not on a possibly-absent username),
   // and the username is resolved separately when Meta omits it.
   if (options.requireInstagram) {
-    const firstWithInstagram = pages.find(
-      (page) => toInstagram(page.instagram_business_account) !== null,
-    );
-    if (!firstWithInstagram) {
+    for (const rawPage of pages) {
+      const ig = await linkedInstagram(rawPage);
+      if (!ig) continue;
+
+      const resolved = await resolveInstagramUsername(cfg, accessToken, ig);
+      const skipped = pages
+        .filter((page) => page.id !== rawPage.id)
+        .map((page) => describe(page))
+        .join(", ");
       console.log(
-        `[FB-OAuth-Page] Rejected: no Page has a linked Instagram Business account. pages=${pages
-          .map(describe)
-          .join(", ")}`,
+        `[FB-OAuth-Page] Selected page: ${describe(
+          rawPage,
+          resolved,
+        )}; skipped: ${skipped || "none"}`,
       );
+
       return {
-        ok: false,
-        message:
-          "No Instagram Business account is linked to any of your Facebook Pages. Connect your Instagram Business account to a Page in Meta's settings, then reconnect.",
+        ok: true,
+        page: {
+          id: rawPage.id,
+          name: rawPage.name,
+          instagram: resolved,
+        },
       };
     }
 
-    const ig = toInstagram(firstWithInstagram.instagram_business_account);
-    const resolved =
-      ig !== null
-        ? await resolveInstagramUsername(cfg, accessToken, ig)
-        : undefined;
-
-    const skipped = pages
-      .filter((page) => page.id !== firstWithInstagram.id)
-      .map(describe)
-      .join(", ");
     console.log(
-      `[FB-OAuth-Page] Selected page: ${describe(firstWithInstagram)}; skipped: ${
-        skipped || "none"
-      }`,
+      `[FB-OAuth-Page] Rejected: no Page has a linked Instagram Business account. pages=${pages
+        .map((page) => describe(page))
+        .join(", ")}`,
     );
-
     return {
-      ok: true,
-      page: {
-        id: firstWithInstagram.id,
-        name: firstWithInstagram.name,
-        instagram: resolved,
-      },
+      ok: false,
+      message:
+        "No Instagram Business account is linked to any of your Facebook Pages. Connect your Instagram Business account to a Page in Meta's settings, then reconnect.",
     };
   }
 
@@ -536,7 +591,7 @@ export async function discoverPage(
   const firstPage = pages[0];
   const skipped = pages
     .filter((page) => page.id !== firstPage.id)
-    .map(describe)
+    .map((page) => describe(page))
     .join(", ");
   console.log(
     `[FB-OAuth-Page] Selected page: ${describe(firstPage)}; skipped: ${
