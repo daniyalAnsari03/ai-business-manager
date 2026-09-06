@@ -83,7 +83,8 @@ export function TestSpendTool({ onSpend }: TestSpendToolProps) {
     <div className="rounded-xl border border-dashed border-amber-500/40 bg-amber-500/[0.04] px-4 py-4">
       <div className="flex items-start gap-2.5">
         <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-300">
-          <AlertTriangleIcon className="size-3.5" />        </span>
+          <AlertTriangleIcon className="size-3.5" />
+        </span>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-amber-700 dark:text-amber-300">
             {t.marketing.walletTestSpendTitle}

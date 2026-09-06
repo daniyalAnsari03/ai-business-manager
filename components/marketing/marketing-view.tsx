@@ -388,7 +388,7 @@ export function MarketingView({
           <div
             role="radiogroup"
             aria-label={t.marketing.automationLabel}
-            className="mt-5 grid max-w-lg grid-cols-2 gap-3"
+            className="mt-5 grid max-w-lg grid-cols-1 gap-3 sm:grid-cols-2"
           >
             {(
               [
@@ -670,7 +670,7 @@ function ActivityPostCard({
           </p>
         </div>
         {draft ? (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <Button
               size="md"
               variant="ghost"

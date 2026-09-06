@@ -95,7 +95,7 @@ function TransactionRow({
   const amountText = `${sign} ${formatMoney(transaction.amount, currency)}`;
 
   return (
-    <li className="flex items-center gap-3 px-4 py-3">
+    <li className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-3 sm:px-4">
       <span
         className={cn(
           "flex size-8 shrink-0 items-center justify-center rounded-lg",
@@ -105,7 +105,7 @@ function TransactionRow({
         {icon}
       </span>
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-[10rem] flex-1">
         <p className="truncate text-sm font-medium capitalize">
           {typeLabel(t, transaction.type)}
         </p>
@@ -115,22 +115,24 @@ function TransactionRow({
         </p>
       </div>
 
-      <div className="flex shrink-0 flex-col items-end gap-1">
-        <span
-          className={cn(
-            "text-sm font-medium tabular-nums",
-            isTopup ? "text-emerald-600 dark:text-emerald-300" : "text-foreground",
-          )}
-        >
-          {amountText}
-        </span>
-        <span className="text-[11px] text-faint">
-          {t.marketing.walletBalanceAfter}:{" "}
-          {formatMoney(transaction.balanceAfter, currency)}
-        </span>
-      </div>
+      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-3">
+        <div className="flex flex-col items-end gap-1">
+          <span
+            className={cn(
+              "text-sm font-medium tabular-nums",
+              isTopup ? "text-emerald-600 dark:text-emerald-300" : "text-foreground",
+            )}
+          >
+            {amountText}
+          </span>
+          <span className="text-[11px] text-faint">
+            {t.marketing.walletBalanceAfter}:{" "}
+            {formatMoney(transaction.balanceAfter, currency)}
+          </span>
+        </div>
 
-      <StatusBadge status={transaction.status} />
+        <StatusBadge status={transaction.status} />
+      </div>
     </li>
   );
 }

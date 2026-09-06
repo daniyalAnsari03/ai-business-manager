@@ -392,7 +392,7 @@ function VideoCard({
             ) : null}
           </div>
         ) : (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full border border-line px-2.5 py-1 text-[11px] text-faint">
               {t.marketing.videoBestTimeHint}
             </span>
