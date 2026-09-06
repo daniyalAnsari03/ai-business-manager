@@ -514,11 +514,20 @@ export async function discoverPage(
   // (instagram_basic + pages_read_engagement + pages_show_list), so no scope
   // or Meta App setting changes are required. Selection still keys on a valid
   // `instagram_business_account.id`; `username` stays optional.
+  type LinkedInstagramResult =
+    | { ok: true; ig: InstagramIdentity }
+    | {
+        ok: false;
+        nestedPresent: boolean;
+        probeAttempted: boolean;
+        probeStatus?: number;
+      };
+
   const linkedInstagram = async (
     page: RawPage,
-  ): Promise<InstagramIdentity | null> => {
+  ): Promise<LinkedInstagramResult> => {
     const nested = toInstagram(page.instagram_business_account);
-    if (nested) return nested;
+    if (nested) return { ok: true, ig: nested };
 
     const pageUrl = new URL(`${cfg.graphApiBase}/${page.id}`);
     pageUrl.searchParams.set(
@@ -555,12 +564,18 @@ export async function discoverPage(
         console.log(
           `[FB-OAuth-Page] Page node probe found linked IG for ${page.name}`,
         );
-        return probed;
+        return { ok: true, ig: probed };
       }
+      return {
+        ok: false,
+        nestedPresent: false,
+        probeAttempted: true,
+        probeStatus: probe.status,
+      };
     } catch {
       // Best-effort probe; the Page simply has no linked IG as far as we know.
+      return { ok: false, nestedPresent: false, probeAttempted: false };
     }
-    return null;
   };
 
   // Iterate ALL managed Pages and pick the first one that actually has a
@@ -569,19 +584,27 @@ export async function discoverPage(
   // and the username is resolved separately when Meta omits it.
   if (options.requireInstagram) {
     for (const rawPage of pages) {
-      const ig = await linkedInstagram(rawPage);
-      if (!ig) {
+      const result = await linkedInstagram(rawPage);
+      if (!result.ok) {
         console.log(
-          `[FB-OAuth-Diag] candidate rejected page_id=${rawPage.id} name=${JSON.stringify(
+          `[FB-OAuth-Diag] candidate rejected function=discoverPage branch=requireInstagram page_id=${rawPage.id} name=${JSON.stringify(
             rawPage.name,
-          )} no_linked_ig`,
+          )} reason=no_linked_ig nested_ig=${
+            result.nestedPresent ? "yes" : "no"
+          } probe_attempted=${result.probeAttempted ? "yes" : "no"} probe_http=${
+            result.probeStatus ?? "n/a"
+          }`,
         );
         continue;
       }
 
-      const resolved = await resolveInstagramUsername(cfg, accessToken, ig);
+      const resolved = await resolveInstagramUsername(
+        cfg,
+        accessToken,
+        result.ig,
+      );
       console.log(
-        `[FB-OAuth-Diag] discovered IG account page_id=${rawPage.id} ig_id=${ig.id} ig_username=${ig.username ?? "none"}`,
+        `[FB-OAuth-Diag] discovered IG account page_id=${rawPage.id} ig_id=${result.ig.id} ig_username=${result.ig.username ?? "none"}`,
       );
       const skipped = pages
         .filter((page) => page.id !== rawPage.id)
