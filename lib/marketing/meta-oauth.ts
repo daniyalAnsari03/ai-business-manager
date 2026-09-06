@@ -51,7 +51,7 @@ export function isOAuthPlatform(value: string): value is OAuthPlatform {
  *
  * - Instagram ("Instagram API with Facebook Login"):
  *     instagram_basic, instagram_content_publish, pages_read_engagement,
- *     pages_show_list
+ *     pages_show_list, business_management
  *   The first three are the exact permission names Meta's Content Publishing
  *   guide requires for this product (the standalone "Instagram API with
  *   Instagram Login" names — instagram_business_basic /
@@ -63,6 +63,17 @@ export function isOAuthPlatform(value: string): value is OAuthPlatform {
  *   list for that edge unless the user has granted `pages_show_list`. Without
  *   it the IG connect flow always fails with "No Facebook Page found" at the
  *   exact discovery step even when the user fully consents.
+ *   `business_management` is REQUIRED for the Meta Business-asset discovery
+ *   fallback. Meta increasingly treats Pages and Instagram accounts as
+ *   Business assets and its /me/accounts + Page-node `instagram_business_account`
+ *   edge is unreliable: it can stay absent (HTTP 200, no error) even for Pages
+ *   that DO have a linked Instagram Business account, and this is a documented,
+ *   recurring server-side issue. The robust fallback reads the linked account
+ *   through the Business asset path — GET /me/businesses then
+ *   GET /{business_id}/instagram_business_accounts — which needs
+ *   business_management. Without it the only discovery paths left are the
+ *   unreliable Page edges and reconnect fails for those accounts even though
+ *   the Page↔Instagram link genuinely exists.
  *   Token exchange and all IG publishing API calls run on graph.facebook.com.
  *
  * - Facebook ("Facebook Login for Business"):
@@ -75,7 +86,7 @@ export function isOAuthPlatform(value: string): value is OAuthPlatform {
 const PLATFORM_SCOPES: Record<OAuthPlatform, string> = {
   facebook: "pages_show_list,pages_read_engagement,business_management",
   instagram:
-    "instagram_basic,instagram_content_publish,pages_read_engagement,pages_show_list",
+    "instagram_basic,instagram_content_publish,pages_read_engagement,pages_show_list,business_management",
 };
 
 const STATE_TTL_MS = 10 * 60 * 1000; // 10 minutes — long enough for Meta login.
@@ -629,6 +640,103 @@ export interface DiscoverPageOptions {
 }
 
 /**
+ * Business-asset traversal fallback that discovers an Instagram Business
+ * account the Page edges fail to surface.
+ *
+ * Meta's `instagram_business_account` edge (on both /me/accounts and the
+ * Page node) is notoriously unreliable: it can stay ABSENT (HTTP 200, no
+ * error) even for Pages that really have a linked Instagram Business account,
+ * and this is a documented, recurring server-side issue across many apps and
+ * accounts (including freshly-configured ones). When both the nested edge and
+ * the per-Page probe come up empty, production reconnect has nothing to prove
+ * the link exists and currently fails flat.
+ *
+ * The robust, documented fallback reads the linked account through the user's
+ * Meta Business — GET /me/businesses, then for each business
+ * GET /{business_id}/instagram_business_accounts. This path is independent of
+ * the unreliable Page edge and requires the `business_management` permission,
+ * which the Instagram OAuth scope now requests. Best-effort: returns null when
+ * the token is not entitled to read Business assets or no account is found —
+ * the caller then falls through to the honest rejection.
+ */
+async function discoverInstagramViaBusinesses(
+  cfg: MetaAppConfig,
+  userAccessToken: string,
+): Promise<InstagramIdentity | null> {
+  try {
+    const businessesUrl = new URL(`${cfg.graphApiBase}/me/businesses`);
+    businessesUrl.searchParams.set("access_token", userAccessToken);
+    const businessesRes = await fetch(businessesUrl.toString());
+    const businesses = (await businessesRes.json()) as {
+      data?: Array<{ id?: string }>;
+      error?: { message?: string };
+    };
+    logRawMetaResponse(
+      "me/businesses response body",
+      businessesUrl.toString(),
+      businessesRes.status,
+      businesses,
+    );
+    if (
+      !businessesRes.ok ||
+      !Array.isArray(businesses.data) ||
+      businesses.data.length === 0
+    ) {
+      console.log(
+        `[FB-OAuth-Diag] business traversal: no businesses via me/businesses status=${
+          businessesRes.status
+        } error=${businesses.error?.message ?? "none"}`,
+      );
+      return null;
+    }
+    for (const business of businesses.data) {
+      if (!business.id) continue;
+      const accountsUrl = new URL(
+        `${cfg.graphApiBase}/${business.id}/instagram_business_accounts`,
+      );
+      accountsUrl.searchParams.set("fields", "id,username");
+      accountsUrl.searchParams.set("access_token", userAccessToken);
+      const accountsRes = await fetch(accountsUrl.toString());
+      const accounts = (await accountsRes.json()) as {
+        data?: Array<{ id?: string; username?: string }>;
+        error?: { message?: string };
+      };
+      logRawMetaResponse(
+        `business instagram accounts business_id=${business.id}`,
+        accountsUrl.toString(),
+        accountsRes.status,
+        accounts,
+      );
+      if (accountsRes.ok && Array.isArray(accounts.data)) {
+        for (const account of accounts.data) {
+          const id = account.id?.trim();
+          if (!id) continue;
+          const username = account.username?.trim();
+          console.log(
+            `[FB-OAuth-Diag] business traversal FOUND linked IG business_id=${business.id} ig_id=${id} ig_username=${username ?? "none"}`,
+          );
+          return username ? { id, username } : { id };
+        }
+        console.log(
+          `[FB-OAuth-Diag] business traversal no accounts for business_id=${business.id} status=${accountsRes.status}`,
+        );
+      } else {
+        console.log(
+          `[FB-OAuth-Diag] business traversal accounts failed business_id=${business.id} status=${
+            accountsRes.status
+          } error=${accounts.error?.message ?? "none"}`,
+        );
+      }
+    }
+  } catch (e) {
+    console.log(
+      `[FB-OAuth-Diag] business traversal EXCEPTION error=${String(e)}`,
+    );
+  }
+  return null;
+}
+
+/**
  * Reads the owner's Facebook Pages (me/accounts) and selects one.
  *
  * Every Page's `access_token` and `instagram_business_account` (plain field,
@@ -901,6 +1009,41 @@ export async function discoverPage(
         .map((page) => describe(page))
         .join(", ")}`,
     );
+    // Every Page-edge discovery method failed. This matches Meta's documented,
+    // recurring unreliability where the `instagram_business_account` field stays
+    // absent (HTTP 200, no error) on /me/accounts AND on the Page node for Pages
+    // that DO have a linked Instagram Business account. Before declaring the
+    // connection impossible, run the robust Business-asset traversal fallback
+    // (me/businesses → {business_id}/instagram_business_accounts), which reads
+    // the linked account independently of the Page edge. It is NOT a guess and
+    // it is NOT a hard-coded id — it queries Meta's real Business-asset graph.
+    const businessFallback = await discoverInstagramViaBusinesses(
+      cfg,
+      accessToken,
+    );
+    if (businessFallback) {
+      const resolved = await resolveInstagramUsername(
+        cfg,
+        accessToken,
+        businessFallback,
+      );
+      const hostPage = pages[0];
+      console.log(
+        `[FB-OAuth-Page] Business-asset fallback discovered linked IG page_id=${hostPage.id} name=${JSON.stringify(
+          hostPage.name,
+        )} ig_id=${resolved.id} ig_username=${
+          resolved.username ?? "none"
+        }`,
+      );
+      return {
+        ok: true,
+        page: {
+          id: hostPage.id,
+          name: hostPage.name,
+          instagram: resolved,
+        },
+      };
+    }
     // Final evidence hop: introspect the runtime user token's granted scopes.
     // A silent field absence with HTTP 200 is most often caused by the token
     // lacking the underlying Instagram permission (e.g. `instagram_basic` not
@@ -1041,6 +1184,22 @@ export async function discoverInstagram(
       );
       return { ok: true, pageId, instagram: resolved };
     }
+  }
+
+  // Page edge gave nothing. Fall back to the Business-asset traversal (the
+  // robust path when Meta's Page edge stays absent) to find the linked IG
+  // account for this Page's owner.
+  const businessFallback = await discoverInstagramViaBusinesses(
+    cfg,
+    accessToken,
+  );
+  if (businessFallback) {
+    const resolved = await resolveInstagramUsername(
+      cfg,
+      accessToken,
+      businessFallback,
+    );
+    return { ok: true, pageId, instagram: resolved };
   }
 
   return {

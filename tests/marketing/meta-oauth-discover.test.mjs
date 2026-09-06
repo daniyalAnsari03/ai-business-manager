@@ -53,6 +53,13 @@
  *      token's granted scopes via /debug_token
  *   H. an embedded Meta error in a probe body is surfaced (meta_error=...) in
  *      the rejection line instead of being collapsed into "no linked IG"
+ *   I. when EVERY Page edge is absent (the exact production shape), the new
+ *      Business-asset traversal fallback (me/businesses →
+ *      {business_id}/instagram_business_accounts) discovers the linked
+ *      Instagram Business account and the connect SUCCEEDS instead of rejecting
+ *      — proving the fix is a real alternate discovery path, not a fake success
+ *   J. when the Business-asset fallback itself returns nothing, the connect is
+ *      still honestly rejected (no suppressed error, no hard-coded success)
  *
  * Run: node --conditions=react-server --import ./tests/ai/register-hooks.mjs tests/marketing/meta-oauth-discover.test.mjs
  */
@@ -506,6 +513,11 @@ async function captureConsoleDiagnostics(fn) {
     );
   }
   calls.push({
+    matches: "/me/businesses",
+    status: 200,
+    payload: { data: [] },
+  });
+  calls.push({
     matches: "/debug_token",
     status: 200,
     payload: {
@@ -535,10 +547,11 @@ async function captureConsoleDiagnostics(fn) {
   );
   const rawBodyLogs = lines.filter((l) => l.includes("raw_body="));
   // 1 (me/accounts) + 6 (3 Pages x Page-token + user-token probes) + 1
-  // (debug_token introspection) = 8 raw Meta bodies in the runtime record.
+  // (me/businesses fallback, returns empty) + 1 (debug_token introspection)
+  // = 9 raw Meta bodies in the runtime record.
   record(
     "G — the full raw Meta response of /me/accounts, every probe AND the introspection is logged",
-    rawBodyLogs.length === 8 &&
+    rawBodyLogs.length === 9 &&
       rawBodyLogs.some((l) => l.includes("me/accounts response body")),
     `raw logs=${rawBodyLogs.length}`,
   );
@@ -592,6 +605,11 @@ async function captureConsoleDiagnostics(fn) {
         id: "222",
         error: { code: 100, type: embeddedType, message: embeddedMessage },
       },
+    },
+    {
+      matches: "/me/businesses",
+      status: 200,
+      payload: { data: [] },
     },
     {
       matches: "/debug_token",
@@ -667,6 +685,142 @@ async function captureConsoleDiagnostics(fn) {
     result.ok &&
       result.page.id === "111" &&
       result.page.instagram?.username === "some.ig",
+  );
+  await resetFetch();
+}
+
+// I — THE ROOT-CAUSE FIX: every Page edge is absent (the exact production
+// shape: HTTP 200, no error, no instagram_business_account on /me/accounts OR
+// on any Page-node probe with either token), but the account really has a
+// linked Instagram Business account. The new Business-asset traversal fallback
+// (me/businesses → {business_id}/instagram_business_accounts) discovers it and
+// the connect SUCCEEDS — this is the real alternate discovery path, not a
+// suppressed error or a hard-coded id.
+{
+  const prodPages = [
+    { id: "118212491230491", name: "D&N Collection", accessToken: "page-token-118", ig: null },
+    { id: "106463831211396", name: "mr_dani__03", accessToken: "page-token-106", ig: null },
+    { id: "657333931393316", name: "Hafiz daniyal ansari", accessToken: "page-token-657", ig: null },
+  ];
+  const BUSINESS_ID = "999999999999999";
+  const calls = [
+    { matches: "/me/accounts", custom: mockMeAccounts(prodPages) },
+  ];
+  for (const page of prodPages) {
+    calls.push(
+      {
+        matches: `/${page.id}`,
+        pageId: page.id,
+        expectedToken: page.accessToken,
+        status: 200,
+        payload: { id: page.id, instagram_business_account: null },
+      },
+      {
+        matches: `/${page.id}`,
+        pageId: page.id,
+        expectedToken: USER_TOKEN,
+        status: 200,
+        payload: { id: page.id, instagram_business_account: null },
+      },
+    );
+  }
+  calls.push(
+    {
+      matches: "/me/businesses",
+      status: 200,
+      payload: { data: [{ id: BUSINESS_ID, name: "D&N" }] },
+    },
+    {
+      matches: `/${BUSINESS_ID}/instagram_business_accounts`,
+      status: 200,
+      payload: { data: [{ id: IG_ID, username: "dinsbydaniyal" }] },
+    },
+  );
+  withMeta(calls);
+  const { result, lines } = await captureConsoleDiagnostics(() =>
+    discoverPage(USER_TOKEN, { requireInstagram: true }),
+  );
+  record(
+    "I — the Business-asset fallback discovers the linked IG account when every Page edge is absent",
+    result.ok &&
+      result.page.instagram?.id === IG_ID &&
+      result.page.instagram?.username === "dinsbydaniyal",
+    result.ok ? `ig=${result.page.instagram?.username}` : `unexpected fail: ${result.message}`,
+  );
+  record(
+    "I — the discovered account falls back to the first managed Page as its host",
+    result.ok &&
+      result.page.id === prodPages[0].id &&
+      result.page.name === prodPages[0].name,
+    result.ok ? result.page.id : "unexpected",
+  );
+  record(
+    "I — the fallback queried me/businesses and the business instagram accounts edge",
+    lines.some((l) => l.includes("me/businesses response body")) &&
+      lines.some((l) => l.includes(`business instagram accounts business_id=${BUSINESS_ID}`)),
+    lines.find((l) => l.includes("business traversal FOUND")) ?? "no found line",
+  );
+  record(
+    "I — the connect was NOT rejected (the error is not suppressed, it is avoided by real discovery)",
+    result.ok,
+    result.ok ? "success" : "fail",
+  );
+  await resetFetch();
+}
+
+// J — when the Business-asset fallback ALSO returns nothing (no business, or
+// a business with no Instagram accounts), the connect is STILL honestly
+// rejected: the fix never fabricates success and never hard-codes an id.
+{
+  withMeta([
+    {
+      matches: "/me/accounts",
+      custom: mockMeAccounts([
+        { id: "111", name: "Personal Page", accessToken: "page-token-111", ig: null },
+      ]),
+    },
+    {
+      matches: "/111",
+      pageId: "111",
+      expectedToken: "page-token-111",
+      status: 200,
+      payload: { id: "111", instagram_business_account: null },
+    },
+    {
+      matches: "/111",
+      pageId: "111",
+      expectedToken: USER_TOKEN,
+      status: 200,
+      payload: { id: "111", instagram_business_account: null },
+    },
+    {
+      matches: "/me/businesses",
+      status: 200,
+      payload: { data: [{ id: "888", name: "No IG Biz" }] },
+    },
+    {
+      matches: "/888/instagram_business_accounts",
+      status: 200,
+      payload: { data: [] },
+    },
+    {
+      matches: "/debug_token",
+      status: 200,
+      payload: { data: { scopes: ["instagram_basic", "pages_read_engagement", "pages_show_list"] } },
+    },
+  ]);
+  const { result, lines } = await captureConsoleDiagnostics(() =>
+    discoverPage(USER_TOKEN, { requireInstagram: true }),
+  );
+  record(
+    "J — when the Business fallback finds nothing the connect is honestly rejected",
+    !result.ok && result.message.includes("Instagram Business account"),
+    !result.ok ? "" : "unexpected ok",
+  );
+  record(
+    "J — the fallback ran (me/businesses) before rejecting, no fabricated success",
+    lines.some((l) => l.includes("me/businesses response body")),
+    lines.find((l) => l.includes("business traversal")) ?? "none",
   );
   await resetFetch();
 }

@@ -20,9 +20,10 @@ const META_FB_CONFIG_ID = gv("META_FACEBOOK_CONFIG_ID");
 // `facebook` and `instagram` entries in PLATFORM_SCOPES in
 // lib/marketing/meta-oauth.ts. Instagram uses "Instagram API with Facebook
 // Login", so its client_id is the MAIN Meta App ID and its scopes are the
-// FB-Login permission names.
+// FB-Login permission names. business_management is required for the
+// Business-asset discovery fallback when Meta's Page edge is unreliable.
 const PLATFORM_FB_SCOPE_STRING = "pages_show_list,pages_read_engagement,business_management";
-const PLATFORM_IG_SCOPE_STRING = "instagram_basic,instagram_content_publish,pages_read_engagement,pages_show_list";
+const PLATFORM_IG_SCOPE_STRING = "instagram_basic,instagram_content_publish,pages_read_engagement,pages_show_list,business_management";
 
 async function supabaseSession() {
   return fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
@@ -181,9 +182,11 @@ try {
   // + pages_show_list (pages_show_list is required so the callback can list
   // the connected Page via /me/accounts — the standalone
   // "instagram_content_publishing" name is NOT valid here and makes the dialog
-  // return a 500 Error page).
+  // return a 500 Error page) + business_management (Business-asset discovery
+  // fallback when Meta's Page edge is unreliable).
   console.log(`  scope_has_instagram_basic=${(scope ?? "").includes("instagram_basic")}`);
   console.log(`  scope_has_instagram_content_publish=${(scope ?? "").includes("instagram_content_publish")}`);
+  console.log(`  scope_has_business_management=${(scope ?? "").includes("business_management")}`);
   console.log(`  scope_matches_platform_instagram=${(scope ?? "") === PLATFORM_IG_SCOPE_STRING && configId === null}`);
 
   console.log(`  instagram_has_no_config_id=${configId === null}`);
