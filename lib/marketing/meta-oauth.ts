@@ -10,13 +10,15 @@
  *   3. verifyState() re-derives and checks the signature, expiry and that
  *      the state matches the authenticated business + platform.
  *   4. exchangeCodeForToken() swaps the short-lived code for an access token.
- *   5. discoverPage() reads the owner's Pages (me/accounts), and selects the
- *      FIRST Page that actually has a linked Instagram Business account (a
- *      plain Facebook connect accepts any Page). Meta does not reliably
- *      return the nested `instagram_business_account` edge from /me/accounts,
- *      so each Page that lacks the nested edge is probed directly on the Page
- *      node (GET /{page-id}?fields=instagram_business_account{id,username}),
- *      the method Meta's "Instagram API with Facebook Login" guide documents.
+ *   5. discoverPage() reads the owner's Pages (me/accounts), requesting each
+ *      Page's `access_token` AND its linked Instagram Business account, and
+ *      selects the FIRST Page that actually has a linked Instagram Business
+ *      account (a plain Facebook connect accepts any Page). Meta does not
+ *      reliably return the nested `instagram_business_account` edge from
+ *      /me/accounts, so each Page that lacks the edge is probed directly on
+ *      the Page node (GET /{page-id}?fields=instagram_business_account), the
+ *      method Meta's "Instagram API with Facebook Login" guide documents —
+ *      first with the Page's own access token, then with the user access token.
  *      The right account_label and external ids can then be persisted.
  *   6. discoverInstagram() remains available to verify the Instagram Business
  *      account of ONE specific Page when callers do not use the discovery
@@ -352,10 +354,10 @@ type RawPage = {
   id: string;
   name: string;
   /**
-   * The Page-scoped access token /me/accounts returns for THIS Page. Reading a
-   * Page node's `instagram_business_account` edge (and calling any Page/IG
-   * publishing API) requires this token — the user access token is NOT
-   * sufficient and is never used for Page-node calls.
+   * The Page-scoped access token /me/accounts returns for THIS Page when its
+   * `access_token` field is requested (it is — see discoverPage). The Page-node
+   * `instagram_business_account` lookup tries this Page token first and falls
+   * back to the user access token that the Meta docs use for the same request.
    */
   access_token?: string;
   instagram_business_account?: { id?: string; username?: string } | null;
@@ -418,6 +420,64 @@ async function resolveInstagramUsername(
   return identity;
 }
 
+/**
+ * Probes ONE Page node for its linked Instagram Business account using the
+ * given token. The request is the Meta-documented plain field shape
+ * `fields=id,instagram_business_account` — WITHOUT a nested `{id,username}`
+ * expansion, because Meta drops the whole edge (HTTP 200, no error) when an
+ * expanded subfield cannot be resolved.
+ */
+type PageProbeResult =
+  | { ok: true; ig: InstagramIdentity }
+  | { ok: false; probeAttempted: boolean; probeStatus?: number };
+
+async function probePageForInstagram(
+  cfg: MetaAppConfig,
+  pageId: string,
+  token: string,
+  tokenKind: "page" | "user",
+): Promise<PageProbeResult> {
+  const pageUrl = new URL(`${cfg.graphApiBase}/${pageId}`);
+  pageUrl.searchParams.set("fields", "id,instagram_business_account");
+  pageUrl.searchParams.set("access_token", token);
+  try {
+    const probe = await fetch(pageUrl.toString());
+    const body = (await probe.json()) as {
+      instagram_business_account?: {
+        id?: string;
+        username?: string;
+      } | null;
+      error?: { message?: string };
+    };
+    const igPresent =
+      body.instagram_business_account !== null &&
+      body.instagram_business_account !== undefined;
+    console.log(
+      `[FB-OAuth-Diag] page-node probe id=${pageId} token=${tokenKind} HTTP_status=${
+        probe.status
+      } ig_present=${igPresent} ig_id=${
+        body.instagram_business_account?.id ?? "none"
+      } ig_username=${body.instagram_business_account?.username ?? "none"}`,
+    );
+    const probed = probe.ok
+      ? toInstagram(body.instagram_business_account)
+      : null;
+    if (probed) {
+      console.log(
+        `[FB-OAuth-Diag] page-node probe FOUND linked IG page_id=${pageId} token=${tokenKind} ig_id=${probed.id} ig_username=${probed.username ?? "none"}`,
+      );
+      return { ok: true, ig: probed };
+    }
+    return {
+      ok: false,
+      probeAttempted: true,
+      probeStatus: probe.status,
+    };
+  } catch {
+    return { ok: false, probeAttempted: false };
+  }
+}
+
 export interface DiscoverPageOptions {
   /**
    * When true, only a Page that has a linked Instagram Business account is
@@ -431,14 +491,15 @@ export interface DiscoverPageOptions {
 /**
  * Reads the owner's Facebook Pages (me/accounts) and selects one.
  *
- * Every Page's `instagram_business_account{id,username}` is requested
- * up-front on /me/accounts, and each Page that Meta returns WITHOUT the
- * nested edge is probed directly on its Page node (the documented way to read
- * a Page's linked Instagram account), before deciding it has no linked IG.
- * This replaces the old behaviour of relying solely on the nested edge (Meta
- * often omits it from /me/accounts for Pages that ARE linked to Instagram)
- * and of blindly using the first Page, which picked the wrong Page (one with
- * NO linked IG) for owners who manage several Pages.
+ * Every Page's `access_token` and `instagram_business_account` (plain field,
+ * no nested expansion) are requested up-front on /me/accounts, and each Page
+ * that Meta returns WITHOUT a linked IG id is probed directly on its Page node
+ * (the documented way to read a Page's linked Instagram account) before being
+ * declared to have no linked IG. This replaces the old behaviour of relying
+ * solely on the nested edge (Meta often omits it from /me/accounts for Pages
+ * that ARE linked to Instagram) and of blindly using the first Page, which
+ * picked the wrong Page (one with NO linked IG) for owners who manage several
+ * Pages.
  */
 export async function discoverPage(
   accessToken: string,
@@ -450,8 +511,21 @@ export async function discoverPage(
     return { ok: false, message: "Meta not configured." };
   }
 
+  // The exact field set Meta documents for "Instagram API with Facebook Login"
+  // (Facebook Login for Business): each Page comes with its OWN Page access
+  // token AND the linked Instagram Business account id. `access_token` is NOT
+  // returned unless requested — omitting it makes every Runtime probe below
+  // silently skip (reason=no_page_access_token), which is exactly why commit
+  // d653cf3 changed nothing in production. The `instagram_business_account`
+  // field is requested PLAIN (no {id,username} expansion): Meta drops the whole
+  // edge (HTTP 200, no error) when the requested subfields cannot be resolved,
+  // and the documented shape of the field is just `{id}` — the username is
+  // resolved separately from the IG User node.
   const url = new URL(`${cfg.graphApiBase}/me/accounts`);
-  url.searchParams.set("fields", "id,name,instagram_business_account{id,username}");
+  url.searchParams.set(
+    "fields",
+    "id,name,access_token,instagram_business_account",
+  );
   url.searchParams.set("access_token", accessToken);
 
   let res: Response;
@@ -507,26 +581,31 @@ export async function discoverPage(
       : `${page.name} (has linked IG account ${ig.id})`;
   };
 
-  // Root cause of the production reconnect failure: Meta does NOT reliably
-  // return the nested `instagram_business_account` edge when Pages are listed
-  // through /me/accounts with a User access token, even for Pages that ARE
-  // linked to an Instagram Business account (a documented Graph API gotcha;
-  // the page simply comes back without the field). The reliable method, per
-  // Meta's "Instagram API with Facebook Login" getting-started guide, is to
-  // query the Page node directly:
-  //   GET /{page-id}?fields=instagram_business_account{id,username}
-  // That request MUST use the Page's OWN access token — the token /me/accounts
-  // returns next to that Page. With the user access token Meta still answers
-  // HTTP 200 but omits `instagram_business_account` for EVERY Page, which is
-  // exactly the `ig_present=false` / `no_linked_ig` failure seen in production
-  // (3 Pages, all returning HTTP 200 with ig_present=false). Each Page that
-  // lacks the nested edge is therefore probed on its own node with ITS OWN
-  // Page access token before being declared to have no linked Instagram
-  // account. The scopes the OAuth dialog already requested
-  // (instagram_basic + pages_read_engagement + pages_show_list) are unchanged
-  // — they are what grant the Page access token its IG read capability.
-  // Selection still keys on a valid `instagram_business_account.id`; `username`
-  // stays optional.
+  // Root cause of the still-failing production reconnect (September 2026):
+  //
+  // 1. Commit d653cf3 switched the Page-node probe to the Page's own access
+  //    token, but the /me/accounts request above never asked Meta for
+  //    `access_token` — so every Page arrived WITHOUT its token and the probe
+  //    was never attempted. Production logs prove it: all 3 Pages logged
+  //    `reason=no_page_access_token`, `probe_attempted=no`, `probe_http=n/a`
+  //    and the callback failed with the exact "no Instagram Business account"
+  //    error. The deployed change therefore could not have changed anything.
+  // 2. The older user-token probes (and the /me/accounts nested edge) used
+  //    `instagram_business_account{id,username}`. Meta silently omits the
+  //    WHOLE edge (HTTP 200, no error) when an expanded subfield cannot be
+  //    resolved for that token/account, so every request came back
+  //    `ig_present=false` even for linked accounts.
+  //
+  // Correct approach (per Meta's "Instagram API with Facebook Login" docs):
+  //   - GET /me/accounts?fields=id,name,access_token,instagram_business_account
+  //   - each Page that still lacks the linked IG id is probed on its own node:
+  //     GET /{page-id}?fields=id,instagram_business_account
+  //     That request is documented with a USER access token (Get Started) and
+  //     the /me/accounts Page access token is the token Meta tells you to
+  //     capture for Page-scoped IG access (Facebook Login for Business), so we
+  //     try the Page's own token first and fall back to the user token.
+  //   - selection keys on a valid `instagram_business_account.id`; `username`
+  //     is resolved separately from the IG User node and stays optional.
   type LinkedInstagramResult =
     | { ok: true; ig: InstagramIdentity }
     | {
@@ -536,16 +615,19 @@ export async function discoverPage(
         probeStatus?: number;
       };
 
+  /**
+   * Reads one Page's linked Instagram Business account. The Page's /me/accounts
+   * entry may already carry the nested id; otherwise the Page node is probed —
+   * first with the Page's OWN access token (the /me/accounts value), then with
+   * the user access token as the documented fallback when the two differ.
+   * Selection keys on a valid `instagram_business_account.id`.
+   */
   const linkedInstagram = async (
     page: RawPage,
   ): Promise<LinkedInstagramResult> => {
     const nested = toInstagram(page.instagram_business_account);
     if (nested) return { ok: true, ig: nested };
 
-    // The Page node probe MUST be authenticated with the Page's OWN access
-    // token from /me/accounts. A user token makes Meta return HTTP 200 with
-    // the edge dropped (ig_present=false) even for Pages that ARE linked to
-    // Instagram — the exact production failure — so never fall back to it.
     const pageToken = page.access_token?.trim();
     if (!pageToken) {
       console.log(
@@ -556,53 +638,39 @@ export async function discoverPage(
       return { ok: false, nestedPresent: false, probeAttempted: false };
     }
 
-    const pageUrl = new URL(`${cfg.graphApiBase}/${page.id}`);
-    pageUrl.searchParams.set(
-      "fields",
-      "id,instagram_business_account{id,username}",
-    );
-    pageUrl.searchParams.set("access_token", pageToken);
-    try {
-      const probe = await fetch(pageUrl.toString());
-      const body = (await probe.json()) as {
-        instagram_business_account?: {
-          id?: string;
-          username?: string;
-        } | null;
-        error?: { message?: string };
-      };
-      const igPresent =
-        body.instagram_business_account !== null &&
-        body.instagram_business_account !== undefined;
-      console.log(
-        `[FB-OAuth-Diag] page-node probe id=${page.id} HTTP_status=${
-          probe.status
-        } ig_present=${igPresent} ig_id=${
-          body.instagram_business_account?.id ?? "none"
-        } ig_username=${body.instagram_business_account?.username ?? "none"}`,
+    const attempts: Array<{ token: string; kind: "page" | "user" }> = [
+      { token: pageToken, kind: "page" },
+    ];
+    if (accessToken.trim() !== pageToken) {
+      attempts.push({ token: accessToken, kind: "user" });
+    }
+
+    let probeStatus: number | undefined;
+    let probeAttempted = false;
+    for (const attempt of attempts) {
+      const probe = await probePageForInstagram(
+        cfg,
+        page.id,
+        attempt.token,
+        attempt.kind,
       );
-      const probed = probe.ok
-        ? toInstagram(body.instagram_business_account)
-        : null;
-      if (probed) {
-        console.log(
-          `[FB-OAuth-Diag] page-node probe FOUND linked IG page_id=${page.id} ig_id=${probed.id} ig_username=${probed.username ?? "none"}`,
-        );
+      if (probe.ok) {
         console.log(
           `[FB-OAuth-Page] Page node probe found linked IG for ${page.name}`,
         );
-        return { ok: true, ig: probed };
+        return { ok: true, ig: probe.ig };
       }
-      return {
-        ok: false,
-        nestedPresent: false,
-        probeAttempted: true,
-        probeStatus: probe.status,
-      };
-    } catch {
-      // Best-effort probe; the Page simply has no linked IG as far as we know.
-      return { ok: false, nestedPresent: false, probeAttempted: false };
+      if (probe.probeAttempted) {
+        probeAttempted = true;
+        probeStatus = probe.probeStatus;
+      }
     }
+    return {
+      ok: false,
+      nestedPresent: false,
+      probeAttempted,
+      probeStatus,
+    };
   };
 
   // Iterate ALL managed Pages and pick the first one that actually has a
@@ -627,7 +695,7 @@ export async function discoverPage(
 
       const resolved = await resolveInstagramUsername(
         cfg,
-        rawPage.access_token?.trim() ?? accessToken,
+        accessToken,
         result.ig,
       );
       console.log(
@@ -702,9 +770,10 @@ export interface InstagramInfo {
 
 /**
  * Resolves the Page-scoped access token for `pageId` from /me/accounts — the
- * only token that can read a Page node's `instagram_business_account` edge.
- * Best-effort: returns null when the user token cannot list Pages or the id is
- * not among them.
+ * token Meta's "Facebook Login for Business" guide says to capture alongside a
+ * Page's linked Instagram Business account. Best-effort: returns null when the
+ * user token cannot list Pages or the id is not among them. Callers fall back
+ * to the user access token for the Page-node lookup when it is unavailable.
  */
 async function resolvePageAccessToken(
   cfg: MetaAppConfig,
@@ -751,8 +820,9 @@ async function resolvePageAccessToken(
  * discoverPage({ requireInstagram: true }) which already resolves the correct
  * Page with a linked IG account; this helper remains for callers that hold a
  * pageId and want to verify that single Page's IG linkage. Like discoverPage's
- * Page-node probe, the lookup MUST use the Page's own access token (resolved
- * from /me/accounts) — a user token returns HTTP 200 without the edge.
+ * Page-node probe, it requests the plain `instagram_business_account` field and
+ * tries the Page's own access token (resolved from /me/accounts) first, then
+ * the user access token.
  */
 export async function discoverInstagram(
   accessToken: string,
@@ -763,65 +833,40 @@ export async function discoverInstagram(
   const cfg = getMetaAppConfig();
   if (!cfg) return { ok: false, message: "Meta not configured." };
 
-  // Reading the Page node's `instagram_business_account` edge requires the
-  // Page's OWN access token, never the user token.
+  // The /me/accounts Page access token is the token Meta's "Facebook Login for
+  // Business" guide says to capture for Page-scoped IG access; read it first
+  // and fall back to the user access token that the "Get Started" guide uses
+  // for the same Page-node request.
   const pageToken = await resolvePageAccessToken(cfg, accessToken, pageId);
-  if (!pageToken) {
-    return {
-      ok: false,
-      message:
-        "This Facebook Page could not be verified for an Instagram Business account.",
+
+  const attempts: Array<{ token: string; kind: "page" | "user" }> = [];
+  if (pageToken) attempts.push({ token: pageToken, kind: "page" });
+  if (!pageToken || pageToken !== accessToken.trim()) {
+    attempts.push({ token: accessToken, kind: "user" });
+  }
+
+  for (const attempt of attempts) {
+    const probe = await probePageForInstagram(
+      cfg,
       pageId,
-    };
+      attempt.token,
+      attempt.kind,
+    );
+    if (probe.ok) {
+      const resolved = await resolveInstagramUsername(
+        cfg,
+        accessToken,
+        probe.ig,
+      );
+      return { ok: true, pageId, instagram: resolved };
+    }
   }
-
-  const pageUrl = new URL(`${cfg.graphApiBase}/${pageId}`);
-  pageUrl.searchParams.set("fields", "id,instagram_business_account{id,username}");
-  pageUrl.searchParams.set("access_token", pageToken);
-
-  let res: Response;
-  try {
-    res = await fetch(pageUrl.toString());
-  } catch (e) {
-    console.log("[FB-OAuth-IG] FETCH ERROR:", e);
-    return { ok: false, message: "Could not reach Meta." };
-  }
-
-  let json: {
-    id?: string;
-    instagram_business_account?: { id?: string; username?: string };
-    error?: { message?: string };
-  };
-  try {
-    json = (await res.json()) as typeof json;
-  } catch (e) {
-    console.log("[FB-OAuth-IG] JSON PARSE ERROR:", e);
-    return { ok: false, message: "Unexpected response from Meta." };
-  }
-
-  console.log("[FB-OAuth-IG] HTTP status:", res.status);
-  console.log("[FB-OAuth-IG] has_ig:", !!json.instagram_business_account?.id);
-  if (json.error) console.log("[FB-OAuth-IG] error:", JSON.stringify(json.error));
-
-  const ig = json.instagram_business_account;
-  if (!ig?.id) {
-    return {
-      ok: false,
-      message:
-        json.error?.message ??
-        "No Instagram business account is linked to this Facebook Page.",
-      pageId,
-    };
-  }
-
-  const resolved = await resolveInstagramUsername(cfg, pageToken, {
-    id: ig.id,
-    username: ig.username?.trim() || undefined,
-  });
 
   return {
-    ok: true,
+    ok: false,
+    message: pageToken
+      ? "No Instagram business account is linked to this Facebook Page."
+      : "This Facebook Page could not be verified for an Instagram Business account.",
     pageId,
-    instagram: resolved,
   };
 }
