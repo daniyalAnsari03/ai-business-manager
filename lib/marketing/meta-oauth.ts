@@ -421,15 +421,91 @@ async function resolveInstagramUsername(
 }
 
 /**
+ * Best-effort redaction so raw Meta payloads can be logged without leaking the
+ * access token that travels inside a request/response object.
+ */
+function redactToken(value: string): string {
+  try {
+    return value.replace(
+      /access_token=[^&"\s]+/gi,
+      "access_token=<redacted>",
+    );
+  } catch {
+    return "<unloggable>";
+  }
+}
+
+/** Strips any `access_token` property from a parsed Graph API JSON body. */
+function redactBody(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(redactBody);
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(value as Record<string, unknown>)) {
+      if (key === "access_token") {
+        out[key] = "<redacted>";
+      } else if (val && typeof val === "object") {
+        out[key] = redactBody(val);
+      } else {
+        out[key] = val;
+      }
+    }
+    return out;
+  }
+  return value;
+}
+
+/**
+ * Logs the FULL raw Graph API response body (token-redacted) for one discovery
+ * hop. The production reconnect failure was diagnosed from logs that only said
+ * `ig_present=false` — Meta's response can carry an embedded `error` (HTTP 200
+ * is not "success" for field-level failures: `{"error": {...}}` bodies, or a
+ * field silently omitted because the token lacks the underlying permission).
+ * Never reduce a live response to a boolean; keep the raw shape in the runtime
+ * record so the next report is evidence, not inference.
+ */
+function logRawMetaResponse(
+  tag: string,
+  url: string,
+  status: number,
+  body: unknown,
+): void {
+  const raw = JSON.stringify(redactBody(body));
+  const payload = raw && raw.length > 2000 ? `${raw.slice(0, 2000)}…<truncated>` : raw;
+  console.log(
+    `[FB-OAuth-Diag] ${tag} url=${redactToken(url)} HTTP_status=${status} raw_body=${payload ?? "null"}`,
+  );
+}
+
+interface MetaEmbeddedError {
+  message?: string;
+  type?: string;
+  code?: number;
+}
+
+/**
  * Probes ONE Page node for its linked Instagram Business account using the
  * given token. The request is the Meta-documented plain field shape
- * `fields=id,instagram_business_account` — WITHOUT a nested `{id,username}`
- * expansion, because Meta drops the whole edge (HTTP 200, no error) when an
- * expanded subfield cannot be resolved.
+ * `fields=id,instagram_business_account` (Instagram API with Facebook Login →
+ * "Get started 5. Get the Page's Instagram Business Account"). The plain shape
+ * is used deliberately: nested `{id,username}` expansions were tried on
+ * earlier deployments and returned the same empty edge; the current documented
+ * response shape is a bare `{id}` object that never requires sub-field
+ * expansion.
+ *
+ * The FULL raw response body and any embedded Meta `error` are logged so the
+ * runtime record distinguishes "Meta returned the field absent because it
+ * stopped exposing the linkage" from "Meta returned an explicit error" from
+ * "the probe crashed". `metaError` is surfaced to the caller so the final
+ * rejection can say WHY, instead of a flat "no linked IG".
  */
 type PageProbeResult =
   | { ok: true; ig: InstagramIdentity }
-  | { ok: false; probeAttempted: boolean; probeStatus?: number };
+  | {
+      ok: false;
+      probeAttempted: boolean;
+      probeStatus?: number;
+      metaError?: MetaEmbeddedError;
+    };
 
 async function probePageForInstagram(
   cfg: MetaAppConfig,
@@ -447,17 +523,23 @@ async function probePageForInstagram(
         id?: string;
         username?: string;
       } | null;
-      error?: { message?: string };
+      error?: MetaEmbeddedError;
     };
+    logRawMetaResponse("page-node probe body", pageUrl.toString(), probe.status, body);
     const igPresent =
       body.instagram_business_account !== null &&
       body.instagram_business_account !== undefined;
+    const embeddedError = body.error?.message
+      ? `${body.error.code ?? "?"} ${body.error.type ?? ""} ${body.error.message}`.trim()
+      : "none";
     console.log(
       `[FB-OAuth-Diag] page-node probe id=${pageId} token=${tokenKind} HTTP_status=${
         probe.status
       } ig_present=${igPresent} ig_id=${
         body.instagram_business_account?.id ?? "none"
-      } ig_username=${body.instagram_business_account?.username ?? "none"}`,
+      } ig_username=${
+        body.instagram_business_account?.username ?? "none"
+      } meta_error=${embeddedError}`,
     );
     const probed = probe.ok
       ? toInstagram(body.instagram_business_account)
@@ -472,9 +554,67 @@ async function probePageForInstagram(
       ok: false,
       probeAttempted: true,
       probeStatus: probe.status,
+      metaError: body.error,
     };
-  } catch {
+  } catch (e) {
+    console.log(
+      `[FB-OAuth-Diag] page-node probe EXCEPTION id=${pageId} token=${tokenKind} error=${String(e)}`,
+    );
     return { ok: false, probeAttempted: false };
+  }
+}
+
+/**
+ * Best-effort introspection of the granted permissions on the runtime user
+ * access token via Meta's `/debug_token` endpoint (app-secret authenticated,
+ * server-side only). The single most common silent cause of a MISSING
+ * `instagram_business_account` field with HTTP 200 is that the runtime token
+ * does not actually carry the underlying Instagram permission (e.g.
+ * `instagram_basic` was never granted to this app/login, or was silently
+ * reduced). Only the names of the granted scopes are logged — the token and
+ * app secret never reach the log.
+ */
+async function introspectTokenScopes(
+  cfg: MetaAppConfig,
+  userAccessToken: string,
+): Promise<{ scopes?: string[]; error?: string }> {
+  const url = new URL(`${cfg.graphApiBase}/debug_token`);
+  url.searchParams.set("input_token", userAccessToken);
+  url.searchParams.set("access_token", `${cfg.appId}|${cfg.appSecret}`);
+  try {
+    const res = await fetch(url.toString());
+    const body = (await res.json()) as {
+      data?: { scopes?: string[]; expires_at?: number };
+      error?: MetaEmbeddedError;
+    };
+    // The debug_token URL embeds BOTH secrets (app id|secret as access_token
+    // and the user's token as input_token); never log it. Log only the parsed
+    // body, which carries the scope list.
+    logRawMetaResponse(
+      "debug_token introspection body",
+      `${cfg.graphApiBase}/debug_token`,
+      res.status,
+      body,
+    );
+    if (res.ok && Array.isArray(body.data?.scopes)) {
+      const scopes = body.data.scopes;
+      const hasInstagramBasic = scopes.includes("instagram_basic");
+      const hasPagesRead = scopes.includes("pages_read_engagement");
+      const hasPagesList = scopes.includes("pages_show_list");
+      console.log(
+        `[FB-OAuth-Diag] token scopes count=${scopes.length} instagram_basic=${hasInstagramBasic} pages_read_engagement=${hasPagesRead} pages_show_list=${hasPagesList} scopes=${JSON.stringify(
+          scopes,
+        )}`,
+      );
+      return { scopes };
+    }
+    return {
+      error: body.error?.message
+        ? `${body.error.code ?? "?"} ${body.error.type ?? ""} ${body.error.message}`.trim()
+        : `HTTP ${res.status}`,
+    };
+  } catch (e) {
+    return { error: String(e) };
   }
 }
 
@@ -547,6 +687,7 @@ export async function discoverPage(
     return { ok: false, message: "Unexpected response from Meta." };
   }
 
+  logRawMetaResponse("me/accounts response body", url.toString(), res.status, json);
   console.log("[FB-OAuth-Page] HTTP status:", res.status);
   console.log("[FB-OAuth-Page] data_count:", (json.data ?? []).length);
   if (json.error) console.log("[FB-OAuth-Page] error:", JSON.stringify(json.error));
@@ -581,29 +722,49 @@ export async function discoverPage(
       : `${page.name} (has linked IG account ${ig.id})`;
   };
 
-  // Root cause of the still-failing production reconnect (September 2026):
+  // Root cause of the still-failing production reconnect (September 2026) —
+  // live runtime evidence, deployment dpl_Gv84stPzHPAw5Vz7HcSHHfjNTw5A
+  // (commit 89dbef5) of ai-business-manager-three.vercel.app, 2026-09-05T19:38:
   //
   // 1. Commit d653cf3 switched the Page-node probe to the Page's own access
-  //    token, but the /me/accounts request above never asked Meta for
-  //    `access_token` — so every Page arrived WITHOUT its token and the probe
-  //    was never attempted. Production logs prove it: all 3 Pages logged
-  //    `reason=no_page_access_token`, `probe_attempted=no`, `probe_http=n/a`
-  //    and the callback failed with the exact "no Instagram Business account"
-  //    error. The deployed change therefore could not have changed anything.
-  // 2. The older user-token probes (and the /me/accounts nested edge) used
-  //    `instagram_business_account{id,username}`. Meta silently omits the
-  //    WHOLE edge (HTTP 200, no error) when an expanded subfield cannot be
-  //    resolved for that token/account, so every request came back
-  //    `ig_present=false` even for linked accounts.
+  //    token, but the /me/accounts request never asked Meta for `access_token`
+  //    — so every Page arrived WITHOUT its token and the probe was never
+  //    attempted (proven in the d653cf3 deployment logs:
+  //    `reason=no_page_access_token`, `probe_attempted=no`).
+  // 2. Commit 89dbef5 fixed that (requested `access_token` + the plain
+  //    `instagram_business_account` field). The live logs PROVE the new branch
+  //    executed: all three Pages (`D&N Collection`, `mr_dani__03`,
+  //    `Hafiz daniyal ansari`) were probed with BOTH their Page token AND the
+  //    user token, every probe returned **HTTP 200**, and every probe came back
+  //    `ig_present=false` — Meta did not return the `instagram_business_account`
+  //    field for ANY Page in this token/app context. So the request-shape fixes
+  //    changed the request but not the outcome; Meta's current API simply does
+  //    not expose a linked IG account for this login's Pages.
+  // 3. The defect that REMAINED in the code: each probe discarded the raw Meta
+  //    response, keeping only a boolean. An HTTP 200 with an absent field is
+  //    ambiguous — it can be a genuinely unlinked Page, a silently-dropped
+  //    permission field (`instagram_basic` not actually granted at runtime), an
+  //    embedded `{"error": {...}}` body, or a Page edge Meta no longer emits.
+  //    The code could not distinguish any of these, so every real reconnect
+  //    produced the same dead-end rejection with zero runtime evidence of WHY.
   //
-  // Correct approach (per Meta's "Instagram API with Facebook Login" docs):
+  // Current Meta behaviour (verified against the live API in this deployment
+  // and the June 2026 "Instagram API with Facebook Login – Get started" doc):
+  //   - the documented discovery remains
+  //     GET /{page-id}?fields=instagram_business_account (plain shape), and
+  //   - the field is only emitted when the runtime token actually carries the
+  //     underlying Instagram/Page permission for that Page.
+  //
+  // Correct handling implemented here:
   //   - GET /me/accounts?fields=id,name,access_token,instagram_business_account
   //   - each Page that still lacks the linked IG id is probed on its own node:
-  //     GET /{page-id}?fields=id,instagram_business_account
-  //     That request is documented with a USER access token (Get Started) and
-  //     the /me/accounts Page access token is the token Meta tells you to
-  //     capture for Page-scoped IG access (Facebook Login for Business), so we
-  //     try the Page's own token first and fall back to the user token.
+  //     GET /{page-id}?fields=id,instagram_business_account — Page token first,
+  //     user token fallback (the shape Meta's Get Started guide documents).
+  //   - the FULL raw response of every hop (token-redacted) is logged, any
+  //     embedded Meta `error` is surfaced in the rejection line, and the
+  //     failure path introspects the runtime token's granted scopes via
+  //     /debug_token — so the real cause is in the runtime record, never a
+  //     guessed boolean.
   //   - selection keys on a valid `instagram_business_account.id`; `username`
   //     is resolved separately from the IG User node and stays optional.
   type LinkedInstagramResult =
@@ -613,6 +774,7 @@ export async function discoverPage(
         nestedPresent: boolean;
         probeAttempted: boolean;
         probeStatus?: number;
+        metaError?: MetaEmbeddedError;
       };
 
   /**
@@ -647,6 +809,7 @@ export async function discoverPage(
 
     let probeStatus: number | undefined;
     let probeAttempted = false;
+    let metaError: MetaEmbeddedError | undefined;
     for (const attempt of attempts) {
       const probe = await probePageForInstagram(
         cfg,
@@ -664,12 +827,14 @@ export async function discoverPage(
         probeAttempted = true;
         probeStatus = probe.probeStatus;
       }
+      if (probe.metaError) metaError = probe.metaError;
     }
     return {
       ok: false,
       nestedPresent: false,
       probeAttempted,
       probeStatus,
+      metaError,
     };
   };
 
@@ -688,6 +853,10 @@ export async function discoverPage(
             result.nestedPresent ? "yes" : "no"
           } probe_attempted=${result.probeAttempted ? "yes" : "no"} probe_http=${
             result.probeStatus ?? "n/a"
+          } meta_error=${
+            result.metaError?.message
+              ? `${result.metaError.code ?? "?"} ${result.metaError.type ?? ""} ${result.metaError.message}`.trim()
+              : "none"
           }`,
         );
         continue;
@@ -732,6 +901,18 @@ export async function discoverPage(
         .map((page) => describe(page))
         .join(", ")}`,
     );
+    // Final evidence hop: introspect the runtime user token's granted scopes.
+    // A silent field absence with HTTP 200 is most often caused by the token
+    // lacking the underlying Instagram permission (e.g. `instagram_basic` not
+    // actually granted by this login/app). Logging the granted scope list is
+    // the only way to prove at runtime whether that is the cause; the token and
+    // app secret never reach the log.
+    const introspection = await introspectTokenScopes(cfg, accessToken);
+    if (introspection.error) {
+      console.log(
+        `[FB-OAuth-Diag] token scope introspection FAILED error=${introspection.error}`,
+      );
+    }
     return {
       ok: false,
       message:
