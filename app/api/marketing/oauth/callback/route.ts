@@ -147,7 +147,7 @@ export async function GET(request: Request) {
 
   const persisted = await connectMetaAccount({
     platform,
-    accountLabel: igUser.username,
+    accountLabel: igUser.username ?? igPage.page.name,
     accessToken: igToken.accessToken,
     tokenExpiresAt: igToken.expiresIn
       ? new Date(Date.now() + igToken.expiresIn * 1000).toISOString()

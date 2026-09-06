@@ -342,7 +342,7 @@ export interface PageInfo {
    * Requested as part of /me/accounts discovery so a single call already shows
    * which Page owns a linked IG account without a per-Page round trip.
    */
-  instagram?: { id: string; username: string };
+  instagram?: InstagramIdentity;
 }
 
 type RawPage = {
@@ -351,12 +351,61 @@ type RawPage = {
   instagram_business_account?: { id?: string; username?: string } | null;
 };
 
+export interface InstagramIdentity {
+  id: string;
+  username?: string;
+}
+
+/**
+ * Returns the linked Instagram identity when the Page carries an
+ * instagram_business_account id, or null when the Page has no linked
+ * Instagram Business account.
+ *
+ * `username` is intentionally optional: Meta does not always include it on the
+ * Page edge — the nested `instagram_business_account{id,username}` expansion
+ * can legitimately return only the `id`. Requiring BOTH fields used to make
+ * the connect flow reject Pages that ARE linked to a real Instagram account
+ * (precisely the production failure when connecting @dinsbydaniyal), so
+ * selection keys on the presence of `id` and the username is resolved
+ * separately (or left out) when Meta omits it.
+ */
 function toInstagram(
   value?: RawPage["instagram_business_account"],
-): { id: string; username: string } | null {
+): InstagramIdentity | null {
   const id = value?.id?.trim();
+  if (!id) return null;
   const username = value?.username?.trim();
-  return id && username ? { id, username } : null;
+  return username ? { id, username } : { id };
+}
+
+/**
+ * Best-effort resolution of a linked Instagram account's username when the
+ * discovery payload did not include it. The account is already trusted by its
+ * `id` — the username is only the display label — so any failure here keeps
+ * the identity (and never blocks the connection).
+ */
+async function resolveInstagramUsername(
+  cfg: MetaAppConfig,
+  accessToken: string,
+  identity: InstagramIdentity,
+): Promise<InstagramIdentity> {
+  if (identity.username) return identity;
+  const url = new URL(`${cfg.graphApiBase}/${identity.id}`);
+  url.searchParams.set("fields", "username");
+  url.searchParams.set("access_token", accessToken);
+  try {
+    const res = await fetch(url.toString());
+    const json = (await res.json()) as {
+      username?: string;
+      error?: { message?: string };
+    };
+    if (res.ok && json.username?.trim()) {
+      return { id: identity.id, username: json.username.trim() };
+    }
+  } catch {
+    // Username is cosmetic; never fail the connection over it.
+  }
+  return identity;
 }
 
 export interface DiscoverPageOptions {
@@ -383,7 +432,10 @@ export async function discoverPage(
   options: DiscoverPageOptions = {},
 ): Promise<{ ok: true; page: PageInfo } | { ok: false; message: string }> {
   const cfg = getMetaAppConfig();
-  if (!cfg) return { ok: false, message: "Meta not configured." };
+  if (!cfg) {
+    console.log("[FB-OAuth-Page] SKIPPED: Meta not configured.");
+    return { ok: false, message: "Meta not configured." };
+  }
 
   const url = new URL(`${cfg.graphApiBase}/me/accounts`);
   url.searchParams.set("fields", "id,name,instagram_business_account{id,username}");
@@ -426,13 +478,16 @@ export async function discoverPage(
 
   const describe = (page: RawPage) => {
     const ig = toInstagram(page.instagram_business_account);
-    return ig
+    if (!ig) return `${page.name} (no linked IG)`;
+    return ig.username
       ? `${page.name} (has linked IG @${ig.username})`
-      : `${page.name} (no linked IG)`;
+      : `${page.name} (has linked IG account ${ig.id})`;
   };
 
   // Iterate ALL managed Pages and pick the first one that actually has a
   // linked Instagram Business account — never settle for the first Page.
+  // Selection keys on the linked IG `id` (not on a possibly-absent username),
+  // and the username is resolved separately when Meta omits it.
   if (options.requireInstagram) {
     const firstWithInstagram = pages.find(
       (page) => toInstagram(page.instagram_business_account) !== null,
@@ -450,6 +505,12 @@ export async function discoverPage(
       };
     }
 
+    const ig = toInstagram(firstWithInstagram.instagram_business_account);
+    const resolved =
+      ig !== null
+        ? await resolveInstagramUsername(cfg, accessToken, ig)
+        : undefined;
+
     const skipped = pages
       .filter((page) => page.id !== firstWithInstagram.id)
       .map(describe)
@@ -465,8 +526,7 @@ export async function discoverPage(
       page: {
         id: firstWithInstagram.id,
         name: firstWithInstagram.name,
-        instagram:
-          toInstagram(firstWithInstagram.instagram_business_account) ?? undefined,
+        instagram: resolved,
       },
     };
   }
@@ -497,7 +557,7 @@ export async function discoverPage(
 
 export interface InstagramInfo {
   id: string;
-  username: string;
+  username?: string;
 }
 
 /**
@@ -548,7 +608,7 @@ export async function discoverInstagram(
   if (json.error) console.log("[FB-OAuth-IG] error:", JSON.stringify(json.error));
 
   const ig = json.instagram_business_account;
-  if (!ig?.id || !ig.username) {
+  if (!ig?.id) {
     return {
       ok: false,
       message:
@@ -558,9 +618,14 @@ export async function discoverInstagram(
     };
   }
 
+  const resolved = await resolveInstagramUsername(cfg, accessToken, {
+    id: ig.id,
+    username: ig.username?.trim() || undefined,
+  });
+
   return {
     ok: true,
     pageId,
-    instagram: { id: ig.id, username: ig.username },
+    instagram: resolved,
   };
 }

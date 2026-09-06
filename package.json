@@ -14,6 +14,7 @@
     "test:tools": "node --conditions=react-server --import ./tests/ai/register-hooks.mjs tests/ai/business-tools.mjs",
     "test:budget-planner": "node --conditions=react-server --import ./tests/ai/register-hooks.mjs tests/marketing/ad-budget-planner.test.mjs",
     "test:ad-campaign-tool": "node --conditions=react-server --import ./tests/marketing/register-ad-campaign-hooks.mjs tests/marketing/ad-campaign-tool.test.mjs",
+    "test:meta-oauth": "node --conditions=react-server --import ./tests/ai/register-hooks.mjs tests/marketing/meta-oauth-discover.test.mjs",
     "perf:audit": "node --env-file=.env.local tests/qa/perf-audit.mjs"
   },
   "dependencies": {
