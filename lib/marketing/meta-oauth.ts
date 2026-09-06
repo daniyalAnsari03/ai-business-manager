@@ -473,6 +473,13 @@ export async function discoverPage(
   const pages = (json.data ?? []).filter(
     (p): p is RawPage => Boolean(p.id && p.name),
   );
+  for (const p of pages) {
+    console.log(
+      `[FB-OAuth-Diag] /me/accounts page id=${p.id} name=${JSON.stringify(
+        p.name,
+      )} nested_ig=${toInstagram(p.instagram_business_account)?.id ?? "none"}`,
+    );
+  }
   if (pages.length === 0) {
     return {
       ok: false,
@@ -528,10 +535,23 @@ export async function discoverPage(
         } | null;
         error?: { message?: string };
       };
+      const igPresent =
+        body.instagram_business_account !== null &&
+        body.instagram_business_account !== undefined;
+      console.log(
+        `[FB-OAuth-Diag] page-node probe id=${page.id} HTTP_status=${
+          probe.status
+        } ig_present=${igPresent} ig_id=${
+          body.instagram_business_account?.id ?? "none"
+        } ig_username=${body.instagram_business_account?.username ?? "none"}`,
+      );
       const probed = probe.ok
         ? toInstagram(body.instagram_business_account)
         : null;
       if (probed) {
+        console.log(
+          `[FB-OAuth-Diag] page-node probe FOUND linked IG page_id=${page.id} ig_id=${probed.id} ig_username=${probed.username ?? "none"}`,
+        );
         console.log(
           `[FB-OAuth-Page] Page node probe found linked IG for ${page.name}`,
         );
@@ -550,13 +570,28 @@ export async function discoverPage(
   if (options.requireInstagram) {
     for (const rawPage of pages) {
       const ig = await linkedInstagram(rawPage);
-      if (!ig) continue;
+      if (!ig) {
+        console.log(
+          `[FB-OAuth-Diag] candidate rejected page_id=${rawPage.id} name=${JSON.stringify(
+            rawPage.name,
+          )} no_linked_ig`,
+        );
+        continue;
+      }
 
       const resolved = await resolveInstagramUsername(cfg, accessToken, ig);
+      console.log(
+        `[FB-OAuth-Diag] discovered IG account page_id=${rawPage.id} ig_id=${ig.id} ig_username=${ig.username ?? "none"}`,
+      );
       const skipped = pages
         .filter((page) => page.id !== rawPage.id)
         .map((page) => describe(page))
         .join(", ");
+      console.log(
+        `[FB-OAuth-Diag] SELECTED page_id=${rawPage.id} name=${JSON.stringify(
+          rawPage.name,
+        )} ig_id=${resolved.id} ig_username=${resolved.username ?? "none"}`,
+      );
       console.log(
         `[FB-OAuth-Page] Selected page: ${describe(
           rawPage,
