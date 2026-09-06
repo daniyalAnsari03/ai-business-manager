@@ -351,6 +351,13 @@ export interface PageInfo {
 type RawPage = {
   id: string;
   name: string;
+  /**
+   * The Page-scoped access token /me/accounts returns for THIS Page. Reading a
+   * Page node's `instagram_business_account` edge (and calling any Page/IG
+   * publishing API) requires this token — the user access token is NOT
+   * sufficient and is never used for Page-node calls.
+   */
+  access_token?: string;
   instagram_business_account?: { id?: string; username?: string } | null;
 };
 
@@ -508,12 +515,18 @@ export async function discoverPage(
   // Meta's "Instagram API with Facebook Login" getting-started guide, is to
   // query the Page node directly:
   //   GET /{page-id}?fields=instagram_business_account{id,username}
-  // So each Page that lacks the nested edge is probed on its own node BEFORE
-  // being declared to have no linked Instagram account. The probe reuses the
-  // SAME user access token and the scopes the OAuth dialog already requested
-  // (instagram_basic + pages_read_engagement + pages_show_list), so no scope
-  // or Meta App setting changes are required. Selection still keys on a valid
-  // `instagram_business_account.id`; `username` stays optional.
+  // That request MUST use the Page's OWN access token — the token /me/accounts
+  // returns next to that Page. With the user access token Meta still answers
+  // HTTP 200 but omits `instagram_business_account` for EVERY Page, which is
+  // exactly the `ig_present=false` / `no_linked_ig` failure seen in production
+  // (3 Pages, all returning HTTP 200 with ig_present=false). Each Page that
+  // lacks the nested edge is therefore probed on its own node with ITS OWN
+  // Page access token before being declared to have no linked Instagram
+  // account. The scopes the OAuth dialog already requested
+  // (instagram_basic + pages_read_engagement + pages_show_list) are unchanged
+  // — they are what grant the Page access token its IG read capability.
+  // Selection still keys on a valid `instagram_business_account.id`; `username`
+  // stays optional.
   type LinkedInstagramResult =
     | { ok: true; ig: InstagramIdentity }
     | {
@@ -529,12 +542,26 @@ export async function discoverPage(
     const nested = toInstagram(page.instagram_business_account);
     if (nested) return { ok: true, ig: nested };
 
+    // The Page node probe MUST be authenticated with the Page's OWN access
+    // token from /me/accounts. A user token makes Meta return HTTP 200 with
+    // the edge dropped (ig_present=false) even for Pages that ARE linked to
+    // Instagram — the exact production failure — so never fall back to it.
+    const pageToken = page.access_token?.trim();
+    if (!pageToken) {
+      console.log(
+        `[FB-OAuth-Diag] candidate skipped function=discoverPage branch=requireInstagram page_id=${page.id} name=${JSON.stringify(
+          page.name,
+        )} reason=no_page_access_token`,
+      );
+      return { ok: false, nestedPresent: false, probeAttempted: false };
+    }
+
     const pageUrl = new URL(`${cfg.graphApiBase}/${page.id}`);
     pageUrl.searchParams.set(
       "fields",
       "id,instagram_business_account{id,username}",
     );
-    pageUrl.searchParams.set("access_token", accessToken);
+    pageUrl.searchParams.set("access_token", pageToken);
     try {
       const probe = await fetch(pageUrl.toString());
       const body = (await probe.json()) as {
@@ -600,7 +627,7 @@ export async function discoverPage(
 
       const resolved = await resolveInstagramUsername(
         cfg,
-        accessToken,
+        rawPage.access_token?.trim() ?? accessToken,
         result.ig,
       );
       console.log(
@@ -674,6 +701,48 @@ export interface InstagramInfo {
 }
 
 /**
+ * Resolves the Page-scoped access token for `pageId` from /me/accounts — the
+ * only token that can read a Page node's `instagram_business_account` edge.
+ * Best-effort: returns null when the user token cannot list Pages or the id is
+ * not among them.
+ */
+async function resolvePageAccessToken(
+  cfg: MetaAppConfig,
+  userAccessToken: string,
+  pageId: string,
+): Promise<string | null> {
+  try {
+    const url = new URL(`${cfg.graphApiBase}/me/accounts`);
+    url.searchParams.set("fields", "id,access_token");
+    url.searchParams.set("access_token", userAccessToken);
+    const res = await fetch(url.toString());
+    const json = (await res.json()) as {
+      data?: Array<{ id?: string; access_token?: string }>;
+      error?: { message?: string };
+    };
+    if (!res.ok || !Array.isArray(json.data)) {
+      console.log(
+        `[FB-OAuth-IG] page access token lookup failed pageId=${pageId} error=${
+          json.error?.message ?? `HTTP ${res.status}`
+        }`,
+      );
+      return null;
+    }
+    const page = json.data.find((p) => p.id === pageId);
+    const token = page?.access_token?.trim();
+    if (!token) {
+      console.log(
+        `[FB-OAuth-IG] no page access token for pageId=${pageId}`,
+      );
+      return null;
+    }
+    return token;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Reads the Instagram business account linked to ONE specific Facebook Page.
  * Returns the Page too so the caller can store both the IG id and the parent
  * page id.
@@ -681,7 +750,9 @@ export interface InstagramInfo {
  * The OAuth callback prefers the one-shot /me/accounts discovery in
  * discoverPage({ requireInstagram: true }) which already resolves the correct
  * Page with a linked IG account; this helper remains for callers that hold a
- * pageId and want to verify that single Page's IG linkage.
+ * pageId and want to verify that single Page's IG linkage. Like discoverPage's
+ * Page-node probe, the lookup MUST use the Page's own access token (resolved
+ * from /me/accounts) — a user token returns HTTP 200 without the edge.
  */
 export async function discoverInstagram(
   accessToken: string,
@@ -692,9 +763,21 @@ export async function discoverInstagram(
   const cfg = getMetaAppConfig();
   if (!cfg) return { ok: false, message: "Meta not configured." };
 
+  // Reading the Page node's `instagram_business_account` edge requires the
+  // Page's OWN access token, never the user token.
+  const pageToken = await resolvePageAccessToken(cfg, accessToken, pageId);
+  if (!pageToken) {
+    return {
+      ok: false,
+      message:
+        "This Facebook Page could not be verified for an Instagram Business account.",
+      pageId,
+    };
+  }
+
   const pageUrl = new URL(`${cfg.graphApiBase}/${pageId}`);
   pageUrl.searchParams.set("fields", "id,instagram_business_account{id,username}");
-  pageUrl.searchParams.set("access_token", accessToken);
+  pageUrl.searchParams.set("access_token", pageToken);
 
   let res: Response;
   try {
@@ -731,7 +814,7 @@ export async function discoverInstagram(
     };
   }
 
-  const resolved = await resolveInstagramUsername(cfg, accessToken, {
+  const resolved = await resolveInstagramUsername(cfg, pageToken, {
     id: ig.id,
     username: ig.username?.trim() || undefined,
   });

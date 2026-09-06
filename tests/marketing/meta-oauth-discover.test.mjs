@@ -1,15 +1,24 @@
 /**
- * Focused regression test for the production Instagram OAuth fix.
+ * Focused regression test for the production Instagram OAuth reconnect fix.
  *
- * Reproduces the exact root cause of the `@dinsbydaniyal` connection failure:
- * the callback must choose the FIRST managed Facebook Page that actually has a
- * linked Instagram Business account (never the first Page in the list), and
- * must NOT reject a linked account merely because Meta omitted `username` from
- * the /me/accounts edge. It also covers the core bug: Meta does not reliably
- * return the nested `instagram_business_account` edge from /me/accounts, so a
- * Page whose IG account is absent there is probed directly on its Page node
- * (GET /{page-id}?fields=instagram_business_account{id,username}) before the
- * connection is rejected.
+ * Root cause: the callback discovered a Facebook Page and then probed
+ * GET /{page-id}?fields=id,instagram_business_account{id,username} with the
+ * USER access token. Meta answers that request with HTTP 200 but omits the
+ * `instagram_business_account` edge for EVERY Page unless the request is
+ * authenticated with the PAGE's OWN access token (the Page-scoped token that
+ * /me/accounts returns next to each Page). Production therefore saw
+ * `ig_present=false` for all 3 Pages and reached `no_linked_ig`, rejecting a
+ * reconnect even though the Pages and their Instagram Business accounts ARE
+ * linked (connected via Meta's /pages/link-accounts).
+ *
+ * These tests prove:
+ *   A. the /me/accounts Page access token is retained per Page
+ *   B. the Page-node Instagram lookup is performed with THAT Page's access
+ *      token (a regression to the user token makes the mock fail the test)
+ *   C. a Page with an `instagram_business_account.id` is selected even when the
+ *      username is absent (the username is then resolved separately)
+ *   D. a Page without a linked Instagram Business account is rejected
+ *   E. the FIRST Page that has a linked Instagram Business account is selected
  *
  * Run: node --conditions=react-server --import ./tests/ai/register-hooks.mjs tests/marketing/meta-oauth-discover.test.mjs
  */
@@ -26,170 +35,213 @@ function record(name, passed, detail = "") {
 const { discoverPage } = await import("../../lib/marketing/meta-oauth.ts");
 
 const REAL_FETCH = globalThis.fetch;
+const USER_TOKEN = "user-access-token";
+const IG_ID = "17841400000000001";
 
-function withMetaResponses(calls) {
+/**
+ * Installs a fetch mock over the Graph API. Each handler:
+ *   - `matches`   — substring that identifies its URL (probe paths like "/111")
+ *   - `expectedToken` — when set, the request MUST carry
+ *                       `access_token=<exact page access token>`. A mismatch
+ *                       throws, so any regression to the user token fails the
+ *                       surrounding case loudly and explains itself.
+ * Handlers are consumed once in insertion order.
+ */
+function withMeta(calls) {
   const seen = [];
+  const tokenChecks = [];
   globalThis.fetch = async (input) => {
     const url = String(input);
     seen.push(url);
     const handler = calls.find(
       (call) => url.includes(call.matches) && !call.consumed,
     );
-    if (handler) {
-      handler.consumed = true;
-      return {
-        ok: handler.status < 400,
-        status: handler.status,
-        json: async () => structuredClone(handler.payload),
-      };
+    if (!handler) {
+      throw new Error(`Unexpected Graph API call: ${url}`);
     }
-    throw new Error(`Unexpected Graph API call: ${url}`);
+    handler.consumed = true;
+    if (handler.expectedToken) {
+      const used = url.includes(`access_token=${handler.expectedToken}`);
+      tokenChecks.push({
+        url,
+        expected: handler.expectedToken,
+        used,
+        pageId: handler.pageId,
+      });
+      if (!used) {
+        throw new Error(
+          `Page-node lookup for page ${handler.pageId} used the WRONG access token. expected=${handler.expectedToken} actual_url=${url}`,
+        );
+      }
+    }
+    return {
+      ok: handler.status < 400,
+      status: handler.status,
+      json: async () => structuredClone(handler.payload),
+    };
   };
-  return seen;
+  return { seen, tokenChecks };
 }
 
 async function resetFetch() {
   globalThis.fetch = REAL_FETCH;
 }
 
-// Case 1: multiple Pages, the FIRST has no linked IG, the SECOND has the
-// nested edge for a page linked to @dinsbydaniyal — requireInstagram must
-// probe the first Page (no IG) and pick the second.
+// Root-cause case: /me/accounts omits the nested edge for EVERY page (the
+// documented Meta gotcha + the exact production shape), each Page carries its
+// OWN Page access token, and each Page lacking the nested edge is probed with
+// ITS OWN token. Proves A, B and E in one flow.
 {
-  const seen = withMetaResponses([
+  const { seen, tokenChecks } = withMeta([
     {
       matches: "/me/accounts",
       status: 200,
       payload: {
         data: [
-          { id: "111", name: "Personal Page" },
-          {
-            id: "222",
-            name: "DINS by Daniyal",
-            instagram_business_account: {
-              id: "17841400000000001",
-              username: "dinsbydaniyal",
-            },
-          },
+          { id: "111", name: "D&N Collection", access_token: "page-token-111" },
+          { id: "222", name: "mr_dani__03", access_token: "page-token-222" },
         ],
       },
     },
     {
       matches: "/111",
+      pageId: "111",
+      expectedToken: "page-token-111",
       status: 200,
       payload: { id: "111", instagram_business_account: null },
     },
+    {
+      matches: "/222",
+      pageId: "222",
+      expectedToken: "page-token-222",
+      status: 200,
+      payload: {
+        id: "222",
+        instagram_business_account: { id: IG_ID, username: "dinsbydaniyal" },
+      },
+    },
   ]);
-  const result = await discoverPage("tok", { requireInstagram: true });
+  const result = await discoverPage(USER_TOKEN, { requireInstagram: true });
   const passed =
     result.ok &&
     result.page.id === "222" &&
-    result.page.instagram?.id === "17841400000000001" &&
+    result.page.instagram?.id === IG_ID &&
     result.page.instagram?.username === "dinsbydaniyal";
-  record("picks first Page with linked IG (not the first Page)", passed);
+
   record(
-    "no username resolution needed when Meta returns it",
-    seen.length === 2 && !seen.some((u) => u.includes("17841400000000001")),
+    "A — each /me/accounts Page access token is retained and used for THAT Page's probe",
+    tokenChecks.length === 2 && tokenChecks.every((t) => t.used),
+    tokenChecks.map((t) => `${t.pageId}=${t.used ? "ok" : "WRONG"}`).join(", "),
+  );
+  record(
+    "B — Page-node IG lookup uses the Page access token, never the user token",
+    seen
+      .filter((u) => !u.includes("/me/accounts"))
+      .every((u) => !u.includes(`access_token=${USER_TOKEN}`)),
+    seen.join(" | "),
+  );
+  record(
+    "E — first Page with a linked IG account is selected when Meta omits every nested edge",
+    passed,
+  );
+  const probes = seen.filter((u) => !u.includes("/me/accounts"));
+  record(
+    "exactly the Pages lacking the nested edge are probed once",
+    probes.length === 2,
     seen.join(" | "),
   );
   await resetFetch();
 }
 
-// Case 1b: THE production bug — /me/accounts returns the linked Page but
-// OMITS the nested `instagram_business_account` edge entirely (a documented
-// Meta gotcha). The Page node probe must discover the linked IG account and
-// select the Page, instead of the old false "No Instagram Business account is
-// linked to any of your Facebook Pages." error.
+// Probe discovers a linked IG account that /me/accounts omitted, and the
+// probe carries the page's own token.
 {
-  const seen = withMetaResponses([
+  const { seen } = withMeta([
     {
       matches: "/me/accounts",
       status: 200,
       payload: {
         data: [
-          { id: "111", name: "Personal Page" },
-          { id: "222", name: "DINS by Daniyal" },
+          { id: "222", name: "DINS by Daniyal", access_token: "page-token-222" },
         ],
       },
     },
     {
-      matches: "/111",
-      status: 200,
-      payload: { id: "111", instagram_business_account: null },
-    },
-    {
       matches: "/222",
+      pageId: "222",
+      expectedToken: "page-token-222",
       status: 200,
       payload: {
         id: "222",
-        instagram_business_account: {
-          id: "17841400000000001",
-          username: "dinsbydaniyal",
-        },
+        instagram_business_account: { id: IG_ID, username: "dinsbydaniyal" },
       },
     },
   ]);
-  const result = await discoverPage("tok", { requireInstagram: true });
-  const passed =
+  const result = await discoverPage(USER_TOKEN, { requireInstagram: true });
+  record(
+    "discovers linked IG via Page-node probe (with page token) when /me/accounts omits the edge",
     result.ok &&
-    result.page.id === "222" &&
-    result.page.instagram?.id === "17841400000000001" &&
-    result.page.instagram?.username === "dinsbydaniyal";
-  record(
-    "discovers linked IG via Page-node probe when /me/accounts omits the edge",
-    passed,
+      result.page.id === "222" &&
+      result.page.instagram?.id === IG_ID &&
+      result.page.instagram?.username === "dinsbydaniyal",
   );
+  const probes = seen.filter((u) => !u.includes("/me/accounts"));
   record(
-    "exactly one probe per Page lacking the nested edge",
-    seen.length === 3,
+    "exactly one probe for the Page lacking the nested edge",
+    probes.length === 1,
     seen.join(" | "),
   );
   await resetFetch();
 }
 
-// Case 1c: same as 1b but the Page-node probe omits `username` — selection
-// must still succeed (keyed on id) and the username resolved separately.
+// C — detection keys on the id: the probe returns an Instagram account with
+// NO username; selection must still succeed and the username resolved from the
+// IG account node exactly once.
 {
-  const seen = withMetaResponses([
+  const { seen } = withMeta([
     {
       matches: "/me/accounts",
       status: 200,
       payload: {
-        data: [{ id: "222", name: "DINS by Daniyal" }],
+        data: [{ id: "222", name: "DINS by Daniyal", access_token: "page-token-222" }],
       },
     },
     {
       matches: "/222",
+      pageId: "222",
+      expectedToken: "page-token-222",
       status: 200,
       payload: {
         id: "222",
-        instagram_business_account: { id: "17841400000000001" },
+        instagram_business_account: { id: IG_ID },
       },
     },
     {
-      matches: "/17841400000000001",
+      matches: `/${IG_ID}`,
       status: 200,
-      payload: { id: "17841400000000001", username: "dinsbydaniyal" },
+      payload: { id: IG_ID, username: "dinsbydaniyal" },
     },
   ]);
-  const result = await discoverPage("tok", { requireInstagram: true });
-  const passed =
-    result.ok &&
-    result.page.instagram?.id === "17841400000000001" &&
-    result.page.instagram?.username === "dinsbydaniyal";
+  const result = await discoverPage(USER_TOKEN, { requireInstagram: true });
   record(
-    "probe-found IG account is kept even when its username is absent (then resolved)",
-    passed,
+    "C — an IG account is kept even when the probe/edge omits username (keyed on id), then resolved",
+    result.ok &&
+      result.page.instagram?.id === IG_ID &&
+      result.page.instagram?.username === "dinsbydaniyal",
   );
-  record("probe + username resolution made exactly two extra calls", seen.length === 3);
+  const probes = seen.filter((u) => !u.includes("/me/accounts"));
+  record(
+    "probe + username resolution made exactly two extra calls",
+    probes.length === 2,
+    seen.join(" | "),
+  );
   await resetFetch();
 }
 
-// Case 2: the linked IG Page is present but Meta omits `username` on the
-// /me/accounts edge — the account must still be selected (keyed on id) and
-// the username resolved from the IG node.
+// C — nested edge on /me/accounts carries id but no username: selected
+// directly by id, username resolved from the IG node.
 {
-  const seen = withMetaResponses([
+  const { seen } = withMeta([
     {
       matches: "/me/accounts",
       status: 200,
@@ -198,67 +250,114 @@ async function resetFetch() {
           {
             id: "222",
             name: "DINS by Daniyal",
-            instagram_business_account: { id: "17841400000000001" },
+            access_token: "page-token-222",
+            instagram_business_account: { id: IG_ID },
           },
         ],
       },
     },
     {
-      matches: "/17841400000000001",
+      matches: `/${IG_ID}`,
       status: 200,
-      payload: { id: "17841400000000001", username: "dinsbydaniyal" },
+      payload: { id: IG_ID, username: "dinsbydaniyal" },
     },
   ]);
-  const result = await discoverPage("tok", { requireInstagram: true });
-  const passed =
-    result.ok &&
-    result.page.instagram?.id === "17841400000000001" &&
-    result.page.instagram?.username === "dinsbydaniyal";
+  const result = await discoverPage(USER_TOKEN, { requireInstagram: true });
   record(
-    "selects a linked IG account even when username is absent (then resolves it)",
-    passed,
+    "selects a nested linked IG account when username is absent (then resolves it)",
+    result.ok &&
+      result.page.instagram?.id === IG_ID &&
+      result.page.instagram?.username === "dinsbydaniyal",
   );
-  record("username resolution made exactly one IG-node call", seen.length === 2);
+  const probes = seen.filter((u) => !u.includes("/me/accounts"));
+  record(
+    "username resolution made exactly one extra IG-node call",
+    probes.length === 1,
+    seen.join(" | "),
+  );
   await resetFetch();
 }
 
-// Case 3: NO Page has a linked Instagram Business account — honest failure
-// after probing every Page that lacks the nested edge.
+// D — NO Page has a linked Instagram account: every candidate is probed with
+// its own Page access token and the connect is honestly rejected.
 {
-  withMetaResponses([
+  const { tokenChecks } = withMeta([
     {
       matches: "/me/accounts",
       status: 200,
       payload: {
         data: [
-          { id: "111", name: "Personal Page" },
-          { id: "222", name: "Other Page" },
+          { id: "111", name: "Personal Page", access_token: "page-token-111" },
+          { id: "222", name: "Other Page", access_token: "page-token-222" },
         ],
       },
     },
     {
       matches: "/111",
+      pageId: "111",
+      expectedToken: "page-token-111",
       status: 200,
       payload: { id: "111", instagram_business_account: null },
     },
     {
       matches: "/222",
+      pageId: "222",
+      expectedToken: "page-token-222",
       status: 200,
       payload: { id: "222", instagram_business_account: null },
     },
   ]);
-  const result = await discoverPage("tok", { requireInstagram: true });
+  const result = await discoverPage(USER_TOKEN, { requireInstagram: true });
   record(
-    "rejects when no Page has a linked Instagram Business account",
+    "D — rejects when no Page has a linked Instagram Business account",
     !result.ok && result.message.includes("Instagram Business account"),
     !result.ok ? "" : "unexpected ok",
+  );
+  record(
+    "both candidate probes used their own Page access token",
+    tokenChecks.length === 2 && tokenChecks.every((t) => t.used),
   );
   await resetFetch();
 }
 
-// Case 4: plain Facebook connect accepts the first Page and reports IG linkage.
+// E — multiple Pages, the FIRST has a nested linked IG account: it is selected
+// without probing later Pages.
 {
-  withMetaResponses([
+  const { seen } = withMeta([
+    {
+      matches: "/me/accounts",
+      status: 200,
+      payload: {
+        data: [
+          {
+            id: "111",
+            name: "DINS by Daniyal",
+            access_token: "page-token-111",
+            instagram_business_account: {
+              id: IG_ID,
+              username: "dinsbydaniyal",
+            },
+          },
+          { id: "222", name: "mr_dani__03", access_token: "page-token-222" },
+        ],
+      },
+    },
+  ]);
+  const result = await discoverPage(USER_TOKEN, { requireInstagram: true });
+  record(
+    "E — first Page with a linked IG account is selected (no probe needed)",
+    result.ok &&
+      result.page.id === "111" &&
+      result.page.instagram?.username === "dinsbydaniyal" &&
+      result.page.instagram?.id === IG_ID,
+  );
+  record("no Page-node probe is issued when the first Page already has IG", seen.length === 1, seen.join(" | "));
+  await resetFetch();
+}
+
+// Plain Facebook connect accepts the first Page and reports IG linkage.
+{
+  withMeta([
     {
       matches: "/me/accounts",
       status: 200,
@@ -267,17 +366,15 @@ async function resetFetch() {
           {
             id: "111",
             name: "Personal Page",
-            instagram_business_account: {
-              id: "17841400000000009",
-              username: "some.ig",
-            },
+            access_token: "page-token-111",
+            instagram_business_account: { id: IG_ID, username: "some.ig" },
           },
-          { id: "222", name: "DINS by Daniyal" },
+          { id: "222", name: "DINS by Daniyal", access_token: "page-token-222" },
         ],
       },
     },
   ]);
-  const result = await discoverPage("tok");
+  const result = await discoverPage(USER_TOKEN);
   record(
     "plain facebook connect keeps first-Page behaviour and reports IG",
     result.ok &&
