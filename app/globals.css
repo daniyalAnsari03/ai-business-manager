@@ -176,7 +176,7 @@
     color: var(--abm-fg);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    overflow-x: clip;
+    overflow-x: hidden;
   }
 
   ::selection {

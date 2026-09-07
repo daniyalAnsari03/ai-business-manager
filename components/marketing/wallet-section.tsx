@@ -290,7 +290,7 @@ export function WalletSection({
               <h3 className="text-sm font-medium">
                 {t.marketing.walletHistoryTitle}
               </h3>
-              <div className="mt-3 -mx-4">
+              <div className="mt-3">
                 <TransactionHistory
                   transactions={initialTransactions}
                   currency={currency}
