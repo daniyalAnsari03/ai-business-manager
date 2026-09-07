@@ -45,6 +45,7 @@ export type PublishErrorCode =
   | "no_media"
   | "no_connection"
   | "token_expired"
+  | "permission_missing"
   | "container_failed"
   | "publish_failed"
   | "database_error";

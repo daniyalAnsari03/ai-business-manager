@@ -1,56 +1,108 @@
-Phase 1 implementation looks complete, but DO NOT start Phase 2 yet.
+CONFIRMED WORKING: A direct manual test (System User token, GET 
+/me/accounts → Page-scoped token → POST /{page-id}/feed) succeeded 
+and created a real post (id: 106463831211396_1545371740966737) on a 
+test Page. This proves the permission set (business_management, 
+pages_manage_posts, etc.) + Page-scoped token approach genuinely 
+works. So the remaining bug is specifically in how the REAL APP 
+obtains/stores/uses its token for the real "Dins By Daniyal" 
+connection — not a fundamental permission/capability problem.
 
-Your current TODO still shows:
+UPDATE: pages_manage_posts permission has now been properly granted 
+(added to the Facebook Login Configuration 4496722177312962, and the 
+user completed a fresh Reconnect through the app's real OAuth flow, 
+selecting "Dins By Daniyal" Page and "opt in to all current and future" 
+for both Businesses and Instagram accounts). Despite this, clicking 
+Publish on a draft still shows the generic "This post couldn't be 
+published. Please try again." error.
 
-[ ] Verify authenticated in-app rendering (needs user login)
+Do this now:
 
-Before declaring Phase 1 complete, finish the remaining verification requirements from the original Phase 1 prompt.
+1. Reproduce the exact server request again (same method as before — 
+   direct reproduction since Vercel runtime logs aren't reliably 
+   accessible) using the CURRENT stored connected_accounts token for 
+   this business (338f48b5-74ed-4f0b-8754-208c6fe663b5, "DINS by 
+   Daniyal") and platform=facebook.
 
-Do ONLY verification now. Do not modify unrelated features and do not start Phase 2.
+2. First, call GET /me/permissions (or debug_token) with the current 
+   stored token and confirm whether pages_manage_posts now actually 
+   appears in its granted scopes — paste the raw response. This tells 
+   us if the reconnect actually captured the new permission, or if the 
+   stored token is still the OLD one (reconnect might not have properly 
+   replaced it — check the connected_accounts row's updated_at/token 
+   value changed after this reconnect).
 
-1. Run typecheck and paste the actual terminal output.
-2. Run lint and paste the actual terminal output.
-3. Run production build and paste the actual terminal output.
-4. Query/inspect Supabase and provide the actual RLS policy definitions for all 4 new tables:
+3. If the token DOES now have pages_manage_posts: reproduce the actual 
+   POST to /{page-id}/feed and paste the raw error/response — this 
+   will tell us if it's now a different, new error (progress) or the 
+   exact same permission error (meaning something else is still wrong).
 
-   * social_posts
-   * ad_campaigns
-   * marketing_wallet
-   * connected_accounts
-     Do not just say RLS is enabled. Show the actual policies/definitions.
-5. Using the running dev server, log in with a real authenticated user and manually verify:
+4. If the token does NOT have pages_manage_posts (still the old token): 
+   the reconnect flow itself likely has a bug not properly capturing/
+   storing the newly granted permission — investigate the callback's 
+   token storage step for this specific case.
 
-   * Marketing tab opens successfully.
-   * Posts this week = 0 / empty state as appropriate.
-   * Ad spend = 0.
-   * Sale from ads = 0 / empty as appropriate.
-   * Activity empty state renders correctly.
-   * Automation mode UI renders without errors.
-   * No browser console errors.
-6. Test the English/Roman Urdu language toggle on the Marketing page and record exactly what changes.
-7. Open Settings → Marketing:
+5. Fix based on whichever of these is shown by the evidence — do not 
+   guess.
 
-   * Instagram = Not connected
-   * Facebook Page = Not connected
-   * Google Ads = Not connected
-   * WhatsApp number = Not connected
-   * Connect buttons do not crash and show the intended coming-soon/disabled behavior.
-8. Test Monthly ad budget cap:
+Paste the raw permissions check and raw publish attempt error before 
+proposing any fix.
 
-   * enter a test amount
-   * save it
-   * verify it persists from Supabase / after refresh
-   * then clean up the test value if appropriate.
-9. Confirm no existing working feature was broken.
-10. Provide the final report exactly against the original Phase 1 verification requirements, including:
+========================================================================
+RESULT (2026-09-07) — evidence captured, root cause found, fix applied.
+========================================================================
 
-* files created
-* files modified + reason
-* migrations applied
-* actual RLS policy definitions
-* raw typecheck/lint/build output
-* authenticated UI verification
-* English/Roman Urdu verification
-* what is intentionally NOT functional in Phase 1
+1. Stored-token permissions check (business 338f48b5..., platform=facebook,
+   external_account_id=118212491230491 "D&N Collection"):
 
-Do not report Phase 1 as complete until every verification item above has evidence.
+   GET /debug_token (input_token = stored token, access_token = app_id|secret):
+   - type: USER (it is a USER access token, not a System User token)
+   - is_valid: true
+   - scopes include: pages_show_list, pages_read_engagement,
+     pages_manage_posts, business_management (+ public_profile)
+   - granular_scopes.pages_manage_posts target_ids include 118212491230491.
+   => The reconnect DID capture pages_manage_posts. The token is NOT stale.
+
+   GET /me/permissions: pages_manage_posts = granted (all permissions granted).
+
+2. Raw publish reproduction on the same stored token:
+   - resolvePageAccessToken (GET /me/accounts) -> returned a valid Page-scoped
+     token for 118212491230491.
+   - POST /118212491230491/feed with the PAGE token  -> 200
+     {"id":"118212491230491_1015484321517532"}
+   - POST /118212491230491/feed with the STORED (USER) token -> 403 OAuthException
+     code 200: "...If posting to a page, requires both pages_read_engagement and
+     pages_manage_posts with a PAGE token..."
+   - POST /photos (real photo draft d03c7d57) with PAGE token -> 200
+     {"id":"1015485318184099","post_id":"118212491230491_1015485354850762"}
+   - POST /feed for the previously-failed draft 78e8b68a with PAGE token -> 200.
+   => Page publishing WORKS with a page token; a USER token is rejected with
+      403/code 200 EVEN WHEN it has pages_manage_posts.
+
+3. ROOT CAUSE: Meta requires a PAGE-scoped token for /page/feed and
+   /page/photos posts. The deployed publisher was signing posts with the stored
+   USER token (the old facebook-publish.ts used connection.access_token
+   directly), so every publish returned 403/code 200 and the UI collapsed it to
+   the generic "couldn't be published" message. The reconnect / permission were
+   never the (remaining) problem.
+
+4. FIX (in the working tree):
+   - app/api/marketing/oauth/callback/route.ts: store the PAGE token
+     (page.page.accessToken from discoverPage) instead of the USER code token.
+   - lib/marketing/facebook-publish.ts: resolve the page token at publish time
+     via resolvePageAccessToken and use it (falling back to stored only when
+     unresolvable); classify OAuthException code 200 naming pages_manage_posts
+     as permission_missing.
+   - lib/marketing/meta-oauth.ts: export resolvePageAccessToken; surface
+     Page accessToken from discoverPage; facebook scope list now includes
+     pages_manage_posts.
+   - components/marketing/marketing-view.tsx: map permission_missing to the
+     honest localized "publishPermissionMissingMessage" instead of the generic
+     failure message.
+   - All verified: tsc --noEmit clean; live Graph API reproduction shows page
+     publish succeeds for text and photo posts, and for a previously-failed
+     draft.
+
+   NOTE: these files were uncommitted in the working tree at diagnosis time —
+     the running deployment used the OLD committed code that lacked the page-token
+     fix, which is exactly why the Publish button still failed after reconnect.
+     Commit + redeploy for the fix to take effect.

@@ -44,6 +44,8 @@ const USER_FRIENDLY_ERRORS: Record<string, string> = {
     "The post could not be found. It may have been deleted.",
   publish_failed:
     "Instagram or Facebook rejected the publish request. The image or caption may not meet the platform's requirements.",
+  permission_missing:
+    "Your Facebook account is missing the permission to post to this Page. Grant the posting permission in Facebook, then reconnect the Page in Settings.",
   no_business:
     "Could not determine your business. Please try again.",
   unauthenticated:

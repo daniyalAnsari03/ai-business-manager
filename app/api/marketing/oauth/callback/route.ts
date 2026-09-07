@@ -103,7 +103,10 @@ export async function GET(request: Request) {
     const persisted = await connectMetaAccount({
       platform,
       accountLabel: page.page.name,
-      accessToken: token.accessToken,
+      // Real Page posts (feed/photos) MUST be signed with a PAGE-scoped token.
+      // discoverPage already returns the Page's own access_token from
+      // /me/accounts — prefer it over the user token the code exchange yields.
+      accessToken: page.page.accessToken?.trim() || token.accessToken,
       tokenExpiresAt: token.expiresIn
         ? new Date(Date.now() + token.expiresIn * 1000).toISOString()
         : null,

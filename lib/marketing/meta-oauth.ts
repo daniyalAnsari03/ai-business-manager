@@ -77,14 +77,22 @@ export function isOAuthPlatform(value: string): value is OAuthPlatform {
  *   Token exchange and all IG publishing API calls run on graph.facebook.com.
  *
  * - Facebook ("Facebook Login for Business"):
- *     pages_show_list, pages_read_engagement, business_management
+ *     pages_show_list, pages_read_engagement, business_management,
+ *     pages_manage_posts
  *   When a Facebook Login for Business Configuration ID is provided
  *   (META_FACEBOOK_CONFIG_ID), the `config_id` parameter replaces `scope`
  *   entirely — the configuration defines which permissions are requested.
- *   `pages_manage_posts` is NOT used; the Configuration ID controls access.
+ *   `pages_manage_posts` is REQUIRED for real Page publishing
+ *   (POST /{page-id}/feed + /{page-id}/photos): without it Meta rejects every
+ *   publish with OAuthException code 200 ("requires both pages_read_engagement
+ *   and pages_manage_posts as an admin"). The scope listed here covers the
+ *   no-config path; when a Configuration ID is used the SAME permission must
+ *   also be enabled in the Meta dashboard configuration, then the user must
+ *   reconnect so a token carrying it is granted.
  */
 const PLATFORM_SCOPES: Record<OAuthPlatform, string> = {
-  facebook: "pages_show_list,pages_read_engagement,business_management",
+  facebook:
+    "pages_show_list,pages_read_engagement,business_management,pages_manage_posts",
   instagram:
     "instagram_basic,instagram_content_publish,pages_read_engagement,pages_show_list,business_management",
 };
@@ -359,6 +367,13 @@ export interface PageInfo {
    * which Page owns a linked IG account without a per-Page round trip.
    */
   instagram?: InstagramIdentity;
+  /**
+   * The Page-scoped access token /me/accounts returned for this Page (requested
+   * via `fields=...,access_token,...`). Page posts MUST be made with a PAGE
+   * token, never the user token (which the connect callback also exchanges).
+   * It is optional because Instagram discovery returns the user token only.
+   */
+  accessToken?: string;
 }
 
 type RawPage = {
@@ -1000,6 +1015,7 @@ export async function discoverPage(
           id: rawPage.id,
           name: rawPage.name,
           instagram: resolved,
+          accessToken: rawPage.access_token,
         },
       };
     }
@@ -1041,6 +1057,7 @@ export async function discoverPage(
           id: hostPage.id,
           name: hostPage.name,
           instagram: resolved,
+          accessToken: hostPage.access_token,
         },
       };
     }
@@ -1083,6 +1100,7 @@ export async function discoverPage(
       name: firstPage.name,
       instagram:
         toInstagram(firstPage.instagram_business_account) ?? undefined,
+      accessToken: firstPage.access_token,
     },
   };
 }
@@ -1098,8 +1116,12 @@ export interface InstagramInfo {
  * Page's linked Instagram Business account. Best-effort: returns null when the
  * user token cannot list Pages or the id is not among them. Callers fall back
  * to the user access token for the Page-node lookup when it is unavailable.
+ *
+ * Also used by the Facebook publisher: real Page posts (feed/photos) MUST be
+ * signed with a Page-scoped token, so an existing connection that stored the
+ * user token resolves this at publish time.
  */
-async function resolvePageAccessToken(
+export async function resolvePageAccessToken(
   cfg: MetaAppConfig,
   userAccessToken: string,
   pageId: string,

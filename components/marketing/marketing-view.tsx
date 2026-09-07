@@ -161,6 +161,7 @@ export function MarketingView({
             no_media: t.marketing.noMediaMessage,
             not_draft: t.marketing.publishFailedMessage,
             publish_failed: t.marketing.publishFailedMessage,
+            permission_missing: t.marketing.publishPermissionMissingMessage,
             not_found: t.marketing.publishFailedMessage,
           };
           setPublishMessage({

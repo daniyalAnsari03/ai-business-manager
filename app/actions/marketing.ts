@@ -51,7 +51,7 @@ export type PublishPostActionState =
 /** Successfully published, or honestly not published (with the failed code). */
 export type PublishAttemptedActionState =
   | { ok: true; published: true; platform: "instagram" | "facebook"; externalPostId: string }
-  | { ok: true; published: false; platform: "instagram" | "facebook"; code: "not_connected" | "token_expired" | "no_media" | "not_draft" | "publish_failed" | "not_found" };
+  | { ok: true; published: false; platform: "instagram" | "facebook"; code: "not_connected" | "token_expired" | "no_media" | "not_draft" | "publish_failed" | "permission_missing" | "not_found" };
 
 /**
  * Publish button on a draft. Routes to the real publisher for the post's own
@@ -66,6 +66,8 @@ export type PublishAttemptedActionState =
  *   - "no_media":       the post has no image (Instagram-only requirement)
  *   - "not_draft":      already published or not a draft
  *   - "publish_failed": the platform rejected the request
+ *   - "permission_missing": the Facebook connection lacks the permission to
+ *     post (pages_manage_posts) — reconnect the Page after granting it
  *   - "not_found":      post does not exist or not owned by this business
  */
 export async function publishSocialPostAction(
@@ -91,6 +93,7 @@ export async function publishSocialPostAction(
     no_media: { ok: true, published: false, platform: result.platform ?? "instagram", code: "no_media" },
     not_draft: { ok: true, published: false, platform: result.platform ?? "facebook", code: "not_draft" },
     publish_failed: { ok: true, published: false, platform: result.platform ?? "facebook", code: "publish_failed" },
+    permission_missing: { ok: true, published: false, platform: result.platform ?? "facebook", code: "permission_missing" },
     not_found: { ok: true, published: false, platform: result.platform ?? "facebook", code: "not_found" },
   };
 

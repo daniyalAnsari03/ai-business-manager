@@ -680,6 +680,8 @@ const en = {
     notConnectedMessage:
       "Instagram/Facebook account is not connected yet. Connect it in Settings first.",
     publishFailedMessage: "This post couldn't be published. Please try again.",
+    publishPermissionMissingMessage:
+      "Your Facebook account is missing the permission to post to this Page. Grant the posting permission in Facebook, then reconnect the Page in Settings.",
     publishSuccessMessage: "Posted to Instagram successfully.",
     publishSuccessMessageFb: "Posted to Facebook successfully.",
     tokenExpiredMessage:
@@ -1675,6 +1677,8 @@ const ur: Dictionary = {
     notConnectedMessage:
       "Instagram/Facebook account abhi connect nahi hua. Pehle Settings mein connect karein.",
     publishFailedMessage: "Ye post publish nahi ho saka. Dobara koshish karein.",
+    publishPermissionMissingMessage:
+      "Aapke Facebook account ke paas is Page par post karne ki ijazat nahi hai. Facebook mein posting ki ijazat dein, phir Settings mein Page dobara connect karein.",
     publishSuccessMessage: "Instagram par publish ho gaya.",
     publishSuccessMessageFb: "Facebook par publish ho gaya.",
     tokenExpiredMessage:

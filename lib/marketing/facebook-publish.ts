@@ -7,6 +7,7 @@ import {
 } from "@/lib/supabase/server";
 import { getUserBusiness } from "@/lib/business/service";
 import { getMetaAppConfig } from "@/lib/marketing/meta-config";
+import { resolvePageAccessToken } from "@/lib/marketing/meta-oauth";
 
 /**
  * Real Facebook Page Content Publishing — the single-step Graph API flow.
@@ -56,6 +57,7 @@ export type FacebookPublishErrorCode =
   | "not_draft"
   | "no_connection"
   | "token_expired"
+  | "permission_missing"
   | "publish_failed"
   | "database_error";
 
@@ -114,12 +116,24 @@ interface FacebookApiResponse {
   error?: { message?: string; type?: string; code?: number };
 }
 
+type PagePublishFailure = {
+  ok: false;
+  error: string;
+  errorCode?: number;
+  metaType?: string;
+};
+
 /**
  * Single-step Facebook Page publish.
  *
  * With an image the post goes to /{page-id}/photos (url + caption). Without
  * one it goes to /{page-id}/feed (message). Meta returns the post id directly
  * in the same call — there is no container step like Instagram.
+ *
+ * The access token MUST be a Page-scoped token for the page being posted to
+ * (see publishFacebookPost, which resolves it from /me/accounts). A user
+ * access token that lacks pages_manage_posts is rejected by Meta with
+ * OAuthException code 200.
  *
  * @returns the Facebook post id on success.
  */
@@ -128,9 +142,10 @@ async function publishToFacebookPage(
   accessToken: string,
   caption: string,
   mediaUrl: string | null,
-): Promise<{ ok: true; facebookPostId: string } | { ok: false; error: string }> {
+): Promise<{ ok: true; facebookPostId: string } | PagePublishFailure> {
   const cfg = getMetaAppConfig();
-  if (!cfg) return { ok: false, error: "Meta not configured." };
+  if (!cfg)
+    return { ok: false, error: "Meta not configured.", errorCode: 0 };
 
   const path = mediaUrl ? `/${pageId}/photos` : `/${pageId}/feed`;
   const publishUrl = new URL(`${cfg.graphApiBase}${path}`);
@@ -155,7 +170,7 @@ async function publishToFacebookPage(
     publishRes = await fetch(publishUrl.toString(), { method: "POST" });
   } catch (e) {
     console.log("[FB-Publish] FETCH ERROR:", e);
-    return { ok: false, error: "Could not reach Facebook." };
+    return { ok: false, error: "Could not reach Facebook.", errorCode: 0 };
   }
 
   let publishJson: FacebookApiResponse;
@@ -163,7 +178,11 @@ async function publishToFacebookPage(
     publishJson = (await publishRes.json()) as FacebookApiResponse;
   } catch (e) {
     console.log("[FB-Publish] JSON PARSE ERROR:", e);
-    return { ok: false, error: "Unexpected response from Facebook." };
+    return {
+      ok: false,
+      error: "Unexpected response from Facebook.",
+      errorCode: 0,
+    };
   }
 
   console.log(
@@ -171,14 +190,23 @@ async function publishToFacebookPage(
   );
   if (publishJson?.error) {
     console.log("[FB-Publish] error:", JSON.stringify(publishJson.error));
-    return { ok: false, error: publishJson.error.message ?? "Publishing failed." };
+    return {
+      ok: false,
+      error: publishJson.error.message ?? "Publishing failed.",
+      errorCode: publishJson.error.code,
+      metaType: publishJson.error.type,
+    };
   }
 
   // Photo posts return both photo `id` and `post_id`; the post_id is the real
   // Facebook post reference. Text/link posts return `id` directly.
   const facebookPostId = publishJson?.post_id ?? publishJson?.id;
   if (!facebookPostId) {
-    return { ok: false, error: "Facebook did not return a post ID." };
+    return {
+      ok: false,
+      error: "Facebook did not return a post ID.",
+      errorCode: 0,
+    };
   }
 
   return { ok: true, facebookPostId };
@@ -241,23 +269,48 @@ export async function publishFacebookPost(
     return { ok: false, error: "token_expired" };
   }
 
-  // 4. Select the caption for the selected language.
+  // 3b. Select the caption for the selected language.
   const caption =
     post.selected_language === "ur"
       ? (post.caption_ur ?? post.caption ?? "")
       : (post.caption_en ?? post.caption ?? "");
 
+  // 3c. Page posts MUST be signed with a PAGE-scoped token, never a user
+  // token. The connect flow now stores the Page token; older connections
+  // stored the user token, so when possible resolve the Page's own token from
+  // /me/accounts at publish time and fall back to the stored token.
+  const cfg = getMetaAppConfig();
+  const pageToken = cfg
+    ? await resolvePageAccessToken(
+        cfg,
+        connection.access_token,
+        connection.external_account_id,
+      )
+    : null;
+  const publishToken = pageToken ?? connection.access_token;
+  const tokenKind = pageToken ? "page" : "stored";
+
   // 5. Single-step Facebook publish (feed for text, photos for an image).
   const result = await publishToFacebookPage(
     connection.external_account_id,
-    connection.access_token,
+    publishToken,
     caption,
     post.media_url,
   );
 
   if (!result.ok) {
-    // Update to failed — log the real error server-side only.
-    console.error("[FB-Publish] FAILED for post:", postId, "error:", result.error);
+    // Classify the real reason so the UI can show it instead of a generic
+    // failure. Meta's OAuthException (code 200) naming pages_manage_posts is
+    // the missing-permission case — the token (user or page kind) simply lacks
+    // the permission to post. Everything else is a platform rejection.
+    const missingPermission =
+      result.errorCode === 200 &&
+      /pages_manage_posts/i.test(result.error ?? "");
+    console.error(
+      `[FB-Publish] FAILED for post: ${postId} token=${tokenKind} error_code=${
+        result.errorCode ?? "n/a"
+      } error_type=${result.metaType ?? "n/a"} error=${result.error}`,
+    );
     await supabase
       .from("social_posts")
       .update({
@@ -266,6 +319,9 @@ export async function publishFacebookPost(
       })
       .eq("id", postId)
       .eq("business_id", businessId);
+    if (missingPermission) {
+      return { ok: false, error: "permission_missing", detail: result.error };
+    }
     return { ok: false, error: "publish_failed", detail: result.error };
   }
 
