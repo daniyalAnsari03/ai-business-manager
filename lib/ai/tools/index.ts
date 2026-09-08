@@ -48,6 +48,8 @@ import {
 import {
   getAutomationModeTool,
   publishSocialPostTool,
+  findApprovalActionTool,
+  executeApprovedActionTool,
 } from "@/lib/ai/tools/approval-tools";
 
 /**
@@ -98,4 +100,6 @@ export const businessTools: Tool<AgentRunContext>[] = [
   // Phase 4 approval-aware marketing
   getAutomationModeTool,
   publishSocialPostTool,
+  findApprovalActionTool,
+  executeApprovedActionTool,
 ];

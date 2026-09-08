@@ -1,14 +1,54 @@
-The latest fixes are complete and local verification passes.
+The code-level fix looks correct, but the report does NOT yet provide evidence of the required production verification.
 
-Now commit and push ALL latest changes to GitHub `main`, then deploy the latest version to Vercel production.
+Do this now:
 
-Verify and report:
+1. Commit the current fix.
+2. Push the commit to GitHub `main`.
+3. Deploy the production version to Vercel.
+4. Verify the production deployment is successful.
 
-* Exact final commit hash
-* GitHub `main` push succeeded
-* Git working tree is clean
-* Vercel production deployment succeeded
-* Production deployment URL
-* Confirm the deployed version contains the latest fixes
+Then perform a REAL production end-to-end Facebook test:
 
-Do not consider the task complete until both GitHub push and Vercel production deployment are verified.
+* Create a fresh Banarsi Jamawar draft.
+* Request: `Banarsi Jamawar ko Facebook par publish karo`.
+* Verify exactly ONE approval action is created.
+* Go to Marketing → Approvals and click Approve.
+* Verify the approval action changes:
+  `pending → approved → executing → completed`
+  or `failed` if Facebook genuinely rejects it.
+* Verify that the Facebook executor actually runs.
+* Verify the Facebook API returns a real success response.
+* Verify the post is actually visible on the connected Facebook Page.
+* Verify Published Posts shows the correct product, Facebook platform, published date/time, and external reference.
+* Verify Review History shows the correct final status.
+* Then return to AI and say:
+  `krdi hay approve ab post kro fb pr`
+* AI must NOT create another approval.
+* AI must find/reuse the existing approved/completed action and report the real current result.
+* Verify the database contains no duplicate active approval for the same publish operation.
+
+Also explicitly verify the three-dot Delete flows still work:
+
+* Marketing draft → ⋮ → Delete → confirmation → draft removed.
+* Marketing → Approvals pending action → ⋮ → Delete → confirmation → pending action removed.
+* Historical completed/failed/rejected records must remain intact.
+
+DATABASE MIGRATIONS:
+Re-check whether this implementation requires any schema/index/RLS/database change. If required, create, apply, and verify the migration. If genuinely not required, explicitly report why no migration is needed.
+
+Final report MUST include:
+
+* commit hash
+* GitHub push result
+* Vercel production deployment result
+* real Facebook publish result
+* Facebook post/reference evidence
+* final approval_actions status
+* confirmation that no duplicate approval was created
+* Published Posts result
+* Review History result
+* delete-flow result
+* migration decision and verification
+* all test/build/typecheck/lint results
+
+Do NOT mark this complete based only on build/typecheck/lint.

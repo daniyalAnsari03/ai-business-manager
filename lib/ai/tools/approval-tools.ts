@@ -7,7 +7,11 @@ import { toolFail, toolOk } from "@/lib/ai/tools/shared";
 import {
   configureApprovalExecutors,
 } from "@/lib/marketing/approval-executors";
-import { decideAndRunAction } from "@/lib/marketing/approval-service";
+import {
+  decideAndRunAction,
+  findExistingActionByPostId,
+  executeApprovedAction,
+} from "@/lib/marketing/approval-service";
 import { getAutomationMode } from "@/lib/marketing/automation";
 
 /**
@@ -127,6 +131,108 @@ export const getAutomationModeTool = tool({
         result.data === "needs_approval"
           ? "AI prepares actions and asks you before publishing, spending money, or performing sensitive marketing actions."
           : "AI can execute eligible actions automatically according to your configured rules.",
+    });
+  },
+});
+
+/**
+ * Checks whether an approval action already exists for a given social post.
+ * Use this BEFORE calling publish_social_post when the user references a
+ * post that may already have an approval in flight (pending, approved, or
+ * executing). This prevents duplicate approvals.
+ */
+export const findApprovalActionTool = tool({
+  name: "find_approval_action",
+  description:
+    "Check whether an approval action already exists for a given social post (by postId). Use this when the user says they already approved something, or when you suspect a publish request for the same post may already be in the approval pipeline. Returns the existing action with its current status (pending, approved, executing) or null if none exists.",
+  parameters: z.object({
+    postId: z.string().trim().min(1).max(60).describe("The social post id to check."),
+  }),
+  execute: async ({ postId }) => {
+    ensureExecutors();
+    const result = await findExistingActionByPostId(postId);
+    if (!result.ok) {
+      return toolFail("database_error", "Could not check for existing approvals.");
+    }
+    if (!result.data) {
+      return toolOk({
+        found: false,
+        postId,
+        message: "No existing approval action found for this post.",
+      });
+    }
+    const action = result.data;
+    return toolOk({
+      found: true,
+      actionId: action.id,
+      status: action.status,
+      summary: action.summary,
+      createdAt: action.createdAt,
+      approvedAt: action.approvedAt,
+      executedAt: action.executedAt,
+      postId,
+      message:
+        action.status === "approved"
+          ? "An approval already exists and is approved. Use execute_approved_action to publish it now."
+          : action.status === "pending"
+            ? "An approval action is still pending. The user must approve it in Marketing → Approvals before it can execute."
+            : action.status === "executing"
+              ? "The action is currently executing. Wait for the result."
+              : `Existing action has status: ${action.status}.`,
+    });
+  },
+});
+
+/**
+ * Executes an already-approved (or pending) approval action. Use this when
+ * the user says "I already approved it, now publish" — find the action first
+ * with find_approval_action, then execute it with this tool.
+ */
+export const executeApprovedActionTool = tool({
+  name: "execute_approved_action",
+  description:
+    "Execute an approval action that was already approved by the user. Use this when the user says they already approved a publish action and wants it published now. The action must be found first using find_approval_action. This triggers the real Facebook/Instagram publish.",
+  parameters: z.object({
+    actionId: z.string().trim().min(1).max(60).describe("The approval action id to execute."),
+  }),
+  execute: async ({ actionId }) => {
+    ensureExecutors();
+    const result = await executeApprovedAction(actionId);
+    if (!result.ok) {
+      const messages: Record<string, string> = {
+        unauthorized: "Could not verify this action belongs to your business.",
+        not_pending: "This action cannot be executed — it was rejected or cancelled.",
+        expired: "This approval has expired. The user must request a new publish action.",
+        database_error: "A system error occurred. Please try again.",
+      };
+      return toolFail(result.reason, messages[result.reason] ?? "Could not execute the action.");
+    }
+
+    const action = result.data;
+    const execResult = action.executionResult as Record<string, unknown> | null;
+    const wasPublished = execResult?.published === true || action.status === "completed";
+    const wasAlreadyPublished = execResult?.alreadyPublished === true;
+    const publishFailed = action.status === "failed";
+
+    let message: string;
+    if (wasAlreadyPublished) {
+      message = "This post was already published earlier.";
+    } else if (wasPublished) {
+      const pubPlatform = (execResult?.platform as string) ?? "the platform";
+      message = `The post was published to ${pubPlatform} successfully.`;
+    } else if (publishFailed) {
+      message = `Publishing failed: ${action.executionError ?? "unknown reason"}. Do NOT tell the user it was published.`;
+    } else {
+      message = `Action status: ${action.status}. ${action.executionError ? `Error: ${action.executionError}` : ""}`;
+    }
+
+    return toolOk({
+      outcome: publishFailed ? "failed" : action.status === "completed" ? "executed" : action.status,
+      published: wasPublished,
+      platform: (execResult?.platform as string) ?? null,
+      externalPostId: (execResult?.externalPostId as string) ?? null,
+      execution_result: execResult,
+      message,
     });
   },
 });

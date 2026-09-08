@@ -191,7 +191,11 @@ export async function createApprovalAction(
 
   if (existing) {
     const mapped = mapAction(existing as ApprovalActionRow);
-    if (mapped.status === "pending" || mapped.status === "approved") {
+    if (
+      mapped.status === "pending" ||
+      mapped.status === "approved" ||
+      mapped.status === "executing"
+    ) {
       return { ok: true, data: mapped };
     }
     return { ok: false, reason: "duplicate" };
@@ -263,6 +267,9 @@ export async function approveAction(
     return { ok: false, reason: "expired" };
   }
 
+  // "approved" but not yet executed (e.g. UI approved but execution hasn't
+  // happened, or a prior execution attempt crashed before recording a result).
+  // Fall through to executeAction which will atomically claim the row.
   return executeAction(context.supabase, context.business, action);
 }
 
@@ -336,6 +343,41 @@ export async function decideAndRunAction(
 
   const context = await requireBusinessContext();
   if (!context.ok) return context;
+
+  // Duplicate prevention: check if an existing non-final action matches
+  // this idempotency key. If so, reuse it instead of creating a duplicate.
+  const { data: existing, error: existingError } = await context.supabase
+    .from("approval_actions")
+    .select("*")
+    .eq("business_id", context.business.id)
+    .eq("idempotency_key", input.idempotencyKey.trim())
+    .in("status", ["pending", "approved", "executing"])
+    .maybeSingle();
+
+  if (existingError) return { ok: false, reason: "database_error" };
+
+  if (existing) {
+    const existingAction = mapAction(existing as ApprovalActionRow);
+
+    // Already approved — execute it directly.
+    if (existingAction.status === "approved") {
+      const executed = await executeAction(context.supabase, context.business, existingAction);
+      if (executed.ok) {
+        return { ok: true, data: { outcome: "executed", action: executed.data } };
+      }
+      return { ok: false, reason: "execution_failed" };
+    }
+
+    // Already executing — return current state.
+    if (existingAction.status === "executing") {
+      return { ok: true, data: { outcome: "executed", action: existingAction } };
+    }
+
+    // Still pending — return existing pending action.
+    if (existingAction.status === "pending") {
+      return { ok: true, data: { outcome: "needs_approval", action: existingAction } };
+    }
+  }
 
   const modeResult = await getAutomationMode();
   if (!modeResult.ok) return { ok: false, reason: "database_error" };
@@ -510,6 +552,86 @@ async function finalizeExecution(
 
   if (updateError || !data) return { ok: false, reason: "database_error" };
   return { ok: true, data: mapAction(data as ApprovalActionRow) };
+}
+
+/**
+ * Finds an existing approval action for a given social post that is in a
+ * non-final state (pending, approved, executing). Returns null when no
+ * matching action exists. Used by the AI to detect whether a publish
+ * request for the same post already has an approval in flight.
+ */
+export async function findExistingActionByPostId(
+  postId: string,
+): Promise<ApprovalServiceResult<ApprovalAction | null>> {
+  const context = await requireBusinessContext();
+  if (!context.ok) return context;
+
+  const { data, error } = await context.supabase
+    .from("approval_actions")
+    .select("*")
+    .eq("business_id", context.business.id)
+    .eq("action_type", "publish_social_post")
+    .in("status", ["pending", "approved", "executing"])
+    .order("created_at", { ascending: false });
+
+  if (error) return { ok: false, reason: "database_error" };
+
+  // Match by postId in the action payload (supports both camelCase and snake_case).
+  const match = ((data ?? []) as ApprovalActionRow[]).find((row) => {
+    const payload = (row.action_payload as Record<string, unknown>) ?? {};
+    const rowPostId =
+      typeof payload.postId === "string"
+        ? payload.postId
+        : typeof payload.post_id === "string"
+          ? payload.post_id
+          : null;
+    return rowPostId === postId;
+  });
+
+  return { ok: true, data: match ? mapAction(match) : null };
+}
+
+/**
+ * Executes an already-approved action by its id. This is the path the AI
+ * uses when the user says "I already approved it, now publish". The action
+ * must be in `approved` state (not yet executed). If it is already executing
+ * or completed, the current state is returned.
+ */
+export async function executeApprovedAction(
+  actionId: string,
+): Promise<ApprovalServiceResult<ApprovalAction>> {
+  configureApprovalExecutors();
+
+  const context = await requireBusinessContext();
+  if (!context.ok) return context;
+
+  const { data: row, error: rowError } = await context.supabase
+    .from("approval_actions")
+    .select("*")
+    .eq("id", actionId)
+    .eq("business_id", context.business.id)
+    .single();
+
+  if (rowError || !row) return { ok: false, reason: "unauthorized" };
+
+  const action = mapAction(row as ApprovalActionRow);
+
+  if (action.status === "executing" || action.status === "completed") {
+    return { ok: true, data: action };
+  }
+  if (action.status === "rejected" || action.status === "cancelled") {
+    return { ok: false, reason: "not_pending" };
+  }
+  if (action.status === "failed") {
+    // Allow retry of a previously failed execution.
+    return executeAction(context.supabase, context.business, action);
+  }
+  if (isExpired(action)) {
+    return { ok: false, reason: "expired" };
+  }
+
+  // status === "pending" or "approved" — execute it.
+  return executeAction(context.supabase, context.business, action);
 }
 
 /**
