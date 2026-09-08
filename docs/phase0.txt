@@ -1,10 +1,42 @@
-Understood — those two are leftover uncommitted changes from earlier 
-sessions, not part of your Phase 2 work. Leave both as they are 
-(don't revert either — both changes were intentional from earlier 
-work). 
+Do NOT implement the proposed fix yet.
 
-Now stage and commit everything together: git add -A && git commit -m 
-"Phase 1 + Phase 2 (reduced scope): marketing module foundation, 
-AI caption generation, dev/prod build separation, eslint config"
+The report claims that `instagram_content_publish` belongs to Instagram Login and that we should switch Instagram OAuth from:
 
-Confirm the commit succeeded and paste the commit hash.
+`https://www.facebook.com/v19.0/dialog/oauth`
+
+to:
+
+`https://www.instagram.com/oauth/authorize`
+
+Before any code change, verify this against the CURRENT official Meta documentation for our exact setup:
+
+**Instagram API with Facebook Login for Business**
+
+Our Meta dashboard explicitly shows this Instagram API setup and its required permissions:
+
+* instagram_basic
+* instagram_content_publishing
+* pages_read_engagement
+* business_management
+* pages_show_list
+
+We have also confirmed that `instagram_content_publish` is now `Ready for testing`.
+
+Determine exactly which OAuth authorization endpoint and parameter/scope names Meta currently requires for:
+
+1. Instagram API with Facebook Login for Business
+2. Instagram API with Instagram Login
+
+Do NOT mix the two products.
+
+Most importantly, answer:
+
+* For our currently configured **Instagram API with Facebook Login for Business**, should the OAuth request use `facebook.com/.../dialog/oauth` or `instagram.com/oauth/authorize`?
+* Is `instagram_content_publish` a valid scope for that exact flow?
+* Why does the Meta dashboard call the permission `instagram_content_publishing` in the use-case requirements while the Permissions and Features page shows `instagram_content_publish`?
+* Is there a separate Facebook Login for Business configuration/template that must be used instead of the classic `/dialog/oauth` URL?
+* What exact authorization URL and parameters should our app generate?
+
+Use current official Meta documentation as the source of truth. Do not infer from old API versions or from memory.
+
+Return ONLY the verified root cause and exact required OAuth flow. Do not modify any files.

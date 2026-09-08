@@ -1,0 +1,1003 @@
+   ▲ Next.js 15.5.23
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.100.138:3001
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ✓ Ready in 5.6s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 1117ms (172 modules)
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 9.5s (1550 modules)
+[business-service] getUserBusiness: no business found for user_id: e22ac955-7939-4a9d-bc98-8385007a9804 error: JWT issued at future
+ GET /dashboard 307 in 13202ms
+ ○ Compiling /setup ...
+ ✓ Compiled /setup in 5s (1580 modules)
+[business-service] getUserBusiness resolved business_id: ae44d4de-e4e5-4854-8e5d-b5428f8797aa name: DINS for user_id: e22ac955-7939-4a9d-bc98-8385007a9804
+ GET /setup 307 in 7703ms
+[business-service] getUserBusiness resolved business_id: ae44d4de-e4e5-4854-8e5d-b5428f8797aa name: DINS for user_id: e22ac955-7939-4a9d-bc98-8385007a9804
+[product-service] getProducts for business_id: ae44d4de-e4e5-4854-8e5d-b5428f8797aa found 3 active products
+ GET /dashboard 200 in 2456ms
+ ○ Compiling /dashboard/settings ...
+ ✓ Compiled /dashboard/settings in 846ms (995 modules)
+ ✓ Compiled in 4.5s (599 modules)
+ GET /icon.svg?2d1d126332e5961d 200 in 6632ms
+[business-service] getUserBusiness resolved business_id: ae44d4de-e4e5-4854-8e5d-b5428f8797aa name: DINS for user_id: e22ac955-7939-4a9d-bc98-8385007a9804
+ GET /dashboard/settings 200 in 12966ms
+ GET /icon.svg?2d1d126332e5961d 200 in 57ms
+ ○ Compiling /api/marketing/oauth/connect ...
+ ✓ Compiled /api/marketing/oauth/connect in 1739ms (2256 modules)
+[business-service] getUserBusiness resolved business_id: ae44d4de-e4e5-4854-8e5d-b5428f8797aa name: DINS for user_id: e22ac955-7939-4a9d-bc98-8385007a9804
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 2816ms
+ ✓ Compiled in 658ms (613 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 3.3s (1594 modules)
+ GET / 200 in 7022ms
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 3.3s (1007 modules)
+ GET /icon.svg?2d1d126332e5961d 200 in 4939ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 7238ms
+ GET /dashboard 200 in 11944ms
+ GET /dashboard 200 in 6420ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 3558ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 4507ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 3079ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2877ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 8815ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2986ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 3188ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2626ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 3243ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2626ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2980ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2887ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2711ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 16336ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 11683ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 3680ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2766ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 5451ms
+ GET /dashboard 200 in 2850ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2440ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 3153ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 4014ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 3004ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 3412ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2991ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 4813ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 3601ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1910ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1504ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET / 200 in 12268ms
+ GET / 200 in 7896ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET / 200 in 5133ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1225ms
+ GET / 200 in 4377ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 4712ms
+ GET /dashboard 200 in 1702ms
+ GET / 200 in 4460ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1285ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1684ms
+ GET / 200 in 5844ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 3931ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET / 200 in 11448ms
+ GET /dashboard 200 in 3492ms
+ GET / 200 in 14432ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 5123ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET / 200 in 21286ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 5073ms
+ GET / 200 in 21019ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2540ms
+ GET / 200 in 18679ms
+ GET / 200 in 16075ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 4659ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET / 200 in 18802ms
+ GET /dashboard 200 in 7809ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 5675ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 5422ms
+ GET / 200 in 22090ms
+ GET / 200 in 20690ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1963ms
+ GET / 200 in 17006ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1356ms
+ GET / 200 in 9469ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET / 200 in 4536ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET / 200 in 4021ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 689ms
+ GET /dashboard 200 in 2337ms
+ GET / 200 in 3479ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 806ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET / 200 in 3068ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1637ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1802ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1067ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET / 200 in 4296ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1225ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1214ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 1380ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1248ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1827ms
+ GET /dashboard 200 in 915ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 766ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1633ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1199ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1630ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1530ms
+ GET /dashboard 200 in 770ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 740ms
+ GET /dashboard 200 in 1112ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 919ms
+ GET /dashboard 200 in 747ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 937ms
+ GET /dashboard 200 in 940ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 975ms
+ GET /dashboard 200 in 927ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 886ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 939ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 968ms
+ GET /dashboard 200 in 675ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 759ms
+ GET /dashboard 200 in 964ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 830ms
+ GET /dashboard 200 in 1183ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 868ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1236ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 979ms
+ GET /dashboard 200 in 795ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1111ms
+ GET /dashboard 200 in 938ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1347ms
+ GET /dashboard 200 in 1151ms
+ GET /dashboard 200 in 825ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 919ms
+ GET /dashboard 200 in 888ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 946ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 1284ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1056ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1295ms
+ GET /dashboard 200 in 825ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 5152ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 4265ms
+ GET /dashboard 200 in 3962ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2749ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2829ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1295ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1019ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 886ms
+ GET /dashboard 200 in 1372ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 1105ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 1532ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 954ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1657ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1137ms
+ GET /dashboard 200 in 789ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 708ms
+ GET /dashboard 200 in 1063ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 1321ms
+ GET /dashboard 200 in 1106ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 830ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1047ms
+ GET /dashboard 200 in 784ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1431ms
+ GET /dashboard 200 in 1240ms
+ GET /dashboard 200 in 853ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1018ms
+ GET /dashboard 200 in 848ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 735ms
+ GET /dashboard 200 in 921ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1024ms
+ GET /dashboard 200 in 736ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 757ms
+ GET /dashboard 200 in 974ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 959ms
+ GET /dashboard 200 in 763ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 725ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 930ms
+ GET /dashboard 200 in 756ms
+ GET /dashboard 200 in 2012ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 912ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 952ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 879ms
+ GET /dashboard 200 in 1756ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 992ms
+ GET /dashboard 200 in 734ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2538ms
+ GET /dashboard 200 in 1084ms
+ GET /dashboard 200 in 795ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 931ms
+ GET /dashboard 200 in 749ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1583ms
+ GET /dashboard 200 in 1567ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 3242ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 4287ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2556ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 2732ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2399ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1068ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1207ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1205ms
+ GET /dashboard 200 in 1007ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2046ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1767ms
+ GET /dashboard 200 in 1408ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 21341ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1248ms
+ GET /dashboard 200 in 1019ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1241ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 825ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 951ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1422ms
+ GET /dashboard 200 in 1199ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 997ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 1021ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 1655ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1157ms
+ GET /dashboard 200 in 799ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1072ms
+ GET /dashboard 200 in 828ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 944ms
+ GET /dashboard 200 in 929ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 748ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 809ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 884ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 899ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1106ms
+ GET /dashboard 200 in 1391ms
+ GET /dashboard 200 in 1065ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1305ms
+ GET /dashboard 200 in 1087ms
+ GET /dashboard 200 in 915ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 699ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 836ms
+ GET /dashboard 200 in 665ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 2247ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1095ms
+ GET /dashboard 200 in 1043ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1360ms
+ GET /dashboard 200 in 1157ms
+ GET /dashboard 200 in 830ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 883ms
+ GET /dashboard 200 in 712ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 858ms
+ GET /dashboard 200 in 679ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1302ms
+ GET /dashboard 200 in 796ms
+ GET /dashboard 200 in 1296ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 773ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 937ms
+ GET /dashboard 200 in 1288ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1385ms
+ GET /dashboard 200 in 686ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1874ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 21686ms
+ ○ Compiling /dashboard/marketing ...
+ ✓ Compiled /dashboard/settings in 20.1s (2893 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[social-posts] listSocialPosts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 business_name: DINS by Daniyal
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 2496ms
+ GET /dashboard/marketing 200 in 33548ms
+ GET /dashboard/settings 200 in 2508ms
+ GET /dashboard/settings 200 in 29131ms
+ GET /dashboard/settings 200 in 2514ms
+[social-posts] listSocialPosts raw rows: 8 posts found for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 26816ms
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 1139ms (2299 modules)
+ GET /icon.svg?2d1d126332e5961d 200 in 2040ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1942ms
+ GET /dashboard/settings 200 in 792ms
+ GET /dashboard/settings 200 in 1184ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 955ms
+ ○ Compiling /api/marketing/oauth/connect ...
+ ✓ Compiled /api/marketing/oauth/connect in 3.1s (2303 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 4154ms
+ ✓ Compiled in 2s (625 modules)
+ ✓ Compiled in 679ms (625 modules)
+ ✓ Compiled in 698ms (625 modules)
+ ✓ Compiled in 587ms (625 modules)
+ ✓ Compiled in 794ms (625 modules)
+ ✓ Compiled in 2.9s (2276 modules)
+ GET / 200 in 3005ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 6316ms
+ GET /dashboard 200 in 4482ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 3316ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 6801ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET / 200 in 15474ms
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 9.3s (1668 modules)
+ GET /icon.svg?2d1d126332e5961d 200 in 10850ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 4974ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 4540ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 12838ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 4137ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1811ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 970ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 1719ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 1680ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1595ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 2147ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1183ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1745ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1967ms
+ GET /dashboard 200 in 1087ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1107ms
+ GET /dashboard 200 in 782ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1285ms
+ GET /dashboard 200 in 1058ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 1843ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1252ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard 200 in 3314ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard/settings 200 in 3147ms
+ GET /dashboard 200 in 3647ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1236ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1497ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1668ms
+[product-service] getProducts for business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 found 8 active products
+ GET /dashboard 200 in 1433ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1207ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 797ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 771ms
+ GET /dashboard/settings 200 in 510ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 931ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 678ms
+ GET /dashboard/settings 200 in 533ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 2188ms
+ GET /dashboard/settings 200 in 1939ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1387ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 883ms
+ ○ Compiling /api/marketing/oauth/connect ...
+ ✓ Compiled /api/marketing/oauth/connect in 901ms (1672 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 743ms
+ GET /dashboard/settings 200 in 801ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 2304ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=facebook 200 in 532ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1800ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 878ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1294ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=facebook 200 in 364ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1086ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=facebook 200 in 343ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 3782ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 460ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1610ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 252ms
+ ✓ Compiled in 1664ms (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1362ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=facebook 200 in 337ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1223ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 320ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1233ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 2356ms
+ GET /icon.svg?2d1d126332e5961d 200 in 129ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1488ms
+ GET /icon.svg?2d1d126332e5961d 200 in 78ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 480ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1467ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 330ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1547ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=facebook 200 in 267ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1435ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=facebook 200 in 398ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1276ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 552ms
+ ✓ Compiled in 2.5s (625 modules)
+ ✓ Compiled in 657ms (625 modules)
+ ✓ Compiled in 2.1s (625 modules)
+ ✓ Compiled in 974ms (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 2980ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1694ms
+ GET /icon.svg?2d1d126332e5961d 200 in 69ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 314ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1465ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 294ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 2290ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1160ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 522ms
+ ✓ Compiled in 3.1s (625 modules)
+ ✓ Compiled in 637ms (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 478ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 166ms
+ ✓ Compiled in 2.1s (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 173ms
+ ✓ Compiled in 2.3s (2276 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1306ms
+ ✓ Compiled in 675ms (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 212ms
+ ✓ Compiled in 1972ms (625 modules)
+ ✓ Compiled in 965ms (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 518ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 259ms
+ ✓ Compiled in 2.3s (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1465ms
+ ✓ Compiled in 1332ms (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 267ms
+ ✓ Compiled in 698ms (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 214ms
+ ✓ Compiled in 771ms (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 262ms
+ ✓ Compiled in 651ms (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 251ms
+ ✓ Compiled in 664ms (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 223ms
+ ✓ Compiled in 654ms (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 233ms
+ ✓ Compiled in 636ms (625 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 294ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 2632ms
+ ○ Compiling /icon.svg ...
+ ✓ Compiled /icon.svg in 2.3s (1668 modules)
+ GET /icon.svg?2d1d126332e5961d 200 in 2992ms
+ ○ Compiling /api/marketing/oauth/connect ...
+ ✓ Compiled /api/marketing/oauth/connect in 1990ms (1672 modules)
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 589ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 3557ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1617ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /api/marketing/oauth/connect?platform=instagram 200 in 281ms
+[business-service] getUserBusiness resolved business_id: 338f48b5-74ed-4f0b-8754-208c6fe663b5 name: DINS by Daniyal for user_id: f2110bbf-30bb-4a64-bd48-7516de122e61
+ GET /dashboard/settings 200 in 1227ms

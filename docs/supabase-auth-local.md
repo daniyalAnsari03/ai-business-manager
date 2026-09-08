@@ -11,13 +11,13 @@ are wrong, clicking "Confirm Email" opens localhost but never reaches
 Supabase Dashboard → your project → **Authentication → URL Configuration**:
 
 1. **Site URL**
-   - Local development: `http://localhost:3000`
+   - Local development: `http://localhost:3001`
    - Production: your deployed URL (change this when you deploy)
 
 2. **Redirect URLs** (allow-list) — must contain BOTH:
 
    ```
-   http://localhost:3000/**
+   http://localhost:3001/**
    https://your-production-domain.com/**
    ```
 
@@ -33,7 +33,7 @@ Sign up (login form)
   → confirmation email
   → click "Confirm Email"
   → Supabase verifies token
-  → redirects to http://localhost:3000/auth/callback?code=...
+  → redirects to http://localhost:3001/auth/callback?code=...
   → app/auth/callback/route.ts exchanges code for session cookie (PKCE)
   → /dashboard (layout redirects to /setup until setup is completed)
   → dashboard after setup

@@ -1,0 +1,157 @@
+AI MARKETING MANAGER — PHASE 3 OF 5: WALLET + PAYMENT (TEST MODE ONLY)
+
+READ AGENTS.md COMPLETELY BEFORE STARTING. This phase touches real 
+money infrastructure — treat every step with maximum caution.
+
+Before starting, inspect the existing marketing_wallet table (from 
+Phase 1) and the wallet UI shells already built. Extend, do not rebuild.
+
+=== HARD SAFETY RULE — READ THIS FIRST, NON-NEGOTIABLE ===
+
+This phase must use a payment gateway's TEST/SANDBOX MODE ONLY. Under 
+no circumstance should this phase process a real charge against a 
+real card, even accidentally.
+
+1. Check .env.local for existing payment gateway credentials (e.g.
+   STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY, or another gateway's 
+   equivalents). 
+   If missing: STOP before writing any payment integration code. Tell 
+   me exactly what account to create (a Stripe account, which has a 
+   free/instant test mode with no business verification needed to 
+   start testing) and exactly which test-mode keys to paste into 
+   .env.local. Do not fabricate placeholder keys.
+2. If present: confirm whether they are TEST mode keys (Stripe test 
+   keys start with sk_test_ / pk_test_) or LIVE keys. If they are LIVE 
+   keys, STOP immediately and tell me — do not proceed with live keys 
+   in this phase under any circumstance, even if I seem to want it 
+   later. This phase is test-mode only, full stop.
+3. Never log, print, or include the actual secret key value anywhere 
+   in your report — reference it only by env var name.
+
+=== SCOPE OF THIS PHASE ===
+
+This phase builds the wallet top-up flow end-to-end using TEST MODE 
+only, so the mechanics are fully working and provably safe before any 
+real money is ever involved. It does NOT connect wallet spending to 
+real ad campaigns yet (that depends on Meta Ads being connected, which 
+is still pending) — this phase is self-contained: proving money can 
+move into a wallet correctly and be tracked correctly.
+
+DO NOT implement in this phase:
+- Do NOT use live/production payment credentials under any 
+  circumstance.
+- Do NOT connect wallet balance deduction to real ad spend yet (no 
+  real ads exist yet — that's a future phase once Meta/Google 
+  credentials work). For now, simulate a deduction only via a manual 
+  "test spend" action you build for verification purposes, clearly 
+  labeled as a test tool, not a real feature the end user sees.
+- Do NOT implement Google Ads billing.
+- Do NOT implement the automation/approval mode logic (Phase 4).
+
+=== WHAT TO BUILD ===
+
+1. TRANSACTION LEDGER (new table, not just a balance number)
+
+- Add a `wallet_transactions` table: id, business_id, type 
+  (topup/spend/adjustment), amount, balance_after, gateway_reference 
+  (nullable, the payment gateway's transaction id), status 
+  (pending/completed/failed), created_at.
+- Every change to marketing_wallet.balance must be accompanied by a 
+  row here — the balance number alone is not sufficient audit trail. 
+  This matches the spirit of AGENTS.md's emphasis on verified, 
+  explainable results, not just a mutated number.
+- RLS scoped by business ownership, same pattern as other tables.
+
+2. TOP-UP FLOW (test mode)
+
+- Build the actual top-up UI (extending the wallet screen shell from 
+  earlier phases): quick-select amounts + a payment form using the 
+  gateway's OWN hosted/embedded fields (Stripe Elements or equivalent) 
+  — the app must NEVER see or handle the raw card number itself; only 
+  the gateway's SDK should touch it. This is a hard requirement, not a 
+  preference — confirm in your report that raw card data never passes 
+  through your own server code.
+- On successful test-mode payment: create a `completed` 
+  wallet_transactions row (type=topup) and increase 
+  marketing_wallet.balance by the same amount, atomically (both must 
+  succeed or both must fail — no partial state).
+- On failure: create a `failed` wallet_transactions row, show an 
+  honest error message, and do not change the balance.
+
+3. WALLET DASHBOARD — WIRE IT TO REAL DATA
+
+- The existing wallet UI (available balance, monthly budget vs used, 
+  daily spend list) must now read from real wallet_transactions rows, 
+  not placeholder/zero values.
+- Add a transaction history list (recent top-ups/spends) using the 
+  ledger table.
+
+4. TEST-SPEND TOOL (verification only, not a real feature)
+
+- Build a simple, clearly-labeled "Simulate ad spend (test)" button, 
+  visible only in a debug/test context (not the normal user-facing 
+  UI), that deducts an amount from the wallet and creates a `spend` 
+  ledger row — purely so you (and I) can verify the ledger and balance 
+  math work correctly before real ad spend exists. Make it obvious in 
+  the code and UI that this is temporary/test-only, and note in your 
+  report exactly how to remove it later.
+
+=== DESIGN CONSISTENCY ===
+
+Same as previous phases: Ferly for headings, Inter for UI text, the 
+existing obsidian/emerald design system, same card/shadow/glow 
+treatment, Framer Motion for any transition (subtle, reduced-motion 
+aware), dark and light mode both working, respects the global English/
+Roman Urdu language switcher for all labels and messages.
+
+=== WHAT NOT TO TOUCH ===
+
+- Do not modify AGENTS.md.
+- Do not touch Phase 1/2/2.5 marketing features (social posting, 
+  caption generation, regenerate, language toggle) beyond what's 
+  needed to read wallet state for display.
+- Do not touch any unrelated existing feature (products, customers, 
+  orders, inventory, expenses, sales, existing AI Business Manager 
+  chat).
+- Do not restructure the project (AGENTS.md Section 2).
+
+=== VERIFICATION REQUIRED — THIS PHASE NEEDS EXTRA PROOF ===
+
+1. Run typecheck, lint, and build — paste actual output.
+2. Confirm explicitly, in writing, that the Stripe/gateway keys used 
+   are TEST mode keys (show the key prefix only, e.g. "sk_test_..." — 
+   never the full key).
+3. Perform a real live test top-up using the gateway's official test 
+   card number (e.g. Stripe's 4242 4242 4242 4242) through the actual 
+   UI. Paste: the resulting wallet_transactions row, the updated 
+   balance, and confirm this matches what's shown in the actual 
+   rendered wallet UI (not just the database).
+4. Perform a deliberately FAILING test payment (Stripe has specific 
+   test card numbers for this, e.g. a decline code) and confirm the 
+   balance did NOT change and a `failed` row was created — paste both.
+5. Use the test-spend tool once, confirm the balance decreases 
+   correctly and a `spend` ledger row is created with the correct 
+   balance_after value.
+6. Confirm RLS: verify a second business account cannot see or affect 
+   the first business's wallet_transactions or balance.
+7. Confirm no raw card data appears anywhere in your server logs, 
+   database, or code — grep for anything resembling a raw card number 
+   pattern in your own added code and confirm none exists.
+
+=== REPORT FORMAT ===
+
+- Files created/modified with reason for each.
+- Migration SQL and confirmation it applied.
+- Explicit confirmation of TEST mode (key prefix only).
+- Real test top-up proof (ledger row + balance + UI match).
+- Real failed-payment proof (ledger row + balance unchanged).
+- Test-spend proof.
+- RLS cross-business isolation proof.
+- Confirmation no raw card data is handled/stored by your own code.
+- Raw verification output, not "PASS" summaries.
+
+Do not report this phase complete without every piece of evidence 
+above. If anything about payment handling feels uncertain or unsafe, 
+STOP and ask me before proceeding rather than guessing — this is 
+money-handling code and mistakes here are not acceptable to guess 
+through.

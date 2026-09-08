@@ -1,0 +1,11 @@
+Push all the changes implemented in the six issues above to GitHub on the `main` branch, then deploy the latest production version to Vercel.
+
+Before finishing, verify:
+
+* All changes are committed and pushed successfully.
+* Required database migrations are created/applied/verified as appropriate.
+* Git working tree is clean.
+* GitHub `main` contains the final commit.
+* Vercel production deployment succeeds.
+
+Do not consider the task complete until GitHub push and Vercel production deployment are both verified.

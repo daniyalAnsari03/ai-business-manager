@@ -5,8 +5,10 @@ import type { MarketingServiceError } from "@/lib/marketing/service";
 import {
   backfillMissingProductDrafts,
   listSocialPosts,
+  listPublishedPosts,
   regeneratePostCaption,
   updatePostLanguage,
+  deletePublishedPost,
   type ActivityPost,
   type BackfillResult,
   type SocialPostServiceError,
@@ -39,6 +41,18 @@ export type SocialPostListActionState =
 /** Real draft/published posts for the business's Marketing activity feed. */
 export async function listSocialPostsAction(): Promise<SocialPostListActionState> {
   const result = await listSocialPosts();
+  return result.ok
+    ? { ok: true, posts: result.data }
+    : { ok: false, reason: result.reason };
+}
+
+export type PublishedPostsActionState =
+  | { ok: true; posts: ActivityPost[] }
+  | { ok: false; reason: SocialPostServiceError };
+
+/** Published posts for the business's Marketing Published section. */
+export async function listPublishedPostsAction(): Promise<PublishedPostsActionState> {
+  const result = await listPublishedPosts();
   return result.ok
     ? { ok: true, posts: result.data }
     : { ok: false, reason: result.reason };
@@ -157,5 +171,22 @@ export async function updatePostLanguageAction(
   const result = await updatePostLanguage(postId, selectedLanguage);
   return result.ok
     ? { ok: true, post: result.data }
+    : { ok: false, reason: result.reason };
+}
+
+export type DeletePublishedPostActionState =
+  | { ok: true; deleted: boolean }
+  | { ok: false; reason: SocialPostServiceError };
+
+/**
+ * Deletes a published post from the local database only.
+ * Does NOT delete the live post from Facebook/Instagram.
+ */
+export async function deletePublishedPostAction(
+  postId: string,
+): Promise<DeletePublishedPostActionState> {
+  const result = await deletePublishedPost(postId);
+  return result.ok
+    ? { ok: true, deleted: result.data.deleted }
     : { ok: false, reason: result.reason };
 }

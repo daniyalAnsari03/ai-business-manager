@@ -532,30 +532,28 @@ export function MarketingView({
             )}
 
             {/* Publish / not-connected feedback */}
-            <AnimatePresence>
-              {publishMessage ? (
-                <motion.p
-                  role="status"
-                  initial={reducedMotion ? false : { opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={reducedMotion ? undefined : { opacity: 0 }}
-                  transition={{ duration: 0.25, ease: EASE_PREMIUM }}
-                  className={cn(
-                    "mt-4 flex items-start gap-1.5 text-sm leading-relaxed",
-                    publishMessage.kind === "error"
-                      ? "text-muted"
-                      : "font-medium text-emerald-700 dark:text-emerald-300",
-                  )}
-                >
-                  {publishMessage.kind === "error" ? (
-                    <AlertCircleIcon className="mt-0.5 size-4 shrink-0" />
-                  ) : (
-                    <CheckCircleIcon className="mt-0.5 size-4 shrink-0" />
-                  )}
-                  {publishMessage.text}
-                </motion.p>
-              ) : null}
-            </AnimatePresence>
+            {publishingId ? (
+              <motion.p
+                role="status"
+                initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reducedMotion ? undefined : { opacity: 0 }}
+                transition={{ duration: 0.25, ease: EASE_PREMIUM }}
+                className={cn(
+                  "mt-2 flex items-start gap-1.5 text-sm leading-relaxed",
+                  publishMessage?.kind === "error"
+                    ? "text-muted"
+                    : "font-medium text-emerald-700 dark:text-emerald-300",
+                )}
+              >
+                {publishMessage?.kind === "error" ? (
+                  <AlertCircleIcon className="mt-0.5 size-4 shrink-0" />
+                ) : (
+                  <CheckCircleIcon className="mt-0.5 size-4 shrink-0" />
+                )}
+                {publishMessage?.text}
+              </motion.p>
+            ) : null}
 
             {/* Regenerate feedback */}
             <AnimatePresence>
@@ -662,7 +660,9 @@ function ActivityPostCard({
           </p>
           <p className="mt-0.5 text-xs text-faint">
             {draft
-              ? t.marketing.postDraftStatus
+              ? post.platformConnected
+                ? t.marketing.postDraftReadyStatus
+                : t.marketing.postDraftStatus
               : post.status === "published"
                 ? t.marketing.postPublishedStatus
                 : post.status === "failed"

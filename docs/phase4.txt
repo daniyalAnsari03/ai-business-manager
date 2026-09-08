@@ -1,0 +1,1065 @@
+# AI Business Manager — Phase 4 Implementation
+
+## Approval + Automation Control + WhatsApp Approval + Weekly Reports + Video AI
+
+You are implementing **Phase 4** of the existing AI Business Manager project.
+
+Before making ANY changes:
+
+> **FIRST read the existing `AGENTS.md` completely and follow every locked rule, architecture decision, design rule, security requirement, naming convention, and implementation constraint defined there.**
+>
+> Do not overwrite, ignore, reinterpret, or replace anything locked in `AGENTS.md`.
+
+Also inspect the existing codebase and understand the current implementation of **Phases 1–3** before writing code.
+
+---
+
+# 1. Current Project Context
+
+The application is **AI Business Manager**.
+
+Existing stack includes:
+
+* Next.js App Router
+* TypeScript
+* Tailwind CSS
+* Framer Motion
+* Supabase
+* Supabase Auth
+* PostgreSQL
+* Existing Products + Inventory
+* Existing Marketing module
+* Existing Marketing Wallet
+* Safepay Sandbox payment integration
+* Existing AI/agent architecture
+
+The application must remain a real business-management product.
+
+Do NOT add fake/mock AI behavior, fake approvals, fake WhatsApp messages, fake reports, or fake video processing just to make the UI appear functional.
+
+---
+
+# 2. Phase 4 Goals
+
+Phase 4 has four major capabilities:
+
+### A. Approval + Automation Control
+
+Add a business-level automation control with two modes:
+
+* **Needs approval**
+* **Full auto**
+
+### B. WhatsApp Approval
+
+When approval is required, the AI can send an approval request through WhatsApp.
+
+The user can reply:
+
+* `haan`
+* `yes`
+* `approve`
+
+to approve.
+
+Or:
+
+* `nahi`
+* `no`
+* `reject`
+
+to reject.
+
+The system must securely map the response to the correct pending action.
+
+### C. In-App Review
+
+Users must be able to review pending actions inside the application.
+
+They can:
+
+* Review
+* Approve
+* Reject
+
+the pending AI action.
+
+### D. Weekly WhatsApp Report + Video AI
+
+Every week the system should be able to send the business owner a marketing summary through WhatsApp.
+
+Also add a Video feature where the user uploads a video and AI prepares:
+
+* Caption
+* Hashtags
+* Suggested posting time
+
+The system must not automatically publish the video unless the existing automation/approval rules explicitly allow it.
+
+---
+
+# 3. FIRST: Inspect Existing Architecture
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Inspect the existing project structure.
+3. Inspect Phase 1–3 implementation.
+4. Find the existing Marketing module.
+5. Find existing AI/agent orchestration.
+6. Find existing activity/action logging.
+7. Find existing Social Posts implementation.
+8. Find existing Facebook/Instagram integration if already implemented.
+9. Find existing WhatsApp integration if any.
+10. Find existing scheduled-job infrastructure if any.
+11. Find existing Supabase migrations.
+12. Find existing wallet/payment implementation.
+13. Find existing localization / English + Roman Urdu system.
+14. Find existing UI design primitives.
+
+Do not duplicate functionality that already exists.
+
+Reuse existing services, utilities, types, components and architecture wherever appropriate.
+
+---
+
+# 4. Approval Mode Architecture
+
+Create a persistent business-level automation setting.
+
+The business must have one of these modes:
+
+```text
+needs_approval
+full_auto
+```
+
+Default should be:
+
+```text
+needs_approval
+```
+
+unless an existing product requirement in `AGENTS.md` specifies another default.
+
+The setting must be stored in Supabase.
+
+Do NOT store this only in React/localStorage.
+
+---
+
+# 5. Approval Settings UI
+
+Add a premium settings interface under the appropriate existing Settings/Marketing settings location.
+
+Display:
+
+### Automation Control
+
+**Needs approval**
+
+> AI prepares actions and asks you before publishing, spending money, or performing sensitive marketing actions.
+
+**Full auto**
+
+> AI can execute eligible actions automatically according to your configured rules.
+
+The UI must clearly explain what each mode means.
+
+Use the existing design system from `AGENTS.md`.
+
+Follow existing:
+
+* Ferly/Inter typography rules
+* Emerald design language
+* Dark/light theme
+* English/Roman Urdu switcher
+* Existing spacing
+* Existing animation rules
+* Existing responsive behavior
+
+Do not introduce shadcn/ui or another component library if `AGENTS.md` prohibits it.
+
+---
+
+# 6. Approval Action System
+
+Do not build approvals as a simple boolean.
+
+Create a proper pending-action model.
+
+A pending AI action should contain enough information to identify:
+
+* Business
+* User
+* Action type
+* Action payload
+* Human-readable summary
+* Current status
+* Approval mode
+* Created time
+* Expiration time if applicable
+* Approved/rejected time
+* Approved/rejected by
+* Execution time
+* Execution result
+* Error state
+* External reference if applicable
+* Idempotency key
+
+Possible statuses:
+
+```text
+pending
+approved
+rejected
+executing
+completed
+failed
+expired
+cancelled
+```
+
+Use database constraints/enums where appropriate.
+
+---
+
+# 7. Approval Lifecycle
+
+The correct lifecycle should be:
+
+```text
+AI decides an action is needed
+        ↓
+Action is validated
+        ↓
+Automation mode checked
+        ↓
+Needs approval?
+     /        \
+   YES         NO
+    ↓           ↓
+Create       Execute
+pending      eligible
+action       action
+    ↓
+Notify user
+    ↓
+User reviews
+    ↓
+Approve / Reject
+    ↓
+Approved?
+  /      \
+YES       NO
+ ↓         ↓
+Execute   Reject
+ ↓
+Verify result
+ ↓
+Completed
+```
+
+Never execute a `pending` action.
+
+Never execute a rejected action.
+
+Never execute an expired action.
+
+---
+
+# 8. Full Auto Safety
+
+`full_auto` does NOT mean unrestricted access.
+
+Define which actions are eligible for automatic execution.
+
+Actions involving:
+
+* Money
+* Ad spend
+* Payment
+* Account connection
+* Credential changes
+* Destructive operations
+* Sensitive external actions
+
+must remain subject to the security and approval rules defined in `AGENTS.md`.
+
+Do not silently allow full-auto spending of arbitrary amounts.
+
+Respect existing wallet/budget limits.
+
+---
+
+# 9. WhatsApp Approval Flow
+
+If WhatsApp integration already exists, reuse it.
+
+If it does not exist, inspect the project architecture and implement the required provider integration without inventing unsupported APIs.
+
+The system should be able to send a message similar to:
+
+```text
+AI Business Manager
+
+Approval required
+
+Action:
+Create and publish an Instagram post for Product X.
+
+Caption:
+...
+
+Scheduled time:
+...
+
+Reply:
+YES to approve
+NO to reject
+```
+
+The actual message must use the application's English/Roman Urdu localization.
+
+Do not hard-code only English.
+
+---
+
+# 10. WhatsApp Reply Processing
+
+Incoming WhatsApp messages must be securely handled.
+
+The system must:
+
+1. Verify webhook authenticity/signature according to the selected WhatsApp provider.
+2. Identify the authenticated/connected business.
+3. Identify the sender.
+4. Confirm the sender is authorized to approve actions.
+5. Identify the correct pending action.
+6. Reject ambiguous approval replies.
+7. Prevent unauthorized users from approving.
+8. Prevent replay attacks where applicable.
+9. Prevent duplicate approval execution.
+10. Make approval processing idempotent.
+
+Do NOT simply search for the latest pending action and approve it.
+
+The approval request must have a secure identifier/reference.
+
+---
+
+# 11. WhatsApp Approval Commands
+
+Support natural simple responses such as:
+
+### Approve
+
+```text
+haan
+yes
+approve
+approved
+```
+
+### Reject
+
+```text
+nahi
+no
+reject
+rejected
+```
+
+Case-insensitive handling is required.
+
+Roman Urdu support must be included.
+
+If the message is ambiguous:
+
+```text
+haan kar do
+```
+
+or similar natural-language approval may be accepted only if the implementation can safely determine intent.
+
+If intent cannot be confidently determined, ask the user to reply clearly:
+
+```text
+YES
+```
+
+or
+
+```text
+NO
+```
+
+Do not guess.
+
+---
+
+# 12. In-App Review System
+
+Create a proper Review experience.
+
+The user should see pending actions such as:
+
+```text
+Needs your approval
+
+Instagram Post
+Product: XYZ
+
+Caption:
+...
+
+Hashtags:
+...
+
+Scheduled:
+...
+
+[Review]
+```
+
+Review screen/modal should show:
+
+* What AI wants to do
+* Why AI wants to do it
+* Exact content
+* Platform
+* Timing
+* Any budget/spend involved
+* Expected impact if available
+* Approval/rejection controls
+
+Buttons:
+
+```text
+Approve
+Reject
+```
+
+Use confirmation where the action is financially or operationally sensitive.
+
+---
+
+# 13. Review History
+
+Users should be able to understand what happened to previous approvals.
+
+Show:
+
+* Pending
+* Approved
+* Rejected
+* Completed
+* Failed
+* Expired
+
+Include timestamps and execution results.
+
+Do not fabricate activity data.
+
+---
+
+# 14. Weekly WhatsApp Marketing Report
+
+Create a scheduled weekly report.
+
+The report should summarize real business data from Supabase.
+
+Potential sections:
+
+### Weekly Marketing Summary
+
+* Posts published
+* Platforms used
+* Engagement where available
+* Ad spend
+* Wallet usage
+* Remaining wallet balance
+* Campaign results where available
+* Top-performing post
+* AI recommendations
+* Important warnings
+
+Only include metrics that actually exist in the database/provider integrations.
+
+Do NOT invent unavailable analytics.
+
+---
+
+# 15. Scheduling Architecture
+
+Inspect the existing project for scheduled-job infrastructure.
+
+If an existing scheduler exists, reuse it.
+
+If not, design a proper server-side scheduled mechanism compatible with the deployment environment.
+
+Do NOT rely on:
+
+```text
+setInterval()
+```
+
+inside a Next.js server process for production scheduling.
+
+The weekly job must be:
+
+* Idempotent
+* Retry-safe
+* Timezone-aware
+* Business-aware
+* Protected from duplicate sends
+
+Store/report the last successful send where appropriate.
+
+---
+
+# 16. Weekly Report WhatsApp Delivery
+
+Before sending:
+
+1. Verify WhatsApp connection.
+2. Verify recipient authorization.
+3. Generate report from real data.
+4. Format it for WhatsApp.
+5. Send it through the configured provider.
+6. Log the delivery result.
+7. Prevent duplicate weekly reports.
+
+If WhatsApp is not connected, do NOT pretend the report was sent.
+
+Show/log the actual failure state.
+
+---
+
+# 17. Video Feature
+
+Add a Marketing Video capability.
+
+User flow:
+
+```text
+Marketing
+   ↓
+Video
+   ↓
+Upload video
+   ↓
+AI analyzes available video/context
+   ↓
+Generate:
+- Caption
+- Hashtags
+- Suggested posting time
+   ↓
+User reviews
+   ↓
+Approve / Edit / Reject
+```
+
+The user should be able to upload a video through the existing Supabase Storage architecture if appropriate.
+
+Do not create a second unnecessary storage system.
+
+---
+
+# 18. Video AI
+
+The AI should use the existing AI architecture.
+
+Do NOT introduce a separate random AI provider.
+
+Follow the architecture and provider rules locked in `AGENTS.md`.
+
+The AI should generate:
+
+### Caption
+
+Relevant to the actual video/business/product.
+
+### Hashtags
+
+Relevant and non-spammy.
+
+### Suggested posting time
+
+Based on available business/account data where possible.
+
+If historical analytics are unavailable, clearly label the recommendation as an AI recommendation rather than pretending it is based on real audience analytics.
+
+---
+
+# 19. Video Processing
+
+Do not claim to understand visual/video content unless the existing AI/video pipeline actually supports it.
+
+If actual video analysis is supported:
+
+* Use it.
+
+If not:
+
+* Build the architecture so the feature can safely accept video metadata/context.
+* Do not fake visual analysis.
+* Do not generate false claims such as “I detected a red dress” unless the system genuinely analyzed the video.
+
+---
+
+# 20. Video Publishing
+
+Do not automatically publish videos just because AI generated a caption.
+
+Publishing must go through the same automation/approval system.
+
+Example:
+
+```text
+Needs approval
+→ Review video
+→ Approve
+→ Publish
+```
+
+or:
+
+```text
+Full auto
+→ Publish if the action is eligible for automation
+```
+
+Respect all existing platform permissions and API capabilities.
+
+---
+
+# 21. AI Agent Integration
+
+Phase 4 must integrate with the existing AI Business Manager agent architecture.
+
+Do NOT turn this into a simple chatbot workflow.
+
+The AI should:
+
+1. Inspect business data.
+2. Reason about the situation.
+3. Decide whether an action is useful.
+4. Use controlled tools.
+5. Check automation/approval mode.
+6. Create an approval request when required.
+7. Execute approved/eligible actions.
+8. Verify the result.
+9. Record the result.
+10. Explain what happened to the user.
+
+Follow the existing agent/tool architecture in `AGENTS.md`.
+
+---
+
+# 22. Tool Safety
+
+Every tool that can perform an external action must have:
+
+* Clear input schema
+* Authorization checks
+* Business ownership checks
+* User authorization checks
+* Approval checks where required
+* Idempotency
+* Error handling
+* Result verification
+
+Never allow the AI model itself to directly call arbitrary external APIs.
+
+Use controlled server-side tools.
+
+---
+
+# 23. Database Requirements
+
+Create proper Supabase migrations for any new tables/columns.
+
+Likely entities may include:
+
+```text
+automation_settings
+approval_actions
+approval_events
+weekly_report_deliveries
+marketing_videos
+```
+
+But do NOT blindly create these exact tables if the existing schema already has equivalent entities.
+
+Inspect first.
+
+Every business-owned record must be properly associated with:
+
+```text
+business_id
+```
+
+Use appropriate:
+
+* Foreign keys
+* Indexes
+* Unique constraints
+* CHECK constraints
+* RLS policies
+* Updated-at triggers where appropriate
+
+Do not weaken existing RLS.
+
+---
+
+# 24. Security Requirements
+
+Security is mandatory.
+
+Never expose:
+
+* API secrets
+* WhatsApp credentials
+* OAuth client secrets
+* Safepay secret
+* Supabase service-role key
+* AI provider keys
+
+to the client.
+
+Never log secrets.
+
+All approval actions must verify business ownership.
+
+All incoming webhooks must be authenticated.
+
+All external actions must be idempotent.
+
+Do not trust:
+
+* Client-side approval state
+* Client-provided business IDs
+* Client-provided user IDs
+* Client-provided action ownership
+
+Derive authorization from the authenticated server-side session/database.
+
+---
+
+# 25. Existing Safepay Integration
+
+Do NOT break the existing Safepay implementation.
+
+Existing webhook:
+
+```text
+/api/safepay/webhook
+```
+
+Existing return page:
+
+```text
+/dashboard/marketing/wallet/topup/return
+```
+
+Existing payment-provider abstraction must remain intact.
+
+Do not modify payment behavior unless required for Phase 4.
+
+The existing Safepay Sandbox integration must remain functional.
+
+---
+
+# 26. Existing Marketing Wallet
+
+Do not bypass the wallet.
+
+Any AI ad-spend action must respect:
+
+* Available balance
+* Monthly budget
+* Existing wallet transaction system
+* Existing payment/ledger architecture
+* Existing safeguards
+
+Do not create another wallet.
+
+Do not maintain a second balance in another table.
+
+---
+
+# 27. Localization
+
+All new user-facing text must support:
+
+* English
+* Roman Urdu
+
+Use the application's existing language-switching architecture.
+
+Do not create a separate translation system.
+
+Do not hard-code English-only UI.
+
+Roman Urdu should be natural and understandable for non-technical users.
+
+---
+
+# 28. UX Requirements
+
+Phase 4 should feel like a premium extension of the existing AI Business Manager.
+
+Follow `AGENTS.md`.
+
+Important UX principles:
+
+* Clear status
+* Clear approval state
+* No confusing technical language
+* Explain what AI wants to do
+* Show user control
+* Avoid unnecessary screens
+* Responsive on mobile and desktop
+* Accessible controls
+* Proper loading states
+* Proper empty states
+* Proper error states
+* No fake data
+
+Use Framer Motion only where it improves UX.
+
+---
+
+# 29. Error Handling
+
+Every external operation needs proper error handling.
+
+Examples:
+
+* WhatsApp unavailable
+* WhatsApp disconnected
+* Invalid webhook
+* Expired approval
+* Duplicate approval
+* Unauthorized approver
+* Platform API failure
+* Video upload failure
+* AI generation failure
+* Scheduled job failure
+* Database failure
+
+Show user-friendly messages.
+
+Keep technical details in safe server-side logs.
+
+Never expose secrets or internal stack traces to users.
+
+---
+
+# 30. Testing Requirements
+
+Before declaring Phase 4 complete, test at minimum:
+
+### Approval
+
+* Needs approval creates pending action.
+* Pending action does not execute.
+* In-app approve executes once.
+* In-app reject prevents execution.
+* Duplicate approval does not execute twice.
+* Expired action cannot execute.
+* Unauthorized user cannot approve.
+
+### Full Auto
+
+* Eligible action executes automatically.
+* Non-eligible sensitive actions remain protected.
+
+### WhatsApp
+
+* Valid approval works.
+* Valid rejection works.
+* Unauthorized sender cannot approve.
+* Duplicate message does not duplicate execution.
+* Invalid/ambiguous response is handled safely.
+* Webhook signature verification works.
+
+### Weekly Reports
+
+* Correct business data is used.
+* Report is generated.
+* Report sends once.
+* Duplicate scheduled execution does not send duplicate reports.
+* WhatsApp disconnected state is handled correctly.
+
+### Video
+
+* Upload works.
+* Video metadata/storage works.
+* AI generation works through existing AI architecture.
+* Caption/hashtags/timing are generated.
+* Review works.
+* Approval rules are respected.
+* No fake visual analysis.
+* Publishing only occurs through the controlled action system.
+
+---
+
+# 31. Build Verification
+
+After implementation run:
+
+```bash
+npm run build
+```
+
+Also run the project's existing:
+
+* Typecheck
+* ESLint
+* Tests
+
+if available.
+
+Fix all errors.
+
+Do not leave warnings/errors unexplained.
+
+---
+
+# 32. Do Not Over-Implement
+
+Do NOT:
+
+* Rewrite existing architecture
+* Replace the existing AI architecture
+* Replace Supabase
+* Replace the payment provider
+* Add unnecessary dependencies
+* Add fake integrations
+* Add mock production behavior
+* Add duplicate tables/services when existing ones can be reused
+* Change Phase 1–3 functionality unnecessarily
+
+The goal is to **extend the existing AI Business Manager**, not rebuild it.
+
+---
+
+# 33. Implementation Order
+
+Follow this order:
+
+### Step 1
+
+Read `AGENTS.md`.
+
+### Step 2
+
+Audit existing Phase 1–3 architecture.
+
+### Step 3
+
+Design Phase 4 database/schema changes.
+
+### Step 4
+
+Implement automation settings.
+
+### Step 5
+
+Implement approval action engine.
+
+### Step 6
+
+Implement in-app Review UI.
+
+### Step 7
+
+Integrate WhatsApp approval flow using the existing/approved WhatsApp architecture.
+
+### Step 8
+
+Implement weekly report generation and scheduling.
+
+### Step 9
+
+Implement Video upload and AI content generation.
+
+### Step 10
+
+Connect video publishing to approval/automation controls.
+
+### Step 11
+
+Add security/RLS/idempotency protections.
+
+### Step 12
+
+Test complete flows.
+
+### Step 13
+
+Run typecheck + ESLint + build/tests.
+
+---
+
+# 34. Final Acceptance Criteria
+
+Phase 4 is complete ONLY when:
+
+* [ ] `Needs approval` / `Full auto` works.
+* [ ] Automation setting persists in Supabase.
+* [ ] AI actions correctly respect automation mode.
+* [ ] Pending approval actions are stored securely.
+* [ ] In-app Review works.
+* [ ] Approve works exactly once.
+* [ ] Reject works.
+* [ ] Expired/rejected actions cannot execute.
+* [ ] WhatsApp approval works through a real configured provider.
+* [ ] WhatsApp authorization/security is enforced.
+* [ ] Duplicate WhatsApp approvals cannot execute twice.
+* [ ] Weekly report is generated from real Supabase/business data.
+* [ ] Weekly report scheduling is idempotent.
+* [ ] Weekly WhatsApp delivery works when connected.
+* [ ] Video upload works.
+* [ ] AI generates caption + hashtags + timing.
+* [ ] Video action respects approval/full-auto rules.
+* [ ] No fake AI analysis.
+* [ ] No fake WhatsApp delivery.
+* [ ] No fake analytics.
+* [ ] Existing Safepay/payment flow is not broken.
+* [ ] Existing wallet is not duplicated/bypassed.
+* [ ] RLS/security is correct.
+* [ ] English/Roman Urdu support works.
+* [ ] Existing design system is followed.
+* [ ] Typecheck passes.
+* [ ] ESLint passes.
+* [ ] Build passes.
+* [ ] Existing Phase 1–3 functionality remains working.
+
+---
+
+# Final Instruction
+
+Do not immediately start coding.
+
+**First inspect `AGENTS.md` and the existing codebase.**
+
+Then provide:
+
+1. A short **Phase 4 implementation plan** based on the actual existing architecture.
+2. Existing components/services/tables that can be reused.
+3. New database changes required.
+4. New API routes/server actions required.
+5. New UI screens/components required.
+6. WhatsApp integration requirements.
+7. Scheduling requirements.
+8. Video processing approach.
+9. Security considerations.
+10. Any conflicts between the Phase 4 requirements and `AGENTS.md`.
+
+Only after this audit and plan should implementation begin.
+
+Do not make assumptions where the existing codebase can provide the answer.

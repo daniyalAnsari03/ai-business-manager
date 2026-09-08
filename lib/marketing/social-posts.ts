@@ -10,9 +10,32 @@ import {
 } from "@/lib/supabase/server";
 import { generateProductCaption } from "@/lib/ai/caption-generator";
 import type { Product } from "@/lib/products/types";
-import { isSocialPostPlatform, type SocialPost } from "@/lib/marketing/types";
+import { isSocialPostPlatform, type SocialPost, type SocialPostPlatform } from "@/lib/marketing/types";
 import { isBusinessType, isCurrencyCode } from "@/lib/business/constants";
 import { isLanguage } from "@/lib/business/types";
+
+/**
+ * Whether the business has a live (connected + non-expired token) connection
+ * for the given platform. Mirrors the logic in lib/marketing/publish.ts.
+ */
+async function hasLiveConnection(
+  supabase: SupabaseClient,
+  businessId: string,
+  platform: SocialPostPlatform,
+): Promise<boolean> {
+  const { data } = await supabase
+    .from("connected_accounts")
+    .select("id, access_token, token_expires_at")
+    .eq("business_id", businessId)
+    .eq("platform", platform)
+    .eq("status", "connected")
+    .maybeSingle();
+
+  if (!data) return false;
+  if (!data.access_token) return false;
+  if (data.token_expires_at && new Date(data.token_expires_at).getTime() < Date.now()) return false;
+  return true;
+}
 
 /**
  * Social posts service layer — the ONLY place that talks to Supabase about
@@ -170,6 +193,8 @@ function mapSocialPost(row: SocialPostRow): SocialPost | null {
  */
 export interface ActivityPost extends SocialPost {
   productName: string | null;
+  /** Whether the business has a live (connected + non-expired token) connection for this post's platform. */
+  platformConnected: boolean;
 }
 
 /** All social_posts for the business, newest first, with product names. */
@@ -208,9 +233,70 @@ export async function listSocialPosts(): Promise<
   for (const row of (data ?? []) as SocialPostRow[]) {
     const mapped = mapSocialPost(row);
     if (mapped) {
+      // Check if the business has a live connection for this post's platform.
+      const platformConnected = await hasLiveConnection(
+        context.supabase,
+        context.business.id,
+        mapped.platform,
+      );
       posts.push({
         ...mapped,
         productName: row.products?.name ?? null,
+        platformConnected,
+      });
+    }
+  }
+  return { ok: true, data: posts };
+}
+
+/**
+ * Lists all published social posts for the business, newest first.
+ */
+export async function listPublishedPosts(): Promise<
+  SocialPostServiceResult<ActivityPost[]>
+> {
+  const context = await requireBusinessContext();
+  if (!context.ok) return context;
+
+  console.log(
+    "[social-posts] listPublishedPosts for business_id:",
+    context.business.id,
+    "business_name:",
+    context.business.name,
+  );
+
+  const { data, error } = await context.supabase
+    .from("social_posts")
+    .select("*, products(name)")
+    .eq("business_id", context.business.id)
+    .eq("status", "published")
+    .order("published_at", { ascending: false });
+
+  if (error) {
+    console.error("[social-posts] listPublishedPosts DB error:", error);
+    return { ok: false, reason: "database_error" };
+  }
+
+  console.log(
+    "[social-posts] listPublishedPosts raw rows:",
+    data?.length ?? 0,
+    "posts found for business_id:",
+    context.business.id,
+  );
+
+  const posts: ActivityPost[] = [];
+  for (const row of (data ?? []) as SocialPostRow[]) {
+    const mapped = mapSocialPost(row);
+    if (mapped) {
+      const platformConnected = await hasLiveConnection(
+        context.supabase,
+        context.business.id,
+        mapped.platform,
+      );
+      posts.push({
+        ...mapped,
+        productName: row.products?.name ?? null,
+        platformConnected,
       });
     }
   }
@@ -274,31 +360,89 @@ async function insertDraftForProduct(
   const mapped = mapSocialPost(data as SocialPostRow);
   if (!mapped) return { ok: false, reason: "database_error" };
 
+  const platformConnected = await hasLiveConnection(supabase, business.id, mapped.platform);
+
   return {
     ok: true,
     data: {
       ...mapped,
       productName: (data as SocialPostRow).products?.name ?? null,
+      platformConnected,
     },
   };
 }
 
 /**
- * Generates a REAL AI caption for a newly created product and saves it as a
- * `social_posts` draft. This is the "controlled tool -> server-side service
- * -> Supabase -> verified result" boundary: the created draft is re-read from
- * the database and returned only after the insert confirms.
+ * Deletes a published social post from the local database.
+ * This ONLY removes the local record — it does NOT delete the live post
+ * from Facebook/Instagram. The external post remains on the platform.
+ */
+export async function deletePublishedPost(
+  postId: string,
+): Promise<SocialPostServiceResult<{ deleted: boolean }>> {
+  const context = await requireBusinessContext();
+  if (!context.ok) return context;
+
+  const { error } = await context.supabase
+    .from("social_posts")
+    .delete()
+    .eq("id", postId)
+    .eq("business_id", context.business.id)
+    .eq("status", "published");
+
+  if (error) return { ok: false, reason: "database_error" };
+
+  return { ok: true, data: { deleted: true } };
+}
+
+/**
+ * Generates a REAL AI caption for a product and saves it as a `social_posts`
+ * draft. This is the "controlled tool -> server-side service -> Supabase ->
+ * verified result" boundary: the created draft is re-read from the database
+ * and returned only after the insert confirms.
  *
- * Falls back to the created product's business language for the caption. If
- * the AI provider is unavailable the service returns `ai_unavailable` so the
- * caller can decide whether to block the underlying flow.
+ * Idempotent: if a draft already exists for this product, it is UPDATED
+ * (regenerated) rather than creating a duplicate row. Only draft posts are
+ * updated; published/failed/scheduled posts are left alone and a new draft
+ * is created instead.
  */
 export async function createDraftForProduct(
   product: Product,
 ): Promise<SocialPostServiceResult<ActivityPost>> {
   const context = await requireBusinessContext();
   if (!context.ok) return context;
-  return insertDraftForProduct(context.supabase, context.business, product);
+
+  const { supabase, business } = context;
+
+  // Check for an existing draft for this product.
+  const { data: existingDraft, error: existingError } = await supabase
+    .from("social_posts")
+    .select("id, status")
+    .eq("business_id", business.id)
+    .eq("product_id", product.id)
+    .eq("status", "draft")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (existingError) {
+    console.error("[social-posts] createDraftForProduct check existing error:", existingError);
+    return { ok: false, reason: "database_error" };
+  }
+
+  if (existingDraft) {
+    // An active draft exists — regenerate its caption instead of creating a duplicate.
+    console.log(
+      "[social-posts] createDraftForProduct: updating existing draft",
+      existingDraft.id,
+      "for product",
+      product.id,
+    );
+    return regeneratePostCaption(existingDraft.id);
+  }
+
+  // No active draft — create a new one.
+  return insertDraftForProduct(supabase, business, product);
 }
 
 /** A draft that resulted from the backfill, captured for reporting. */
@@ -614,11 +758,18 @@ export async function regeneratePostCaption(
   const mapped = mapSocialPost(updatedRow as SocialPostRow);
   if (!mapped) return { ok: false, reason: "database_error" };
 
+  const platformConnected = await hasLiveConnection(
+    context.supabase,
+    context.business.id,
+    mapped.platform,
+  );
+
   return {
     ok: true,
     data: {
       ...mapped,
       productName: (updatedRow as SocialPostRow).products?.name ?? null,
+      platformConnected,
     },
   };
 }
@@ -665,11 +816,18 @@ export async function updatePostLanguage(
   const mapped = mapSocialPost(updatedRow as SocialPostRow);
   if (!mapped) return { ok: false, reason: "database_error" };
 
+  const platformConnected = await hasLiveConnection(
+    context.supabase,
+    context.business.id,
+    mapped.platform,
+  );
+
   return {
     ok: true,
     data: {
       ...mapped,
       productName: (updatedRow as SocialPostRow).products?.name ?? null,
+      platformConnected,
     },
   };
 }

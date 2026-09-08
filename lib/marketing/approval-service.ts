@@ -567,9 +567,27 @@ export async function listApprovalHistory(
     .limit(limit);
 
   if (error) return { ok: false, reason: "database_error" };
+
+  // Deduplicate by idempotency_key: keep only the most recent attempt for each
+  // unique key so the history shows one entry per real action rather than
+  // repeating the same attempt multiple times (which happens when the AI
+  // loses the post ID context and creates redundant approval actions).
+  const seen = new Map<string, ApprovalActionRow>();
+  for (const row of (data ?? []) as ApprovalActionRow[]) {
+    const key = row.idempotency_key;
+    if (!key) continue;
+    if (!seen.has(key) || new Date(row.created_at).getTime() > new Date(seen.get(key)!.created_at).getTime()) {
+      seen.set(key, row);
+    }
+  }
+
+  const deduplicated = Array.from(seen.values())
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, limit);
+
   return {
     ok: true,
-    data: ((data ?? []) as ApprovalActionRow[]).map(mapAction),
+    data: ((deduplicated ?? []) as ApprovalActionRow[]).map(mapAction),
   };
 }
 

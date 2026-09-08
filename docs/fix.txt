@@ -1,108 +1,176 @@
-CONFIRMED WORKING: A direct manual test (System User token, GET 
-/me/accounts → Page-scoped token → POST /{page-id}/feed) succeeded 
-and created a real post (id: 106463831211396_1545371740966737) on a 
-test Page. This proves the permission set (business_management, 
-pages_manage_posts, etc.) + Page-scoped token approach genuinely 
-works. So the remaining bug is specifically in how the REAL APP 
-obtains/stores/uses its token for the real "Dins By Daniyal" 
-connection — not a fundamental permission/capability problem.
+MULTIPLE BUGS in the Marketing module. Each is listed separately — 
+investigate and fix each one with real evidence, do not batch-guess.
 
-UPDATE: pages_manage_posts permission has now been properly granted 
-(added to the Facebook Login Configuration 4496722177312962, and the 
-user completed a fresh Reconnect through the app's real OAuth flow, 
-selecting "Dins By Daniyal" Page and "opt in to all current and future" 
-for both Businesses and Instagram accounts). Despite this, clicking 
-Publish on a draft still shows the generic "This post couldn't be 
-published. Please try again." error.
+=== ISSUE 1: Duplicate drafts for the same product ===
 
-Do this now:
+The Activity feed shows 3-4 draft entries for the SAME product name. 
+Only ONE draft should exist per product at a time.
 
-1. Reproduce the exact server request again (same method as before — 
-   direct reproduction since Vercel runtime logs aren't reliably 
-   accessible) using the CURRENT stored connected_accounts token for 
-   this business (338f48b5-74ed-4f0b-8754-208c6fe663b5, "DINS by 
-   Daniyal") and platform=facebook.
+1. Query social_posts for this business and find which product has 
+   multiple rows — paste the actual rows (id, product_id, created_at, 
+   status).
+2. Find why multiple drafts are being created for one product — likely 
+   the create-draft hook is firing multiple times (e.g. retried without 
+   an idempotency check, or triggered from multiple code paths: chat 
+   tool + approval flow + manual regenerate all creating separate rows 
+   instead of updating one).
+3. Fix so there's at most one active draft per product at a time — 
+   regenerating or re-triggering should UPDATE the existing row, not 
+   insert a new one (same pattern already used correctly elsewhere in 
+   this app, e.g. the backfill's idempotency).
+4. Clean up the existing duplicate rows for products currently affected 
+   (keep the most recent, remove the rest) — confirm with me which 
+   rows before deleting.
 
-2. First, call GET /me/permissions (or debug_token) with the current 
-   stored token and confirm whether pages_manage_posts now actually 
-   appears in its granted scopes — paste the raw response. This tells 
-   us if the reconnect actually captured the new permission, or if the 
-   stored token is still the OLD one (reconnect might not have properly 
-   replaced it — check the connected_accounts row's updated_at/token 
-   value changed after this reconnect).
+=== ISSUE 2: "Not connected" message shows despite Facebook being connected ===
 
-3. If the token DOES now have pages_manage_posts: reproduce the actual 
-   POST to /{page-id}/feed and paste the raw error/response — this 
-   will tell us if it's now a different, new error (progress) or the 
-   exact same permission error (meaning something else is still wrong).
+Drafts still show "Draft — Instagram/Facebook se abhi connect nahi 
+hai" even though Facebook is confirmed connected (real posts have 
+published successfully via this connection).
 
-4. If the token does NOT have pages_manage_posts (still the old token): 
-   the reconnect flow itself likely has a bug not properly capturing/
-   storing the newly granted permission — investigate the callback's 
-   token storage step for this specific case.
+1. Find where this message/condition is generated in the Activity feed 
+   UI.
+2. Check what it's actually checking — is it checking a stale/cached 
+   connection status, checking the wrong platform, or checking 
+   `instagram` connection specifically instead of routing correctly 
+   through the platform router (lib/marketing/publish.ts) added for 
+   the Facebook fix?
+3. Fix so this message accurately reflects the REAL current connection 
+   status per platform.
 
-5. Fix based on whichever of these is shown by the evidence — do not 
-   guess.
+=== ISSUE 3: Add a separate "Published Posts" page ===
 
-Paste the raw permissions check and raw publish attempt error before 
-proposing any fix.
+Currently there's no dedicated place to see what's actually been 
+published (only drafts show in Activity feed).
 
-========================================================================
-RESULT (2026-09-07) — evidence captured, root cause found, fix applied.
-========================================================================
+1. Add a new section/page (e.g. Marketing → Published, or a tab within 
+   the existing Marketing page) listing all social_posts with 
+   status="published" — show the product, caption, platform, and 
+   published date.
+2. Add a "Delete" option on each published post entry. Clarify: 
+   deleting here should remove the LOCAL record (and note whether it 
+   also deletes the LIVE post from Facebook/Instagram, or only removes 
+   it from this app's tracking — make this behavior clear in the UI 
+   text, and confirm with me which behavior is intended before 
+   implementing, since deleting a live social media post is a 
+   consequential/destructive action that may need confirmation).
 
-1. Stored-token permissions check (business 338f48b5..., platform=facebook,
-   external_account_id=118212491230491 "D&N Collection"):
+=== ISSUE 4: Success/failure message placement ===
 
-   GET /debug_token (input_token = stored token, access_token = app_id|secret):
-   - type: USER (it is a USER access token, not a System User token)
-   - is_valid: true
-   - scopes include: pages_show_list, pages_read_engagement,
-     pages_manage_posts, business_management (+ public_profile)
-   - granular_scopes.pages_manage_posts target_ids include 118212491230491.
-   => The reconnect DID capture pages_manage_posts. The token is NOT stale.
+Currently, after publishing, a confirmation message appears at the 
+BOTTOM of the whole page/feed. It should instead appear INLINE, 
+directly under the specific post card that was just published — not 
+as a page-level banner unrelated to which post it refers to.
 
-   GET /me/permissions: pages_manage_posts = granted (all permissions granted).
+Fix the UI so the success/failure state renders attached to that 
+specific post's card component, not as a separate global notification.
 
-2. Raw publish reproduction on the same stored token:
-   - resolvePageAccessToken (GET /me/accounts) -> returned a valid Page-scoped
-     token for 118212491230491.
-   - POST /118212491230491/feed with the PAGE token  -> 200
-     {"id":"118212491230491_1015484321517532"}
-   - POST /118212491230491/feed with the STORED (USER) token -> 403 OAuthException
-     code 200: "...If posting to a page, requires both pages_read_engagement and
-     pages_manage_posts with a PAGE token..."
-   - POST /photos (real photo draft d03c7d57) with PAGE token -> 200
-     {"id":"1015485318184099","post_id":"118212491230491_1015485354850762"}
-   - POST /feed for the previously-failed draft 78e8b68a with PAGE token -> 200.
-   => Page publishing WORKS with a page token; a USER token is rejected with
-      403/code 200 EVEN WHEN it has pages_manage_posts.
+=== ISSUE 5: Review history shows incorrect/inconsistent status ===
 
-3. ROOT CAUSE: Meta requires a PAGE-scoped token for /page/feed and
-   /page/photos posts. The deployed publisher was signing posts with the stored
-   USER token (the old facebook-publish.ts used connection.access_token
-   directly), so every publish returned 403/code 200 and the UI collapsed it to
-   the generic "couldn't be published" message. The reconnect / permission were
-   never the (remaining) problem.
+In the Approvals → Review history list, actions that appeared to 
+succeed (the approval itself showed a success message) are logged 
+repeatedly as "Naqabil-e-kamyabi" (failed/unsuccessful) at multiple 
+timestamps for what looks like the same underlying action:
 
-4. FIX (in the working tree):
-   - app/api/marketing/oauth/callback/route.ts: store the PAGE token
-     (page.page.accessToken from discoverPage) instead of the USER code token.
-   - lib/marketing/facebook-publish.ts: resolve the page token at publish time
-     via resolvePageAccessToken and use it (falling back to stored only when
-     unresolvable); classify OAuthException code 200 naming pages_manage_posts
-     as permission_missing.
-   - lib/marketing/meta-oauth.ts: export resolvePageAccessToken; surface
-     Page accessToken from discoverPage; facebook scope list now includes
-     pages_manage_posts.
-   - components/marketing/marketing-view.tsx: map permission_missing to the
-     honest localized "publishPermissionMissingMessage" instead of the generic
-     failure message.
-   - All verified: tsc --noEmit clean; live Graph API reproduction shows page
-     publish succeeds for text and photo posts, and for a previously-failed
-     draft.
+Example real data from the user:
+"Publish the social post and share it to facebook." — 7 Sept 2026, 
+05:20 — Naqabil-e-kamyabi (repeated at 05:20, 05:12 x2, 05:09 
+Zeri-e-jayza [pending], 05:07, 05:06 — all "Naqabil-e-kamyabi" except 
+one "Zeri-e-jayza")
 
-   NOTE: these files were uncommitted in the working tree at diagnosis time —
-     the running deployment used the OLD committed code that lacked the page-token
-     fix, which is exactly why the Publish button still failed after reconnect.
-     Commit + redeploy for the fix to take effect.
+1. Investigate why so many attempts exist for what the user experienced 
+   as a single action, and why they're logged as failed when the 
+   approve action itself showed a success toast to the user.
+2. This is likely connected to Issue 1 (duplicate drafts) and Issue 6 
+   below (the chat agent creating multiple redundant drafts/attempts) 
+   — trace whether this history list is accurately reflecting real 
+   distinct publish attempts, or if it's an artifact of the same 
+   underlying duplication bug.
+3. Fix so review history accurately shows one entry per real attempt, 
+   with the correct real outcome.
+
+=== ISSUE 6: CRITICAL — AI chat cannot actually execute approved publish actions ===
+
+This is the most important issue. Real reproduction transcript from 
+the user (paraphrased structure, exact behavior described):
+
+1. User (in AI chat): "lama silk post karo fb pe"
+2. AI: creates the post content, says approval is required, asks user 
+   to confirm.
+3. User: says yes/approve in chat.
+4. AI: says it doesn't have the draft's post ID in this chat context, 
+   asks user to regenerate the draft.
+5. User: asks how to regenerate.
+6. AI: says draft was created and sent for approval, tells user to go 
+   approve it in the separate Approval section.
+7. User: says "yes, right here in chat, permission granted, do it."
+8. AI: says chat's "yes" does not publish — approval must happen in 
+   the Approval section or via connected WhatsApp.
+9. User: says "I approved it [in the Approval section]."
+10. AI: says it's still not published, says final approval must come 
+    from the Approval section or WhatsApp, asks user to send "YES" 
+    there.
+11. User: says "I've set it to auto mode now, post it."
+12. AI: says publish failed, "system cannot identify the post."
+13. User: says "do it anyway."
+14. AI: creates ANOTHER new draft, again fails to publish, same 
+    "cannot identify the post" issue, but this time returns a Post ID.
+15. User: asks to "delete all marketing posts."
+16. AI: says it has no capability to delete all marketing posts, only 
+    to draft/publish per-product.
+
+THE USER'S CORE REQUIREMENT (please read carefully, this defines the 
+fix): When the user gives approval in the SAME chat conversation 
+("haan", "approve hai karo", "post kardo"), the AI should be able to 
+actually EXECUTE the publish directly — it should not repeatedly 
+redirect the user to a separate UI section or WhatsApp, and it should 
+not "forget" which draft/post it's talking about between messages in 
+the same conversation. The AI should have complete access to the 
+user's business data and be able to complete the full action within 
+chat when given clear permission, the same way it already handles 
+other actions (create_product, create_order, etc. — which don't 
+require leaving the chat to complete).
+
+Investigate and fix:
+
+1. Find the actual controlled tool(s) involved in this flow (likely 
+   something like create_social_post + a separate publish trigger, or 
+   an approval-request tool). Trace exactly why the draft's post ID 
+   isn't retained/passed correctly across turns in the SAME 
+   conversation — is conversation state/context being lost, or is the 
+   tool's return value not including the ID the model needs to 
+   reference it in a follow-up turn?
+2. Determine whether "approval required before publish" is a hard 
+   architectural requirement (i.e., must always go through the 
+   separate Approval section by design, per the automation-mode system 
+   built earlier) — if so, the AI's chat responses must be REWRITTEN 
+   to be clear and CONSISTENT about this from the first message (not 
+   contradict itself across turns as shown above), and ideally the chat 
+   should proactively tell the user once, clearly, "yeh approval Marketing 
+   > Approvals section mein deni hogi" — not repeat conflicting 
+   instructions turn after turn.
+3. Alternatively (and preferably, matching the user's stated 
+   requirement): if a business/product design decision is made to 
+   allow direct in-chat approval to trigger the SAME publish path as 
+   the Approval section (respecting the same automation-mode setting), 
+   implement a controlled tool that lets the AI directly execute the 
+   publish when the user gives clear affirmative confirmation in chat, 
+   reusing the exact same underlying publish logic (lib/marketing/publish.ts) 
+   already built — do not create a parallel/duplicate publish path.
+4. Fix the "system cannot identify the post" failure specifically — 
+   find why a freshly created draft with a real Post ID still fails to 
+   be found/published; this is a distinct bug from the approval-routing 
+   confusion above.
+5. Give the AI chat agent a way to answer "delete all marketing posts" 
+   or similar bulk requests honestly and usefully — either by actually 
+   supporting it (with appropriate confirmation, since bulk delete is 
+   destructive) or by clearly explaining current capability limits 
+   without a dead end.
+
+=== VERIFICATION REQUIRED FOR ALL ISSUES ===
+
+For each issue: reproduce it live first with evidence (query results, 
+actual chat transcript, actual UI state) before fixing, then fix, then 
+re-verify live and paste the real result. Do not batch multiple issues 
+into one vague "fixed" claim — report each issue's fix and verification 
+separately.

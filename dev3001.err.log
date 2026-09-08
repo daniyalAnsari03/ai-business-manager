@@ -1,6 +1,5 @@
 [ai-provider] openai primary engaged (model will be used for first attempt on each request)
-[ai-provider] openai failed with a request-shape error; not engaging gemini+groq backup (status=400 message="400 Unsupported value: 'temperature' does not support 0.6 with this model. Only the default (1) value is supported." body={"message":"Unsupported value: 'temperature' does not support 0.6 with this model. Only the default (1) value is supported.","type":"invalid_request_error","param":"temperature","code":"unsupported_value"})
-[caption-generator] caption generation failed: 400 Unsupported value: 'temperature' does not support 0.6 with this model. Only the default (1) value is supported.
+[ai-provider] openai_direct: model served response directly (no fallback)
 [ai-provider] openai primary engaged (model will be used for first attempt on each request)
 [ai-provider] openai_direct: model served response directly (no fallback)
 [ai-provider] openai primary engaged (model will be used for first attempt on each request)

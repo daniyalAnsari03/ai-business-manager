@@ -1,0 +1,164 @@
+AI MARKETING MANAGER — PHASE 2.5: CAPTION REGENERATE + LANGUAGE TOGGLE
+
+READ AGENTS.md COMPLETELY BEFORE STARTING. Every rule in it applies to
+this work exactly as it applies to the rest of the app.
+
+Before starting, inspect the existing Phase 2 (reduced scope)
+implementation — the social_posts table, the caption-generation logic
+(lib/ai/caption-generator.ts), the marketing tool
+(lib/ai/tools/marketing-tools.ts and the hook now in
+lib/ai/tools/product-tools.ts), and the Activity feed UI
+(components/marketing/marketing-view.tsx). Extend this — do not
+rebuild or recreate it.
+
+=== SCOPE OF THIS PHASE ===
+
+This phase adds two small, related capabilities to an existing draft
+post card in the Activity feed:
+
+1. A "Regenerate" action that produces a new AI-generated caption for
+   the same draft, replacing the old one.
+2. A per-draft language toggle (Roman Urdu / English) that shows the
+   SAME caption's content in the other language, independent of the
+   app's global language switcher setting.
+
+DO NOT implement in this phase (not in scope):
+- Do NOT implement real publishing, Instagram/Facebook OAuth, or
+  WhatsApp notifications — those remain blocked pending credentials,
+  as established in Phase 2.
+- Do NOT implement the wallet/budget/paid-ads system (Phase 3).
+- Do NOT implement the "Needs approval"/"Full auto" automation logic
+  or WhatsApp approval flow (Phase 4).
+- Do NOT change the global English/Roman Urdu app-wide language
+  switcher's behavior — this per-draft toggle is separate and local to
+  each caption only.
+
+=== WHAT TO BUILD ===
+
+1. DATA MODEL UPDATE
+
+- Extend the social_posts table (new migration) to store BOTH
+  language versions of the caption for a draft, e.g. add columns
+  `caption_ur` and `caption_en` (or a small related table if that
+  fits the existing schema pattern better — check how similar
+  bilingual content is already handled elsewhere in this project, if
+  anywhere, and follow that pattern; otherwise use two columns).
+- The existing `caption` column's current behavior must not break —
+  decide whether to keep it as a "currently selected" value or
+  deprecate it in favor of the two new columns, and be explicit in
+  your report about which approach you took and why.
+
+2. CAPTION GENERATION — GENERATE BOTH LANGUAGES
+
+- When a draft is created (new product hook, or later re-generation),
+  generate the caption in BOTH Roman Urdu and English in the same AI
+  call/flow (not two separate independent generations that could
+  produce inconsistent content — the English and Roman Urdu versions
+  should represent the same caption, just in each language).
+- Store both in the respective columns.
+- The draft shown to the user should default to displaying whichever
+  language matches the CURRENT global app language setting at the
+  time it's viewed (e.g. if the app is in Roman Urdu mode, show
+  caption_ur by default) — but the toggle described below lets the
+  user view/select the other one regardless of the global setting.
+
+3. UI — PER-DRAFT LANGUAGE TOGGLE
+
+- On each draft card in the Activity feed, add a small toggle/tab:
+  "Roman Urdu" / "English".
+- Clicking it switches only that card's displayed caption between
+  caption_ur and caption_en — it must NOT affect any other UI text on
+  the page (navigation, other cards, buttons) and must NOT change the
+  app's global language setting.
+- Whichever language is currently selected/displayed on a draft is
+  the one that will be used if the user later publishes that post
+  (store this as the draft's "selected language" so Phase 4's publish
+  logic can use the correct one later — add a column like
+  `selected_language` on social_posts, defaulting to the app's global
+  language at creation time).
+
+4. UI — "REGENERATE" ACTION
+
+- Add a "Regenerate" button/icon on each draft card (only for drafts —
+  not for already-published posts, since Phase 2 currently blocks
+  actual publishing anyway, but keep this restriction in mind for
+  when Phase 4 lands).
+- Clicking it re-runs the same caption-generation logic used at
+  creation (do not create a second, different generation path) for
+  that specific product, generates fresh values for BOTH caption_ur
+  and caption_en, and replaces the existing ones on that same
+  social_posts row (do not create a duplicate row).
+- Show a loading state while regenerating (per AGENTS.md Section 25 —
+  every operation needs a loading state).
+- If regeneration fails (AI provider error), show an honest error
+  message and leave the previous caption intact — never wipe a working
+  caption because a regeneration attempt failed.
+
+5. OPTIONAL BUT PREFERRED — CHAT-BASED REFINEMENT
+
+If feasible within this phase without disrupting the above, also allow
+refining a caption via natural language through the existing AI
+Business Manager chat (e.g. "Test Kurta ka caption zyada casual banao")
+by adding a controlled tool that updates the correct social_posts
+row's caption(s) using the SAME architecture as other agent tools
+(AGENTS.md Section 8). If this proves too complex to fit safely in
+this phase, skip it and say so explicitly in your report — do not
+rush an unsafe implementation of it.
+
+=== DESIGN CONSISTENCY ===
+
+Same as previous phases: Ferly for headings, Inter for body/UI text,
+existing obsidian/emerald color system, same card/shadow/glow
+treatment as the rest of the Marketing tab, Framer Motion for any
+transition (subtle, reduced-motion aware), both dark and light mode
+working correctly.
+
+=== WHAT NOT TO TOUCH ===
+
+- Do not modify AGENTS.md.
+- Do not modify the global language switcher's implementation.
+- Do not touch product-tools.ts's product-creation hook logic beyond
+  what's needed to generate both languages at creation time — the
+  hook itself (calling createDraftForProduct / triggering generation)
+  must keep working exactly as fixed in the previous bug fix.
+- Do not touch any unrelated existing feature (products, customers,
+  orders, inventory, expenses, sales, existing AI Business Manager
+  chat, wallet/settings work planned for later phases).
+
+=== VERIFICATION REQUIRED ===
+
+1. Run typecheck, lint, and build — paste actual output.
+2. Live test: create a new test product, confirm both caption_ur and
+   caption_en are generated and stored — paste both actual generated
+   captions.
+3. Live test the toggle: switch a draft card between Roman Urdu and
+   English and confirm ONLY that card's text changes, nothing else on
+   the page — paste before/after text shown.
+4. Live test Regenerate: click it, confirm a genuinely different
+   caption is produced in both languages (paste old vs new caption),
+   confirm no duplicate row was created (paste the row count for that
+   product before and after — should stay at 1).
+5. Deliberately break the AI provider call (or simulate failure) and
+   confirm Regenerate shows an honest error and does not wipe the
+   existing caption — paste the result.
+6. If you implemented the chat-based refinement tool, test it live
+   with a real chat message and paste the result. If you skipped it,
+   confirm that explicitly.
+7. Confirm no existing feature (global language switch, product
+   creation, other Marketing tab elements) was broken.
+8. Clean up any test products/drafts created during testing.
+
+=== REPORT FORMAT ===
+
+- Files created/modified with reason for each.
+- Migration SQL and confirmation it applied.
+- Both generated captions (Roman Urdu + English) from a real live
+  test — pasted directly.
+- Toggle behavior proof (before/after).
+- Regenerate proof (old caption vs new caption, row count unchanged).
+- Failure-path proof for Regenerate.
+- Whether chat-based refinement was built or explicitly skipped, and
+  why.
+- Raw verification output (not "PASS" summaries).
+
+Do not report this phase complete without all of the above evidence.
