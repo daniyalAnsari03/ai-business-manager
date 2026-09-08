@@ -99,10 +99,10 @@ export function MarketingView({
   const [refreshing, setRefreshing] = useState(false);
   const [refreshFailed, setRefreshFailed] = useState(false);
   const [publishingId, setPublishingId] = useState<string | null>(null);
-  const [publishMessage, setPublishMessage] = useState<{
+  const [publishMessages, setPublishMessages] = useState<Map<string, {
     kind: "error" | "info" | "success";
     text: string;
-  } | null>(null);
+  }>>(new Map());
   const [regeneratingId, setRegeneratingId] = useState<string | null>(null);
   const [regenerateMessage, setRegenerateMessage] = useState<{
     kind: "error" | "info";
@@ -111,12 +111,12 @@ export function MarketingView({
 
   const postsLoadError = postsLoadFailed;
 
-  // Auto-dismiss the publish/not-connected message.
+  // Auto-dismiss publish messages after 6 seconds.
   useEffect(() => {
-    if (!publishMessage) return;
-    const timer = window.setTimeout(() => setPublishMessage(null), 6000);
+    if (publishMessages.size === 0) return;
+    const timer = window.setTimeout(() => setPublishMessages(new Map()), 6000);
     return () => window.clearTimeout(timer);
-  }, [publishMessage]);
+  }, [publishMessages]);
 
   // Auto-dismiss the regenerate message.
   useEffect(() => {
@@ -127,7 +127,11 @@ export function MarketingView({
 
   async function handlePublish(post: ActivityPost) {
     setPublishingId(post.id);
-    setPublishMessage(null);
+    setPublishMessages((prev) => {
+      const next = new Map(prev);
+      next.delete(post.id);
+      return next;
+    });
     try {
       const result = await publishSocialPostAction(post.id);
       if (result.ok) {
@@ -140,18 +144,19 @@ export function MarketingView({
                 : p,
             ),
           );
-          setPublishMessage({
-            kind: "success",
-            text:
-              result.platform === "facebook"
-                ? t.marketing.publishSuccessMessageFb
-                : t.marketing.publishSuccessMessage,
+          setPublishMessages((prev) => {
+            const next = new Map(prev);
+            next.set(post.id, {
+              kind: "success",
+              text:
+                result.platform === "facebook"
+                  ? t.marketing.publishSuccessMessageFb
+                  : t.marketing.publishSuccessMessage,
+            });
+            return next;
           });
         } else {
-          // Honest specific failure — map code to the correct message using
-          // the platform that was actually attempted (the router resolves it
-          // from the connected account, which may differ from the draft's
-          // legacy platform label).
+          // Honest specific failure — map code to the correct message.
           const isFacebook = result.platform === "facebook";
           const messageMap: Record<string, string> = {
             not_connected: t.marketing.notConnectedMessage,
@@ -164,16 +169,28 @@ export function MarketingView({
             permission_missing: t.marketing.publishPermissionMissingMessage,
             not_found: t.marketing.publishFailedMessage,
           };
-          setPublishMessage({
-            kind: "error",
-            text: messageMap[result.code] ?? t.marketing.publishFailedMessage,
+          setPublishMessages((prev) => {
+            const next = new Map(prev);
+            next.set(post.id, {
+              kind: "error",
+              text: messageMap[result.code] ?? t.marketing.publishFailedMessage,
+            });
+            return next;
           });
         }
       } else {
-        setPublishMessage({ kind: "error", text: t.marketing.publishFailedMessage });
+        setPublishMessages((prev) => {
+          const next = new Map(prev);
+          next.set(post.id, { kind: "error", text: t.marketing.publishFailedMessage });
+          return next;
+        });
       }
     } catch {
-      setPublishMessage({ kind: "error", text: t.marketing.publishFailedMessage });
+      setPublishMessages((prev) => {
+        const next = new Map(prev);
+        next.set(post.id, { kind: "error", text: t.marketing.publishFailedMessage });
+        return next;
+      });
     } finally {
       setPublishingId(null);
     }
@@ -505,6 +522,7 @@ export function MarketingView({
                           regenerating={regeneratingId === post.id}
                           onRegenerate={() => handleRegenerate(post)}
                           onLanguageToggle={(lang) => handleLanguageToggle(post, lang)}
+                          publishMessage={publishMessages.get(post.id) ?? null}
                         />
                       </li>
                     ))}
@@ -530,30 +548,6 @@ export function MarketingView({
                 )}
               </>
             )}
-
-            {/* Publish / not-connected feedback */}
-            {publishingId ? (
-              <motion.p
-                role="status"
-                initial={reducedMotion ? false : { opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={reducedMotion ? undefined : { opacity: 0 }}
-                transition={{ duration: 0.25, ease: EASE_PREMIUM }}
-                className={cn(
-                  "mt-2 flex items-start gap-1.5 text-sm leading-relaxed",
-                  publishMessage?.kind === "error"
-                    ? "text-muted"
-                    : "font-medium text-emerald-700 dark:text-emerald-300",
-                )}
-              >
-                {publishMessage?.kind === "error" ? (
-                  <AlertCircleIcon className="mt-0.5 size-4 shrink-0" />
-                ) : (
-                  <CheckCircleIcon className="mt-0.5 size-4 shrink-0" />
-                )}
-                {publishMessage?.text}
-              </motion.p>
-            ) : null}
 
             {/* Regenerate feedback */}
             <AnimatePresence>
@@ -627,6 +621,7 @@ function ActivityPostCard({
   regenerating,
   onRegenerate,
   onLanguageToggle,
+  publishMessage,
 }: {
   post: ActivityPost;
   publishing: boolean;
@@ -634,6 +629,7 @@ function ActivityPostCard({
   regenerating: boolean;
   onRegenerate: () => void;
   onLanguageToggle: (lang: "en" | "ur") => void;
+  publishMessage?: { kind: "error" | "info" | "success"; text: string } | null;
 }) {
   const { t } = useI18n();
   const draft = post.status === "draft";
@@ -745,6 +741,32 @@ function ActivityPostCard({
           {fullCaption && fullCaption.length > 160 ? "…" : ""}
         </p>
       ) : null}
+
+      {/* Per-post publish feedback */}
+      <AnimatePresence>
+        {publishMessage ? (
+          <motion.p
+            role="status"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className={cn(
+              "mt-2 flex items-start gap-1.5 text-sm leading-relaxed",
+              publishMessage.kind === "error"
+                ? "text-muted"
+                : "font-medium text-emerald-700 dark:text-emerald-300",
+            )}
+          >
+            {publishMessage.kind === "error" ? (
+              <AlertCircleIcon className="mt-0.5 size-4 shrink-0" />
+            ) : (
+              <CheckCircleIcon className="mt-0.5 size-4 shrink-0" />
+            )}
+            {publishMessage.text}
+          </motion.p>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }

@@ -34,7 +34,7 @@ function productSummary(product: Product) {
 export const generateProductCaptionTool = tool({
   name: "generate_product_caption",
   description:
-    "Generate an AI marketing caption and hashtags for a product and save it as a reviewable draft post in the business's marketing activity. Use when the user asks something like 'product ka caption banao' or 'create a social post for this product'. Resolves the product from the business catalogue by name or id.",
+    "Generate an AI marketing caption and hashtags for a product and save it as a reviewable draft post in the business's marketing activity. Use when the user asks something like 'product ka caption banao' or 'create a social post for this product'. Resolves the product from the business catalogue by name or id. IMPORTANT: If a draft already exists for this product, it will be UPDATED (not duplicated). The result includes 'existingDraft: true' when this happens — in that case tell the user the existing draft was updated, NOT that a new draft was created.",
   parameters: z.object({
     productName: z.string().trim().min(1).max(160).optional().nullable(),
     productId: z.string().trim().min(1).max(60).optional().nullable().describe("Exact product ID when the user picked a specific candidate. Bypasses name search."),
@@ -76,8 +76,13 @@ export const generateProductCaptionTool = tool({
       );
     }
 
+    // createDraftForProduct is idempotent: when a draft already exists for this
+    // product it UPDATES the existing draft rather than creating a duplicate.
+    // The caller must report this honestly so the AI does not claim a new draft
+    // was created when one already existed.
     return toolOk({
-      created: true,
+      created: draftResult.data.isNew,
+      existingDraft: !draftResult.data.isNew,
       status: "draft",
       product: productSummary(match.item),
       caption_en: draftResult.data.captionEn,

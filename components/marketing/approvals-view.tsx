@@ -393,11 +393,27 @@ function HistoryRow({
   item: ApprovalAction;
   tKey: { [k: string]: string };
 }) {
+  const payload = item.actionPayload as Record<string, unknown>;
+  const productName = typeof payload.productName === "string" ? payload.productName : null;
+  const platform = typeof payload.platform === "string" ? payload.platform : null;
+  const failureReason = item.executionError ?? null;
+
   return (
-    <li className="flex flex-wrap items-center justify-between gap-2 py-3">
-      <div className="min-w-0">
-        <p className="truncate text-sm font-medium">{item.summary}</p>
-        <p className="mt-0.5 text-xs text-faint">{formatTime(item.createdAt)}</p>
+    <li className="flex flex-wrap items-start justify-between gap-2 py-3">
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-medium">{item.summary}</p>
+        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-faint">
+          {productName ? (
+            <span className="rounded-full border border-line px-2 py-0.5">{productName}</span>
+          ) : null}
+          {platform ? (
+            <span className="rounded-full border border-line px-2 py-0.5 capitalize">{platform}</span>
+          ) : null}
+          <span>{formatTime(item.createdAt)}</span>
+        </div>
+        {failureReason && (item.status === "failed" || item.status === "rejected") ? (
+          <p className="mt-1 text-xs text-red-600 dark:text-red-400">{failureReason}</p>
+        ) : null}
       </div>
       <StatusPill status={item.status} tKey={tKey} />
     </li>

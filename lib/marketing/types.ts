@@ -75,6 +75,8 @@ export interface SocialPost {
   status: SocialPostStatus;
   scheduledAt: string | null;
   publishedAt: string | null;
+  /** Real platform post reference (Facebook post id or Instagram media id). */
+  externalPostReference: string | null;
   createdAt: string;
   updatedAt: string;
 }

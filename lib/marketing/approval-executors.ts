@@ -59,7 +59,12 @@ const USER_FRIENDLY_ERRORS: Record<string, string> = {
 const executors: ApprovalExecutorRegistry = {
   publish_social_post: async (action) => {
     const payload = action.actionPayload as Record<string, unknown>;
-    const postId = typeof payload.post_id === "string" ? payload.post_id : null;
+    // Support both camelCase (postId) and snake_case (post_id) payload keys.
+    const postId = typeof payload.postId === "string"
+      ? payload.postId
+      : typeof payload.post_id === "string"
+        ? payload.post_id
+        : null;
     if (!postId) {
       return { ok: false, error: "This post could not be identified for publishing." };
     }
@@ -73,6 +78,19 @@ const executors: ApprovalExecutorRegistry = {
           published: true,
           platform: result.platform,
           externalPostId: result.externalPostId,
+          actionId: action.id,
+        },
+      };
+    }
+
+    // "not_draft" means the post was already published — treat as success.
+    if (result.error === "not_draft") {
+      return {
+        ok: true,
+        result: {
+          published: true,
+          platform: result.platform ?? "unknown",
+          alreadyPublished: true,
           actionId: action.id,
         },
       };

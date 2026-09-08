@@ -39,12 +39,13 @@ export const publishSocialPostTool = tool({
     "Publish a drafted social post. Routes the request through the business's automation control: in 'needs approval' mode it creates a pending approval the owner must confirm in-app or by WhatsApp; in 'full auto' mode it executes immediately when the action is safe. Never publishes without the owner's automation rules being respected.",
   parameters: z.object({
     postId: z.string().trim().min(1).max(60).describe("The id of the drafted social post to publish."),
+    productName: z.string().trim().max(160).optional().describe("The product name for this post. Used in approval history."),
     platform: z
       .enum(["instagram", "facebook"])
       .optional()
       .describe("The platform to publish to. Defaults to the post's platform."),
   }),
-  execute: async ({ postId, platform }) => {
+  execute: async ({ postId, productName, platform }) => {
     ensureExecutors();
     const modeResult = await getAutomationMode();
     if (!modeResult.ok) {
@@ -57,9 +58,12 @@ export const publishSocialPostTool = tool({
       payload: {
         postId,
         platform: platform ?? "instagram",
+        productName: productName ?? null,
         source: "agent",
       },
-      summary: `Publish the social post and share it to ${platform ?? "instagram"}.`,
+      summary: productName
+        ? `Publish "${productName}" to ${platform ?? "facebook"}.`
+        : `Publish the social post to ${platform ?? "facebook"}.`,
       idempotencyKey: `post-publish-${postId}`,
       executor: () => Promise.resolve({ ok: true, result: { postId, platform: platform ?? "instagram" } }),
     });
@@ -72,18 +76,37 @@ export const publishSocialPostTool = tool({
       return toolOk({
         outcome: "needs_approval",
         mode,
-        message: "This action is waiting for your approval. Please review it in the Approval section (or reply YES/NO on WhatsApp if you connected it).",
+        postId,
+        message: "This post requires your approval before publishing. Go to Marketing → Approvals to review and approve it. You will see the product name, platform, and caption there.",
       });
     }
 
     const action = result.data.action;
+    const execResult = action.executionResult as Record<string, unknown> | null;
+    const wasPublished = execResult?.published === true || action.status === "completed";
+    const wasAlreadyPublished = execResult?.alreadyPublished === true;
+    const publishFailed = action.status === "failed";
+
+    let message: string;
+    if (wasAlreadyPublished) {
+      message = "This post was already published earlier.";
+    } else if (wasPublished) {
+      const pubPlatform = (execResult?.platform as string) ?? platform ?? "the platform";
+      message = `The post was published to ${pubPlatform} successfully.`;
+    } else if (publishFailed) {
+      message = `Publishing failed: ${action.executionError ?? "unknown reason"}. Do NOT tell the user it was published.`;
+    } else {
+      message = `Publishing did not complete: ${action.executionError ?? "unknown reason"}.`;
+    }
+
     return toolOk({
-      outcome: action.status === "completed" ? "executed" : action.status,
+      outcome: publishFailed ? "failed" : action.status === "completed" ? "executed" : action.status,
+      published: wasPublished,
+      platform: (execResult?.platform as string) ?? platform ?? null,
+      externalPostId: (execResult?.externalPostId as string) ?? null,
       mode,
-      execution_result: action.executionResult ?? null,
-      message: action.status === "completed"
-        ? "The post was published."
-        : `Publishing did not complete: ${action.executionError ?? "unknown reason"}.`,
+      execution_result: execResult,
+      message,
     });
   },
 });

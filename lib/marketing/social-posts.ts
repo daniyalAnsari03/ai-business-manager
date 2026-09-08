@@ -96,6 +96,7 @@ interface SocialPostRow {
   status: string;
   scheduled_at: string | null;
   published_at: string | null;
+  external_post_reference: string | null;
   created_at: string;
   updated_at: string;
   products?: { name: string } | null;
@@ -181,6 +182,7 @@ function mapSocialPost(row: SocialPostRow): SocialPost | null {
     status: isPostStatus(row.status) ? row.status : "draft",
     scheduledAt: row.scheduled_at,
     publishedAt: row.published_at,
+    externalPostReference: row.external_post_reference ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -406,9 +408,14 @@ export async function deletePublishedPost(
  * updated; published/failed/scheduled posts are left alone and a new draft
  * is created instead.
  */
+export interface CreateDraftResult extends ActivityPost {
+  /** Whether this is a newly created draft (false when an existing draft was updated). */
+  isNew: boolean;
+}
+
 export async function createDraftForProduct(
   product: Product,
-): Promise<SocialPostServiceResult<ActivityPost>> {
+): Promise<SocialPostServiceResult<CreateDraftResult>> {
   const context = await requireBusinessContext();
   if (!context.ok) return context;
 
@@ -438,11 +445,15 @@ export async function createDraftForProduct(
       "for product",
       product.id,
     );
-    return regeneratePostCaption(existingDraft.id);
+    const result = await regeneratePostCaption(existingDraft.id);
+    if (!result.ok) return result;
+    return { ok: true, data: { ...result.data, isNew: false } };
   }
 
   // No active draft — create a new one.
-  return insertDraftForProduct(supabase, business, product);
+  const result = await insertDraftForProduct(supabase, business, product);
+  if (!result.ok) return result;
+  return { ok: true, data: { ...result.data, isNew: true } };
 }
 
 /** A draft that resulted from the backfill, captured for reporting. */

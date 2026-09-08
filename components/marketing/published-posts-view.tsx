@@ -251,31 +251,34 @@ function PublishedPostCard({
   return (
     <div className="rounded-xl border border-line bg-surface px-4 py-3.5">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">
             {post.productName ?? t.marketing.activityTitle}
           </p>
-          <p className="mt-0.5 flex items-center gap-1 text-xs text-emerald-700 dark:text-emerald-300">
-            <CheckCircleIcon className="size-3.5" />
-            {t.marketing.postPublishedStatus}
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
+            <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-300">
+              <CheckCircleIcon className="size-3.5" />
+              {t.marketing.postPublishedStatus}
+            </span>
             {post.publishedAt && (
-              <>
-                <span className="text-faint">·</span>
+              <span className="text-faint">
                 {new Date(post.publishedAt).toLocaleDateString("en-GB", {
                   dateStyle: "medium",
                   timeStyle: "short",
                 })}
-              </>
+              </span>
             )}
             {post.platform && (
-              <>
-                <span className="text-faint">·</span>
-                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-emerald-700 dark:text-emerald-300">
-                  {post.platform}
-                </span>
-              </>
+              <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-emerald-700 capitalize dark:text-emerald-300">
+                {post.platform}
+              </span>
             )}
-          </p>
+          </div>
+          {post.externalPostReference ? (
+            <p className="mt-1 text-xs text-faint">
+              Ref: {post.externalPostReference}
+            </p>
+          ) : null}
         </div>
         <Button
           size="md"
