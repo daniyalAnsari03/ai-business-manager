@@ -286,33 +286,55 @@ export async function publishSocialPost(
   if (!result.ok) {
     // Update to failed — log the real error server-side only.
     console.error("[IG-Publish] FAILED for post:", postId, "error:", result.error);
-    await supabase
+    const failedPayload = {
+      status: "failed",
+      updated_at: new Date().toISOString(),
+    };
+    const { error: failUpdateError } = await supabase
       .from("social_posts")
-      .update({
-        status: "failed",
-        updated_at: new Date().toISOString(),
-      })
+      .update(failedPayload)
       .eq("id", postId)
       .eq("business_id", businessId);
+    if (failUpdateError) {
+      console.error("[IG-Publish] DB update to failed also failed:", failUpdateError);
+    }
     return { ok: false, error: "publish_failed", detail: result.error };
   }
 
   // 6. Update to published with the real Instagram post ID.
+  //    This is CRITICAL — Marketing Activity reads social_posts.status to
+  //    determine Draft vs Published. If this update fails, the approval
+  //    action is marked completed but the UI still shows "Draft".
   const now = new Date().toISOString();
-  const { error: updateError } = await supabase
+  const updatePayload = {
+    status: "published",
+    published_at: now,
+    updated_at: now,
+    external_post_reference: result.instagramPostId,
+  };
+
+  let { error: updateError } = await supabase
     .from("social_posts")
-    .update({
-      status: "published",
-      published_at: now,
-      updated_at: now,
-    })
+    .update(updatePayload)
     .eq("id", postId)
     .eq("business_id", businessId);
 
+  // Retry once if the first update failed — the canonical status MUST be
+  // persisted for Marketing Activity to show "Published".
   if (updateError) {
-    console.error("[IG-Publish] DB update failed after publish:", updateError);
-    // The post IS live on Instagram even though our DB update failed.
-    // Return success so the user knows it went through.
+    console.error("[IG-Publish] DB update failed after publish, retrying:", updateError);
+    const retry = await supabase
+      .from("social_posts")
+      .update(updatePayload)
+      .eq("id", postId)
+      .eq("business_id", businessId);
+    if (retry.error) {
+      // The post IS live on Instagram but our DB status is still "draft".
+      // Log as critical — the user will see the post on Instagram but our
+      // UI will incorrectly show "Draft". A manual DB fix or re-sync is needed.
+      console.error("[IG-Publish] CRITICAL: DB update retry also failed:", retry.error);
+    }
+    updateError = retry.error;
   }
 
   console.log("[IG-Publish] SUCCESS — post:", postId, "IG id:", result.instagramPostId);
