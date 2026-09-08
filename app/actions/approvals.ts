@@ -3,6 +3,7 @@
 import {
   approveAction,
   rejectAction,
+  deleteApprovalAction,
   listReviewableActions,
   listApprovalHistory,
   type ApprovalServiceError,
@@ -63,5 +64,19 @@ export async function rejectActionAction(
   const result = await rejectAction(actionId);
   return result.ok
     ? { ok: true, action: result.data }
+    : { ok: false, reason: result.reason };
+}
+
+export type DeleteApprovalActionState =
+  | { ok: true; deleted: boolean }
+  | { ok: false; reason: ApprovalServiceError };
+
+/** Deletes a pending approval action. Only pending/expired actions can be deleted. */
+export async function deleteApprovalActionAction(
+  actionId: string,
+): Promise<DeleteApprovalActionState> {
+  const result = await deleteApprovalAction(actionId);
+  return result.ok
+    ? { ok: true, deleted: result.data.deleted }
     : { ok: false, reason: result.reason };
 }

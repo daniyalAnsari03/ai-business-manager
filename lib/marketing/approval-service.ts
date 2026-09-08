@@ -17,6 +17,7 @@ import {
   type CreateApprovalActionInput,
   type ReviewableAction,
 } from "@/lib/marketing/approval-types";
+import { configureApprovalExecutors } from "@/lib/marketing/approval-executors";
 
 /**
  * The approval action engine — the ONLY place that talks to Supabase about
@@ -233,6 +234,10 @@ export async function createApprovalAction(
 export async function approveAction(
   actionId: string,
 ): Promise<ApprovalServiceResult<ApprovalAction>> {
+  // Ensure executors are wired — the UI approval path does not go through
+  // the AI agent builder, so the registry may not be populated yet.
+  configureApprovalExecutors();
+
   const context = await requireBusinessContext();
   if (!context.ok) return context;
 
@@ -325,6 +330,10 @@ export async function decideAndRunAction(
     | { outcome: "executed"; action: ApprovalAction }
   >
 > {
+  // Ensure executors are wired — this may be called from paths that don't
+  // go through the AI agent builder (e.g. direct tool execution).
+  configureApprovalExecutors();
+
   const context = await requireBusinessContext();
   if (!context.ok) return context;
 
@@ -612,6 +621,51 @@ export async function getActionByExternalReference(
   if (error) return { ok: false, reason: "database_error" };
   if (!data) return { ok: false, reason: "not_found" };
   return { ok: true, data: mapAction(data as ApprovalActionRow) };
+}
+
+/**
+ * Deletes a pending approval action. Only `pending` (and optionally `expired`)
+ * actions can be deleted — executing/completed/failed actions are preserved
+ * as historical records.
+ *
+ * When a pending publish approval is deleted, the associated social post
+ * draft remains in the database (it is NOT cascade-deleted). The action
+ * simply becomes non-executable.
+ */
+export async function deleteApprovalAction(
+  actionId: string,
+): Promise<ApprovalServiceResult<{ deleted: boolean }>> {
+  const context = await requireBusinessContext();
+  if (!context.ok) return context;
+
+  // Only allow deletion of pending or expired actions — completed/failed
+  // records are historical and must not be removed.
+  const { data: row, error: rowError } = await context.supabase
+    .from("approval_actions")
+    .select("id, status")
+    .eq("id", actionId)
+    .eq("business_id", context.business.id)
+    .single();
+
+  if (rowError || !row) return { ok: false, reason: "unauthorized" };
+
+  if (row.status !== "pending" && row.status !== "expired") {
+    return { ok: false, reason: "not_pending" };
+  }
+
+  const { error } = await context.supabase
+    .from("approval_actions")
+    .delete()
+    .eq("id", actionId)
+    .eq("business_id", context.business.id);
+
+  if (error) return { ok: false, reason: "database_error" };
+
+  await logEvent(context.supabase, actionId, context.business.id, "cancelled", {
+    by_type: "in_app_delete",
+  });
+
+  return { ok: true, data: { deleted: true } };
 }
 
 /**

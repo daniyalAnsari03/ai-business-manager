@@ -9,6 +9,7 @@ import {
   regeneratePostCaption,
   updatePostLanguage,
   deletePublishedPost,
+  deleteDraftPost,
   type ActivityPost,
   type BackfillResult,
   type SocialPostServiceError,
@@ -186,6 +187,23 @@ export async function deletePublishedPostAction(
   postId: string,
 ): Promise<DeletePublishedPostActionState> {
   const result = await deletePublishedPost(postId);
+  return result.ok
+    ? { ok: true, deleted: result.data.deleted }
+    : { ok: false, reason: result.reason };
+}
+
+export type DeleteDraftPostActionState =
+  | { ok: true; deleted: boolean }
+  | { ok: false; reason: SocialPostServiceError };
+
+/**
+ * Deletes a draft social post and cancels any pending approval actions
+ * referencing it. Only draft posts can be deleted.
+ */
+export async function deleteDraftPostAction(
+  postId: string,
+): Promise<DeleteDraftPostActionState> {
+  const result = await deleteDraftPost(postId);
   return result.ok
     ? { ok: true, deleted: result.data.deleted }
     : { ok: false, reason: result.reason };

@@ -7,6 +7,7 @@ import {
   listApprovalHistoryAction,
   listReviewableActionsAction,
   rejectActionAction,
+  deleteApprovalActionAction,
 } from "@/app/actions/approvals";
 import { Spinner } from "@/components/customers/customer-form-modal";
 import { useI18n } from "@/components/i18n/language-provider";
@@ -17,7 +18,9 @@ import {
   CheckCircleIcon,
   ClockIcon,
   MegaPhoneIcon,
+  MoreVerticalIcon,
   ShieldCheckIcon,
+  TrashIcon,
 } from "@/components/ui/icons";
 import { Modal } from "@/components/ui/modal";
 import { PageHeader } from "@/components/ui/page-header";
@@ -57,6 +60,7 @@ export function ApprovalsView({
   const [busy, setBusy] = useState(false);
   const [confirmReject, setConfirmReject] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   async function refresh() {
     const [p, h] = await Promise.all([
@@ -110,6 +114,25 @@ export function ApprovalsView({
     }
   }
 
+  async function handleDelete(action: ReviewableAction) {
+    if (!confirm(t.marketing.approvalsConfirmDelete)) return;
+    setDeletingId(action.id);
+    setFeedback(null);
+    try {
+      const result = await deleteApprovalActionAction(action.id);
+      if (result.ok) {
+        setFeedback({ kind: "info", text: t.marketing.approvalsDeleteSuccess });
+        await refresh();
+      } else {
+        setFeedback({ kind: "error", text: mapError(result.reason, t) });
+      }
+    } catch {
+      setFeedback({ kind: "error", text: t.marketing.approvalsDeleteFailed });
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   const content = (
     <>
       {feedback ? (
@@ -156,7 +179,9 @@ export function ApprovalsView({
                         setConfirmReject(false);
                         setSelected(action);
                       }}
+                      onDelete={() => handleDelete(action)}
                       busy={busy}
+                      deleting={deletingId === action.id}
                     />
                   </li>
                 ))}
@@ -344,13 +369,19 @@ function ReviewDetail({ label, value }: { label: string; value: string }) {
 function PendingCard({
   action,
   onReview,
+  onDelete,
   busy,
+  deleting,
 }: {
   action: ReviewableAction;
   onReview: () => void;
+  onDelete: () => void;
   busy: boolean;
+  deleting: boolean;
 }) {
   const { t } = useI18n();
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-line bg-surface px-4 py-3.5">
       <div className="min-w-0">
@@ -374,14 +405,51 @@ function PendingCard({
           ) : null}
         </p>
       </div>
-      <Button
-        size="md"
-        variant="secondary"
-        disabled={busy || action.hasExpired}
-        onClick={onReview}
-      >
-        {t.common.view}
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          size="md"
+          variant="secondary"
+          disabled={busy || action.hasExpired}
+          onClick={onReview}
+        >
+          {t.common.view}
+        </Button>
+        {/* Three-dot menu */}
+        <div className="relative">
+          <Button
+            size="md"
+            variant="ghost"
+            className="min-h-9 px-2"
+            disabled={deleting}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="More options"
+          >
+            <MoreVerticalIcon className="size-4" />
+          </Button>
+          {menuOpen ? (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setMenuOpen(false)}
+              />
+              <div className="absolute right-0 z-50 mt-1 min-w-[140px] rounded-xl border border-line bg-surface-raised shadow-lg">
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-red-600 hover:bg-red-500/10"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onDelete();
+                  }}
+                  disabled={deleting}
+                >
+                  <TrashIcon className="size-3.5" />
+                  {t.common.delete}
+                </button>
+              </div>
+            </>
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 }

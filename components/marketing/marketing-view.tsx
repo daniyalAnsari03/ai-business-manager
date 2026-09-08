@@ -8,6 +8,7 @@ import {
   publishSocialPostAction,
   regeneratePostAction,
   updatePostLanguageAction,
+  deleteDraftPostAction,
 } from "@/app/actions/marketing";
 import { Spinner } from "@/components/customers/customer-form-modal";
 import { useI18n } from "@/components/i18n/language-provider";
@@ -19,9 +20,11 @@ import {
   CheckCircleIcon,
   ImageIcon,
   MegaPhoneIcon,
+  MoreVerticalIcon,
   RefreshCwIcon,
   SettingsIcon,
   ShieldCheckIcon,
+  TrashIcon,
   TrendingUpIcon,
   WalletIcon,
   ZapIcon,
@@ -108,6 +111,11 @@ export function MarketingView({
     kind: "error" | "info";
     text: string;
   } | null>(null);
+  const [deletingDraftId, setDeletingDraftId] = useState<string | null>(null);
+  const [draftDeleteMessage, setDraftDeleteMessage] = useState<{
+    kind: "error" | "success";
+    text: string;
+  } | null>(null);
 
   const postsLoadError = postsLoadFailed;
 
@@ -124,6 +132,13 @@ export function MarketingView({
     const timer = window.setTimeout(() => setRegenerateMessage(null), 6000);
     return () => window.clearTimeout(timer);
   }, [regenerateMessage]);
+
+  // Auto-dismiss the draft delete message.
+  useEffect(() => {
+    if (!draftDeleteMessage) return;
+    const timer = window.setTimeout(() => setDraftDeleteMessage(null), 6000);
+    return () => window.clearTimeout(timer);
+  }, [draftDeleteMessage]);
 
   async function handlePublish(post: ActivityPost) {
     setPublishingId(post.id);
@@ -231,6 +246,25 @@ export function MarketingView({
     } catch {
       // Silently fail — the local state is already updated for responsive UX.
       // The next refresh will re-sync from the server.
+    }
+  }
+
+  async function handleDeleteDraft(post: ActivityPost) {
+    if (!confirm(t.marketing.draftConfirmDelete)) return;
+    setDeletingDraftId(post.id);
+    setDraftDeleteMessage(null);
+    try {
+      const result = await deleteDraftPostAction(post.id);
+      if (result.ok) {
+        setPosts((prev) => prev.filter((p) => p.id !== post.id));
+        setDraftDeleteMessage({ kind: "success", text: t.marketing.draftDeleteSuccess });
+      } else {
+        setDraftDeleteMessage({ kind: "error", text: t.marketing.draftDeleteFailed });
+      }
+    } catch {
+      setDraftDeleteMessage({ kind: "error", text: t.marketing.draftDeleteFailed });
+    } finally {
+      setDeletingDraftId(null);
     }
   }
 
@@ -523,6 +557,8 @@ export function MarketingView({
                           onRegenerate={() => handleRegenerate(post)}
                           onLanguageToggle={(lang) => handleLanguageToggle(post, lang)}
                           publishMessage={publishMessages.get(post.id) ?? null}
+                          deleting={deletingDraftId === post.id}
+                          onDelete={() => handleDeleteDraft(post)}
                         />
                       </li>
                     ))}
@@ -574,6 +610,32 @@ export function MarketingView({
                 </motion.p>
               ) : null}
             </AnimatePresence>
+
+            {/* Draft delete feedback */}
+            <AnimatePresence>
+              {draftDeleteMessage ? (
+                <motion.p
+                  role="status"
+                  initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reducedMotion ? undefined : { opacity: 0 }}
+                  transition={{ duration: 0.25, ease: EASE_PREMIUM }}
+                  className={cn(
+                    "mt-4 flex items-start gap-1.5 text-sm leading-relaxed",
+                    draftDeleteMessage.kind === "error"
+                      ? "text-muted"
+                      : "font-medium text-emerald-700 dark:text-emerald-300",
+                  )}
+                >
+                  {draftDeleteMessage.kind === "error" ? (
+                    <AlertCircleIcon className="mt-0.5 size-4 shrink-0" />
+                  ) : (
+                    <CheckCircleIcon className="mt-0.5 size-4 shrink-0" />
+                  )}
+                  {draftDeleteMessage.text}
+                </motion.p>
+              ) : null}
+            </AnimatePresence>
           </div>
         </Card>
       </section>
@@ -622,6 +684,8 @@ function ActivityPostCard({
   onRegenerate,
   onLanguageToggle,
   publishMessage,
+  deleting,
+  onDelete,
 }: {
   post: ActivityPost;
   publishing: boolean;
@@ -630,9 +694,12 @@ function ActivityPostCard({
   onRegenerate: () => void;
   onLanguageToggle: (lang: "en" | "ur") => void;
   publishMessage?: { kind: "error" | "info" | "success"; text: string } | null;
+  deleting: boolean;
+  onDelete: () => void;
 }) {
   const { t } = useI18n();
   const draft = post.status === "draft";
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Local toggle state: which language is displayed on THIS card only.
   const [displayLang, setDisplayLang] = useState<"en" | "ur">(post.selectedLanguage);
@@ -702,6 +769,41 @@ function ActivityPostCard({
                 t.marketing.publishButton
               )}
             </Button>
+            {/* Three-dot menu */}
+            <div className="relative">
+              <Button
+                size="md"
+                variant="ghost"
+                className="min-h-9 px-2"
+                disabled={deleting}
+                onClick={() => setMenuOpen(!menuOpen)}
+                aria-label="More options"
+              >
+                <MoreVerticalIcon className="size-4" />
+              </Button>
+              {menuOpen ? (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setMenuOpen(false)}
+                  />
+                  <div className="absolute right-0 z-50 mt-1 min-w-[140px] rounded-xl border border-line bg-surface-raised shadow-lg">
+                    <button
+                      type="button"
+                      className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-red-600 hover:bg-red-500/10"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        onDelete();
+                      }}
+                      disabled={deleting}
+                    >
+                      <TrashIcon className="size-3.5" />
+                      {t.common.delete}
+                    </button>
+                  </div>
+                </>
+              ) : null}
+            </div>
           </div>
         ) : null}
       </div>

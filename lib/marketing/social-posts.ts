@@ -398,6 +398,49 @@ export async function deletePublishedPost(
 }
 
 /**
+ * Deletes a draft social post from the local database.
+ * Only draft posts can be deleted through this function.
+ * Associated pending approval actions (if any) are also cleaned up.
+ */
+export async function deleteDraftPost(
+  postId: string,
+): Promise<SocialPostServiceResult<{ deleted: boolean }>> {
+  const context = await requireBusinessContext();
+  if (!context.ok) return context;
+
+  // Verify the post is a draft owned by this business.
+  const { data: postRow, error: postError } = await context.supabase
+    .from("social_posts")
+    .select("id, status")
+    .eq("id", postId)
+    .eq("business_id", context.business.id)
+    .single();
+
+  if (postError || !postRow) return { ok: false, reason: "database_error" };
+  if (postRow.status !== "draft") return { ok: false, reason: "invalid_input" };
+
+  // Cancel any pending approval actions that reference this post via idempotency key.
+  await context.supabase
+    .from("approval_actions")
+    .update({ status: "cancelled" })
+    .eq("business_id", context.business.id)
+    .eq("status", "pending")
+    .like("idempotency_key", `post-publish-${postId}`);
+
+  // Delete the draft post.
+  const { error } = await context.supabase
+    .from("social_posts")
+    .delete()
+    .eq("id", postId)
+    .eq("business_id", context.business.id)
+    .eq("status", "draft");
+
+  if (error) return { ok: false, reason: "database_error" };
+
+  return { ok: true, data: { deleted: true } };
+}
+
+/**
  * Generates a REAL AI caption for a product and saves it as a `social_posts`
  * draft. This is the "controlled tool -> server-side service -> Supabase ->
  * verified result" boundary: the created draft is re-read from the database
