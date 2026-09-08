@@ -555,10 +555,11 @@ async function finalizeExecution(
 }
 
 /**
- * Finds an existing approval action for a given social post that is in a
- * non-final state (pending, approved, executing). Returns null when no
- * matching action exists. Used by the AI to detect whether a publish
- * request for the same post already has an approval in flight.
+ * Finds an existing approval action for a given social post. Searches ALL
+ * statuses (pending, approved, executing, completed, failed) so the AI can
+ * detect whether a publish request for the same post already exists —
+ * including ones that have already completed or failed. Returns null when
+ * no matching action exists.
  */
 export async function findExistingActionByPostId(
   postId: string,
@@ -571,7 +572,6 @@ export async function findExistingActionByPostId(
     .select("*")
     .eq("business_id", context.business.id)
     .eq("action_type", "publish_social_post")
-    .in("status", ["pending", "approved", "executing"])
     .order("created_at", { ascending: false });
 
   if (error) return { ok: false, reason: "database_error" };
@@ -586,6 +586,36 @@ export async function findExistingActionByPostId(
           ? payload.post_id
           : null;
     return rowPostId === postId;
+  });
+
+  return { ok: true, data: match ? mapAction(match) : null };
+}
+
+/**
+ * Finds an existing publish approval action by product name. Searches the
+ * summary field for a case-insensitive match. Returns the most recent
+ * matching action, or null. Used when the AI knows the product name but
+ * not the postId.
+ */
+export async function findExistingActionByProductName(
+  productName: string,
+): Promise<ApprovalServiceResult<ApprovalAction | null>> {
+  const context = await requireBusinessContext();
+  if (!context.ok) return context;
+
+  const { data, error } = await context.supabase
+    .from("approval_actions")
+    .select("*")
+    .eq("business_id", context.business.id)
+    .eq("action_type", "publish_social_post")
+    .order("created_at", { ascending: false });
+
+  if (error) return { ok: false, reason: "database_error" };
+
+  const lowerName = productName.toLowerCase();
+  const match = ((data ?? []) as ApprovalActionRow[]).find((row) => {
+    const summary = (row.summary ?? "").toLowerCase();
+    return summary.includes(lowerName);
   });
 
   return { ok: true, data: match ? mapAction(match) : null };

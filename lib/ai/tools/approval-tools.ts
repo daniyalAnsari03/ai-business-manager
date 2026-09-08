@@ -10,6 +10,7 @@ import {
 import {
   decideAndRunAction,
   findExistingActionByPostId,
+  findExistingActionByProductName,
   executeApprovedAction,
 } from "@/lib/marketing/approval-service";
 import { getAutomationMode } from "@/lib/marketing/automation";
@@ -136,32 +137,45 @@ export const getAutomationModeTool = tool({
 });
 
 /**
- * Checks whether an approval action already exists for a given social post.
- * Use this BEFORE calling publish_social_post when the user references a
- * post that may already have an approval in flight (pending, approved, or
- * executing). This prevents duplicate approvals.
+ * Checks whether an approval action already exists for a given social post
+ * (by postId or productName). Use this BEFORE calling publish_social_post
+ * when the user references a post that may already have an approval in
+ * flight (pending, approved, executing, completed, or failed). This
+ * prevents duplicate approvals.
  */
 export const findApprovalActionTool = tool({
   name: "find_approval_action",
   description:
-    "Check whether an approval action already exists for a given social post (by postId). Use this when the user says they already approved something, or when you suspect a publish request for the same post may already be in the approval pipeline. Returns the existing action with its current status (pending, approved, executing) or null if none exists.",
+    "Check whether an approval action already exists for a given social post (by postId or productName). Use this when the user says they already approved something, or when you suspect a publish request for the same post may already be in the approval pipeline. Returns the existing action with its current status or null if none exists.",
   parameters: z.object({
-    postId: z.string().trim().min(1).max(60).describe("The social post id to check."),
+    postId: z.string().trim().min(1).max(60).optional().describe("The social post id to check."),
+    productName: z.string().trim().min(1).max(160).optional().describe("The product name to search for in approval summaries. Use when postId is unknown."),
   }),
-  execute: async ({ postId }) => {
+  execute: async ({ postId, productName }) => {
     ensureExecutors();
-    const result = await findExistingActionByPostId(postId);
+
+    let result;
+    if (postId) {
+      result = await findExistingActionByPostId(postId);
+    } else if (productName) {
+      result = await findExistingActionByProductName(productName);
+    } else {
+      return toolFail("invalid_input", "Provide either postId or productName to search for an existing approval.");
+    }
+
     if (!result.ok) {
       return toolFail("database_error", "Could not check for existing approvals.");
     }
     if (!result.data) {
       return toolOk({
         found: false,
-        postId,
-        message: "No existing approval action found for this post.",
+        postId: postId ?? null,
+        productName: productName ?? null,
+        message: "No existing approval action found.",
       });
     }
     const action = result.data;
+    const resolvedPostId = postId ?? ((action.actionPayload as Record<string, unknown>)?.postId as string | undefined) ?? null;
     return toolOk({
       found: true,
       actionId: action.id,
@@ -170,15 +184,20 @@ export const findApprovalActionTool = tool({
       createdAt: action.createdAt,
       approvedAt: action.approvedAt,
       executedAt: action.executedAt,
-      postId,
+      postId: resolvedPostId,
+      productName: productName ?? null,
       message:
-        action.status === "approved"
-          ? "An approval already exists and is approved. Use execute_approved_action to publish it now."
-          : action.status === "pending"
-            ? "An approval action is still pending. The user must approve it in Marketing → Approvals before it can execute."
-            : action.status === "executing"
-              ? "The action is currently executing. Wait for the result."
-              : `Existing action has status: ${action.status}.`,
+        action.status === "completed"
+          ? "This action was already completed and published. Tell the user it is already published. Do NOT create a new approval or publish request."
+          : action.status === "approved"
+            ? "An approval already exists and is approved. Use execute_approved_action to publish it now."
+            : action.status === "pending"
+              ? "An approval action is still pending. The user must approve it in Marketing → Approvals before it can execute."
+              : action.status === "executing"
+                ? "The action is currently executing. Wait for the result."
+                : action.status === "failed"
+                  ? `The previous publish attempt failed: ${action.executionError ?? "unknown reason"}. Report this honestly. Do NOT silently create a duplicate.`
+                  : `Existing action has status: ${action.status}.`,
     });
   },
 });
