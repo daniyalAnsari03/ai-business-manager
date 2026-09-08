@@ -776,9 +776,9 @@ export async function getActionByExternalReference(
 }
 
 /**
- * Deletes a pending approval action. Only `pending` (and optionally `expired`)
- * actions can be deleted — executing/completed/failed actions are preserved
- * as historical records.
+ * Deletes an approval action of ANY status (pending, approved, rejected,
+ * executing, completed, failed, expired, cancelled). The action must be
+ * owned by the caller's business.
  *
  * When a pending publish approval is deleted, the associated social post
  * draft remains in the database (it is NOT cascade-deleted). The action
@@ -790,8 +790,7 @@ export async function deleteApprovalAction(
   const context = await requireBusinessContext();
   if (!context.ok) return context;
 
-  // Only allow deletion of pending or expired actions — completed/failed
-  // records are historical and must not be removed.
+  // Verify the action is owned by this business.
   const { data: row, error: rowError } = await context.supabase
     .from("approval_actions")
     .select("id, status")
@@ -800,10 +799,6 @@ export async function deleteApprovalAction(
     .single();
 
   if (rowError || !row) return { ok: false, reason: "unauthorized" };
-
-  if (row.status !== "pending" && row.status !== "expired") {
-    return { ok: false, reason: "not_pending" };
-  }
 
   const { error } = await context.supabase
     .from("approval_actions")
@@ -815,6 +810,7 @@ export async function deleteApprovalAction(
 
   await logEvent(context.supabase, actionId, context.business.id, "cancelled", {
     by_type: "in_app_delete",
+    previous_status: row.status,
   });
 
   return { ok: true, data: { deleted: true } };

@@ -8,7 +8,7 @@ import {
   publishSocialPostAction,
   regeneratePostAction,
   updatePostLanguageAction,
-  deleteDraftPostAction,
+  deletePostAction,
 } from "@/app/actions/marketing";
 import { Spinner } from "@/components/customers/customer-form-modal";
 import { useI18n } from "@/components/i18n/language-provider";
@@ -111,8 +111,8 @@ export function MarketingView({
     kind: "error" | "info";
     text: string;
   } | null>(null);
-  const [deletingDraftId, setDeletingDraftId] = useState<string | null>(null);
-  const [draftDeleteMessage, setDraftDeleteMessage] = useState<{
+  const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
+  const [postDeleteMessage, setPostDeleteMessage] = useState<{
     kind: "error" | "success";
     text: string;
   } | null>(null);
@@ -133,12 +133,12 @@ export function MarketingView({
     return () => window.clearTimeout(timer);
   }, [regenerateMessage]);
 
-  // Auto-dismiss the draft delete message.
+  // Auto-dismiss the post delete message.
   useEffect(() => {
-    if (!draftDeleteMessage) return;
-    const timer = window.setTimeout(() => setDraftDeleteMessage(null), 6000);
+    if (!postDeleteMessage) return;
+    const timer = window.setTimeout(() => setPostDeleteMessage(null), 6000);
     return () => window.clearTimeout(timer);
-  }, [draftDeleteMessage]);
+  }, [postDeleteMessage]);
 
   async function handlePublish(post: ActivityPost) {
     setPublishingId(post.id);
@@ -249,22 +249,22 @@ export function MarketingView({
     }
   }
 
-  async function handleDeleteDraft(post: ActivityPost) {
+  async function handleDeletePost(post: ActivityPost) {
     if (!confirm(t.marketing.draftConfirmDelete)) return;
-    setDeletingDraftId(post.id);
-    setDraftDeleteMessage(null);
+    setDeletingPostId(post.id);
+    setPostDeleteMessage(null);
     try {
-      const result = await deleteDraftPostAction(post.id);
+      const result = await deletePostAction(post.id);
       if (result.ok) {
         setPosts((prev) => prev.filter((p) => p.id !== post.id));
-        setDraftDeleteMessage({ kind: "success", text: t.marketing.draftDeleteSuccess });
+        setPostDeleteMessage({ kind: "success", text: t.marketing.draftDeleteSuccess });
       } else {
-        setDraftDeleteMessage({ kind: "error", text: t.marketing.draftDeleteFailed });
+        setPostDeleteMessage({ kind: "error", text: t.marketing.draftDeleteFailed });
       }
     } catch {
-      setDraftDeleteMessage({ kind: "error", text: t.marketing.draftDeleteFailed });
+      setPostDeleteMessage({ kind: "error", text: t.marketing.draftDeleteFailed });
     } finally {
-      setDeletingDraftId(null);
+      setDeletingPostId(null);
     }
   }
 
@@ -557,8 +557,8 @@ export function MarketingView({
                           onRegenerate={() => handleRegenerate(post)}
                           onLanguageToggle={(lang) => handleLanguageToggle(post, lang)}
                           publishMessage={publishMessages.get(post.id) ?? null}
-                          deleting={deletingDraftId === post.id}
-                          onDelete={() => handleDeleteDraft(post)}
+                          deleting={deletingPostId === post.id}
+                          onDelete={() => handleDeletePost(post)}
                         />
                       </li>
                     ))}
@@ -611,9 +611,9 @@ export function MarketingView({
               ) : null}
             </AnimatePresence>
 
-            {/* Draft delete feedback */}
+            {/* Post delete feedback */}
             <AnimatePresence>
-              {draftDeleteMessage ? (
+              {postDeleteMessage ? (
                 <motion.p
                   role="status"
                   initial={reducedMotion ? false : { opacity: 0, y: 8 }}
@@ -622,17 +622,17 @@ export function MarketingView({
                   transition={{ duration: 0.25, ease: EASE_PREMIUM }}
                   className={cn(
                     "mt-4 flex items-start gap-1.5 text-sm leading-relaxed",
-                    draftDeleteMessage.kind === "error"
+                    postDeleteMessage.kind === "error"
                       ? "text-muted"
                       : "font-medium text-emerald-700 dark:text-emerald-300",
                   )}
                 >
-                  {draftDeleteMessage.kind === "error" ? (
+                  {postDeleteMessage.kind === "error" ? (
                     <AlertCircleIcon className="mt-0.5 size-4 shrink-0" />
                   ) : (
                     <CheckCircleIcon className="mt-0.5 size-4 shrink-0" />
                   )}
-                  {draftDeleteMessage.text}
+                  {postDeleteMessage.text}
                 </motion.p>
               ) : null}
             </AnimatePresence>
@@ -805,7 +805,43 @@ function ActivityPostCard({
               ) : null}
             </div>
           </div>
-        ) : null}
+        ) : (
+          /* Three-dot menu for non-draft posts (published, scheduled, failed) */
+          <div className="relative">
+            <Button
+              size="md"
+              variant="ghost"
+              className="min-h-9 px-2"
+              disabled={deleting}
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="More options"
+            >
+              <MoreVerticalIcon className="size-4" />
+            </Button>
+            {menuOpen ? (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setMenuOpen(false)}
+                />
+                <div className="absolute right-0 z-50 mt-1 min-w-[140px] rounded-xl border border-line bg-surface-raised shadow-lg">
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-red-600 hover:bg-red-500/10"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      onDelete();
+                    }}
+                    disabled={deleting}
+                  >
+                    <TrashIcon className="size-3.5" />
+                    {t.common.delete}
+                  </button>
+                </div>
+              </>
+            ) : null}
+          </div>
+        )}
       </div>
 
       {/* Per-draft language toggle — only shown when both captions exist */}

@@ -61,6 +61,7 @@ export function ApprovalsView({
   const [confirmReject, setConfirmReject] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deletingHistoryId, setDeletingHistoryId] = useState<string | null>(null);
 
   async function refresh() {
     const [p, h] = await Promise.all([
@@ -130,6 +131,25 @@ export function ApprovalsView({
       setFeedback({ kind: "error", text: t.marketing.approvalsDeleteFailed });
     } finally {
       setDeletingId(null);
+    }
+  }
+
+  async function handleDeleteHistory(item: ApprovalAction) {
+    if (!confirm(t.marketing.approvalsConfirmDelete)) return;
+    setDeletingHistoryId(item.id);
+    setFeedback(null);
+    try {
+      const result = await deleteApprovalActionAction(item.id);
+      if (result.ok) {
+        setFeedback({ kind: "info", text: t.marketing.approvalsDeleteSuccess });
+        await refresh();
+      } else {
+        setFeedback({ kind: "error", text: mapError(result.reason, t) });
+      }
+    } catch {
+      setFeedback({ kind: "error", text: t.marketing.approvalsDeleteFailed });
+    } finally {
+      setDeletingHistoryId(null);
     }
   }
 
@@ -217,7 +237,13 @@ export function ApprovalsView({
             {history.length > 0 ? (
               <ul className="mt-4 divide-y divide-line">
                 {history.map((item) => (
-                  <HistoryRow key={item.id} item={item} tKey={t.marketing} />
+                  <HistoryRow
+                    key={item.id}
+                    item={item}
+                    tKey={t.marketing}
+                    onDelete={() => handleDeleteHistory(item)}
+                    deleting={deletingHistoryId === item.id}
+                  />
                 ))}
               </ul>
             ) : (
@@ -457,10 +483,16 @@ function PendingCard({
 function HistoryRow({
   item,
   tKey,
+  onDelete,
+  deleting,
 }: {
   item: ApprovalAction;
   tKey: { [k: string]: string };
+  onDelete: () => void;
+  deleting: boolean;
 }) {
+  const { t } = useI18n();
+  const [menuOpen, setMenuOpen] = useState(false);
   const payload = item.actionPayload as Record<string, unknown>;
   const productName = typeof payload.productName === "string" ? payload.productName : null;
   const platform = typeof payload.platform === "string" ? payload.platform : null;
@@ -483,7 +515,44 @@ function HistoryRow({
           <p className="mt-1 text-xs text-red-600 dark:text-red-400">{failureReason}</p>
         ) : null}
       </div>
-      <StatusPill status={item.status} tKey={tKey} />
+      <div className="flex items-center gap-2">
+        <StatusPill status={item.status} tKey={tKey} />
+        {/* Three-dot menu */}
+        <div className="relative">
+          <Button
+            size="md"
+            variant="ghost"
+            className="min-h-9 px-2"
+            disabled={deleting}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="More options"
+          >
+            <MoreVerticalIcon className="size-4" />
+          </Button>
+          {menuOpen ? (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setMenuOpen(false)}
+              />
+              <div className="absolute right-0 z-50 mt-1 min-w-[140px] rounded-xl border border-line bg-surface-raised shadow-lg">
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-red-600 hover:bg-red-500/10"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onDelete();
+                  }}
+                  disabled={deleting}
+                >
+                  <TrashIcon className="size-3.5" />
+                  {t.common.delete}
+                </button>
+              </div>
+            </>
+          ) : null}
+        </div>
+      </div>
     </li>
   );
 }
