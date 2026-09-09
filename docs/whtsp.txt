@@ -1,0 +1,34 @@
+WhatsApp Cloud API credentials have been added to .env.local and 
+Vercel (WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID=1255149561024194, 
+WHATSAPP_BUSINESS_ACCOUNT_ID=1655666986123019). This is currently a 
+TEST number (limited to 5 recipient numbers, per Meta's test-number 
+rules).
+
+Do this now:
+
+1. Confirm these three env vars are readable server-side (check names 
+   only, do not print/log the actual token value anywhere).
+
+2. Send a real test WhatsApp message using the Cloud API directly 
+   (POST https://graph.facebook.com/v25.0/{WHATSAPP_PHONE_NUMBER_ID}/messages) 
+   to confirm the credentials actually work end-to-end. Use my own 
+   WhatsApp number as the recipient — ask me for it if you don't 
+   already have it stored somewhere, since test numbers must be 
+   explicitly added as approved recipients first (check if this 
+   number needs to be added via the "To" recipient field in the Meta 
+   dashboard's test-message tool before an API call will work, and 
+   tell me if so).
+
+3. Paste the raw API response from the test send.
+
+4. Check whether the existing WhatsApp notification code (from Phase 4 
+   — the "post published" real-time notification, weekly report, 
+   approval-request messages) is wired to use these real credentials 
+   now, or if it's still in the "not connected" honest-fallback state. 
+   Report which parts are ready to go live now that real credentials 
+   exist.
+
+5. Do NOT mark this complete without an actual delivered test message 
+   — I will confirm on my phone whether I received it.
+
+Paste the real API response and tell me exactly when to check my phone.

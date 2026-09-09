@@ -120,6 +120,19 @@ export async function sendApprovalRequest(input: {
     messageId: reference,
   });
 
+  // Store provider message ID → business mapping for status webhook resolution.
+  if (sent.ok && sent.data.providerMessageId) {
+    try {
+      await admin.from("whatsapp_message_id_map").insert({
+        business_id: biz.id,
+        provider_message_id: sent.data.providerMessageId,
+        recipient_phone: biz.phone,
+      });
+    } catch {
+      // Best-effort: mapping failure must not block the approval flow.
+    }
+  }
+
   return {
     ok: true,
     data: { reference, delivered: sent.ok ? sent.data.delivered : false },

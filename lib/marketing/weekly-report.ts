@@ -227,6 +227,19 @@ export async function runWeeklyReportForBusiness(
     messageId: `weekly-${input.businessId}-${input.weekStart}`,
   });
 
+  // Store provider message ID → business mapping for status webhook resolution.
+  if (sent.ok && sent.data.providerMessageId) {
+    try {
+      await admin.from("whatsapp_message_id_map").insert({
+        business_id: input.businessId,
+        provider_message_id: sent.data.providerMessageId,
+        recipient_phone: phone,
+      });
+    } catch {
+      // Best-effort: mapping failure must not block the weekly report flow.
+    }
+  }
+
   if (sent.ok && sent.data.delivered) {
     await admin
       .from("weekly_report_deliveries")

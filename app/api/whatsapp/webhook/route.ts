@@ -2,6 +2,7 @@ import "server-only";
 
 import { NextResponse } from "next/server";
 
+import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getWhatsAppProvider } from "@/lib/marketing/whatsapp/provider";
 import { verifyHubSignature } from "@/lib/marketing/whatsapp/signature";
 import { processInboundReply } from "@/lib/marketing/whatsapp/whatsapp-service";
@@ -91,8 +92,127 @@ export async function POST(request: Request): Promise<Response> {
     }
   }
 
+  // Also handle status updates (delivery/read receipts) from Meta.
+  // Fire-and-forget: never block the webhook response on persistence.
+  handleStatusUpdates(body).catch((err) => {
+    console.error("[WhatsApp Status] Failed to persist status updates:", err);
+  });
+
   // Always acknowledge the webhook with 200 within Meta's timeout.
   return new NextResponse("OK", { status: 200 });
+}
+
+/**
+ * Processes outbound message status updates (sent/delivered/read/failed)
+ * from Meta's webhook and persists them idempotently.
+ *
+ * Status webhooks do NOT carry business context, so we resolve ownership via
+ * the whatsapp_message_id_map table (populated at send time). Duplicate
+ * webhooks from Meta retries are handled by the unique constraint on
+ * message_id — the upsert only advances status forward.
+ */
+async function handleStatusUpdates(body: unknown): Promise<void> {
+  try {
+    const payload = body as {
+      entry?: Array<{
+        changes?: Array<{
+          value?: {
+            statuses?: Array<{
+              id?: string;
+              status?: string;
+              timestamp?: string;
+              recipient_id?: string;
+              errors?: Array<{ code?: number; message?: string; error_data?: { troubleshooting_url?: string } }>;
+            }>;
+          };
+        }>;
+      }>;
+    };
+
+    const statuses = payload?.entry?.[0]?.changes?.[0]?.value?.statuses;
+    if (!Array.isArray(statuses) || statuses.length === 0) return;
+
+    const admin = await getSupabaseAdminClient();
+    if (!admin) {
+      console.warn("[WhatsApp Status] No admin client — cannot persist status updates");
+      return;
+    }
+
+    for (const status of statuses) {
+      const msgId = status.id ?? "unknown";
+      const state = status.status ?? "unknown";
+      const ts = status.timestamp ?? "";
+      const recipient = status.recipient_id ?? "";
+
+      // Log for observability.
+      console.log(
+        `[WhatsApp Status] message=${msgId} status=${state} recipient=${recipient} time=${ts}`,
+        status.errors ? { errors: status.errors } : "",
+      );
+
+      // Resolve business from the message ID map.
+      const { data: mapping } = await admin
+        .from("whatsapp_message_id_map")
+        .select("business_id, recipient_phone")
+        .eq("provider_message_id", msgId)
+        .maybeSingle();
+
+      if (!mapping) {
+        // Message was sent outside our system or map row not yet committed.
+        console.log(`[WhatsApp Status] No business mapping for message ${msgId} — skipping persistence`);
+        continue;
+      }
+
+      const businessId = mapping.business_id as string;
+      const recipientPhone = (mapping.recipient_phone as string) || recipient;
+
+      // Parse Meta timestamp (unix seconds) to ISO.
+      const providerTimestamp = ts && /^\d+$/.test(ts)
+        ? new Date(Number.parseInt(ts, 10) * 1000).toISOString()
+        : null;
+
+      // Idempotent upsert: only advance status forward.
+      // sent < delivered < read; failed is terminal.
+      const { data: existing } = await admin
+        .from("whatsapp_message_status")
+        .select("status")
+        .eq("message_id", msgId)
+        .maybeSingle();
+
+      const existingStatus = existing?.status as string | undefined;
+      const shouldUpdate = !existingStatus || shouldAdvanceStatus(existingStatus, state);
+
+      if (shouldUpdate) {
+        const upsertPayload = {
+          business_id: businessId,
+          message_id: msgId,
+          recipient_phone: recipientPhone,
+          status: state,
+          provider_timestamp: providerTimestamp,
+          errors: status.errors ?? null,
+        };
+
+        const { error } = await admin
+          .from("whatsapp_message_status")
+          .upsert(upsertPayload, { onConflict: "message_id" });
+
+        if (error) {
+          console.error(`[WhatsApp Status] Failed to persist status for ${msgId}:`, error.message);
+        }
+      }
+    }
+  } catch {
+    // Status updates are informational; never crash the webhook.
+  }
+}
+
+/** Returns true if `newStatus` represents a forward progression from `currentStatus`. */
+function shouldAdvanceStatus(currentStatus: string, newStatus: string): boolean {
+  const order: Record<string, number> = { sent: 0, delivered: 1, read: 2, failed: 3 };
+  const current = order[currentStatus] ?? -1;
+  const next = order[newStatus] ?? -1;
+  // Allow transition to 'failed' from any state, or forward progression.
+  return newStatus === "failed" || next > current;
 }
 
 /** Sends a short clarification request when intent cannot be determined. */

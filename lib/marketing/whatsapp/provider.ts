@@ -107,7 +107,7 @@ class MetaWhatsAppProvider implements WhatsAppProvider {
 
   async sendText(input: SendMessageInput): Promise<SendMessageOutcome> {
     try {
-      const url = `https://graph.facebook.com/v19.0/${this.phoneNumberId}/messages`;
+      const url = `https://graph.facebook.com/v25.0/${this.phoneNumberId}/messages`;
       const res = await fetch(url, {
         method: "POST",
         headers: {
