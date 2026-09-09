@@ -11,6 +11,7 @@ import {
 import {
   configureApprovalExecutors,
 } from "@/lib/marketing/approval-executors";
+import { registerNotifyOwner } from "@/lib/marketing/approval-service";
 
 /**
  * WhatsApp approval service — sends approval requests and processes replies.
@@ -37,7 +38,7 @@ export type WhatsappServiceError =
 
 export type WhatsappServiceResult<T> =
   | { ok: true; data: T }
-  | { ok: false; reason: WhatsappServiceError };
+  | { ok: false; reason: WhatsappServiceError; language?: "en" | "ur" };
 
 /** Ensure executors are wired once (idempotent). */
 let executorsConfigured = false;
@@ -47,6 +48,16 @@ function ensureExecutors(): void {
     executorsConfigured = true;
   }
 }
+
+// Register the WhatsApp notification callback with the approval service so
+// that when an action is parked as needs_approval, the owner is notified.
+registerNotifyOwner(async (actionId: string) => {
+  try {
+    await sendApprovalRequest({ actionId });
+  } catch {
+    // Best-effort: notification failure must not break the approval flow.
+  }
+});
 
 interface BusinessRow {
   id: string;
@@ -157,6 +168,7 @@ export async function processInboundReply(input: {
 }): Promise<
   WhatsappServiceResult<{
     decision: "approve" | "reject" | "ambiguous";
+    language?: "en" | "ur";
   }>
 > {
   ensureExecutors();
@@ -169,7 +181,14 @@ export async function processInboundReply(input: {
 
   const decision = parseApprovalReply(input.body);
   if (decision === "ambiguous") {
-    return { ok: false, reason: "ambiguous" };
+    // Resolve the sender's business to determine the language for clarification.
+    const { data: fromBiz } = await admin
+      .from("businesses")
+      .select("language")
+      .eq("phone", normalizePhone(input.from))
+      .maybeSingle();
+    const lang = (fromBiz as { language?: string } | null)?.language === "ur" ? "ur" : "en";
+    return { ok: false, reason: "ambiguous", language: lang };
   }
 
   // Duplicate detection: a provider message id is only ever processed once.
@@ -177,7 +196,7 @@ export async function processInboundReply(input: {
     .from("approval_events")
     .select("id")
     .eq("event", "whatsapp_reply")
-    .eq("detail", JSON.stringify({ provider_message_id: input.providerMessageId }))
+    .contains("detail", { provider_message_id: input.providerMessageId })
     .maybeSingle();
   if (dedupeError) return { ok: false, reason: "database_error" };
   if (existingEvent) return { ok: false, reason: "duplicate" };

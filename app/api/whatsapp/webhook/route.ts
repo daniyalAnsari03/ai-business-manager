@@ -79,7 +79,8 @@ export async function POST(request: Request): Promise<Response> {
       switch (result.reason) {
         case "ambiguous": {
           // Ask for a clearer YES / NO (honest — we never guess).
-          await sendClarification(message.from);
+          const lang = result.language === "ur" ? "ur" : "en";
+          await sendClarification(message.from, lang);
           break;
         }
         case "duplicate":
@@ -216,14 +217,18 @@ function shouldAdvanceStatus(currentStatus: string, newStatus: string): boolean 
 }
 
 /** Sends a short clarification request when intent cannot be determined. */
-async function sendClarification(to: string): Promise<void> {
+async function sendClarification(to: string, language: "en" | "ur" = "en"): Promise<void> {
   const provider = getWhatsAppProvider();
   if (!provider) return;
   try {
+    const text =
+      language === "ur"
+        ? "Barabar se reply karein: sirf YES ya NO bhejein."
+        : "Please reply with a clear YES or NO only.";
     await provider.sendText({
       businessId: "",
       to,
-      text: "Please reply with a clear YES or NO only.",
+      text,
     });
   } catch {
     // Best-effort clarification; never crash the webhook.

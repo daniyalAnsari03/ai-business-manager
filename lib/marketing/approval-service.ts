@@ -64,6 +64,21 @@ export function registerExecutors(registry: ApprovalExecutorRegistry): void {
   executorRegistry = registry;
 }
 
+/**
+ * Optional notification callback — populated by the WhatsApp service when it
+ * is available. Called (fire-and-forget) after a pending action is parked so
+ * the business owner is notified via WhatsApp.
+ *
+ * Registered from lib/marketing/whatsapp/whatsapp-service.ts to avoid
+ * circular imports.
+ */
+export type NotifyOwnerFn = (actionId: string) => Promise<void>;
+let notifyOwnerFn: NotifyOwnerFn | null = null;
+
+export function registerNotifyOwner(fn: NotifyOwnerFn): void {
+  notifyOwnerFn = fn;
+}
+
 async function requireBusinessContext(): Promise<
   | { ok: true; supabase: SupabaseClient; business: Business }
   | { ok: false; reason: ApprovalServiceError }
@@ -400,6 +415,13 @@ export async function decideAndRunAction(
   // needs_approval (default) — park as pending.
   const parked = await createDirectAction(context.supabase, context.business, input, "needs_approval");
   if (!parked.ok) return parked;
+
+  // Fire-and-forget: notify the business owner via WhatsApp if a notifier
+  // is registered. Never block or fail the action on notification errors.
+  if (notifyOwnerFn) {
+    notifyOwnerFn(parked.data.id).catch(() => {});
+  }
+
   return { ok: true, data: { outcome: "needs_approval", action: parked.data } };
 }
 
