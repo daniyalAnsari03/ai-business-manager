@@ -1,5 +1,9 @@
+import "server-only";
+
 import { NextResponse } from "next/server";
+
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
+import { getWhatsAppProvider } from "@/lib/marketing/whatsapp/provider";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,13 +21,19 @@ export const dynamic = "force-dynamic";
  * When businessId is provided, the provider message ID is persisted to
  * whatsapp_message_id_map so that Meta status webhooks can resolve business
  * ownership and be persisted to whatsapp_message_status.
+ *
+ * Requires x-cron-secret header matching CRON_SECRET env var.
  */
 
 export async function POST(request: Request): Promise<Response> {
-  const token = process.env.WHATSAPP_ACCESS_TOKEN;
-  const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+  const expected = process.env.CRON_SECRET ?? process.env.CRON_AUTH_TOKEN;
+  const provided = request.headers.get("x-cron-secret");
+  if (expected && provided !== expected) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
 
-  if (!token || !phoneId) {
+  const provider = getWhatsAppProvider();
+  if (!provider) {
     return NextResponse.json(
       { error: "WhatsApp credentials not configured" },
       { status: 503 },
@@ -47,70 +57,39 @@ export async function POST(request: Request): Promise<Response> {
   // Strip any non-digit characters (spaces, dashes, plus sign, etc.)
   const to = body.to.replace(/\D/g, "");
 
-  const url = `https://graph.facebook.com/v25.0/${phoneId}/messages`;
-
-  const payload = {
-    messaging_product: "whatsapp",
+  const sent = await provider.sendText({
+    businessId: body.businessId ?? "",
     to,
-    type: "text",
-    text: {
-      body: "AI Business Manager test message. Your WhatsApp Cloud API credentials are working!",
-    },
-  };
+    text: "AI Business Manager test message. Your WhatsApp Cloud API credentials are working!",
+  });
 
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const json = await res.json();
-
-    // Extract provider message ID from Meta response.
-    const providerMessageId: string | null =
-      json.messages?.[0]?.id ?? null;
-
-    // If businessId is provided, persist the mapping so status webhooks
-    // can resolve business ownership and be stored in whatsapp_message_status.
-    let mappingInserted = false;
-    if (providerMessageId && body.businessId) {
-      const admin = await getSupabaseAdminClient();
-      if (admin) {
-        const { error: mapError } = await admin
-          .from("whatsapp_message_id_map")
-          .insert({
-            business_id: body.businessId,
-            provider_message_id: providerMessageId,
-            recipient_phone: to,
-          });
-        mappingInserted = !mapError;
-        if (mapError) {
-          console.error(
-            "[WhatsApp Test-Send] Failed to insert message_id_map:",
-            mapError.message,
-          );
-        }
+  // If businessId is provided, persist the mapping so status webhooks
+  // can resolve business ownership and be stored in whatsapp_message_status.
+  let mappingInserted = false;
+  if (sent.ok && sent.data.providerMessageId && body.businessId) {
+    const admin = await getSupabaseAdminClient();
+    if (admin) {
+      const { error: mapError } = await admin
+        .from("whatsapp_message_id_map")
+        .insert({
+          business_id: body.businessId,
+          provider_message_id: sent.data.providerMessageId,
+          recipient_phone: to,
+        });
+      mappingInserted = !mapError;
+      if (mapError) {
+        console.error(
+          "[WhatsApp Test-Send] Failed to insert message_id_map:",
+          mapError.message,
+        );
       }
     }
-
-    return NextResponse.json({
-      status: res.status,
-      ok: res.ok,
-      response: json,
-      providerMessageId,
-      mappingInserted,
-    });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        error: "Network error",
-        detail: error instanceof Error ? error.message : "unknown",
-      },
-      { status: 500 },
-    );
   }
+
+  return NextResponse.json({
+    ok: sent.ok,
+    reason: sent.ok ? undefined : sent.reason,
+    providerMessageId: sent.ok ? sent.data.providerMessageId : null,
+    mappingInserted,
+  });
 }
