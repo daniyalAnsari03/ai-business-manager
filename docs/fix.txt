@@ -1,54 +1,32 @@
-The code-level fix looks correct, but the report does NOT yet provide evidence of the required production verification.
+The whatsapp_inbound_events table has 0 rows even after I sent "YES" 
+from my phone to the test number. Investigate why the webhook request 
+never got recorded:
 
-Do this now:
+1. Check Vercel's Runtime Logs (or reproduce the exact check) around 
+   the time I sent the message, specifically for the 
+   /api/whatsapp/webhook route. Was there ANY incoming request logged 
+   at all — even one that got rejected? Paste whatever you find.
 
-1. Commit the current fix.
-2. Push the commit to GitHub `main`.
-3. Deploy the production version to Vercel.
-4. Verify the production deployment is successful.
+2. Check the route's code flow: does persistInboundEvent() run BEFORE 
+   or AFTER the HMAC signature verification (verifyHubSignature)? If 
+   signature verification happens first and the event is REJECTED 
+   there (e.g. returns 401/403 immediately), the event would never 
+   reach persistInboundEvent() at all — meaning we'd see 0 rows even 
+   if Meta genuinely sent the webhook. Check this order in the code and 
+   tell me which happens first.
 
-Then perform a REAL production end-to-end Facebook test:
+3. If signature verification runs first: temporarily add a log line 
+   RIGHT BEFORE the signature check that logs "webhook request 
+   received" regardless of outcome (so we can tell if Meta even 
+   reached the server at all vs. rejected by our own signature check) 
+   — then have me resend a test "YES" message and check again.
 
-* Create a fresh Banarsi Jamawar draft.
-* Request: `Banarsi Jamawar ko Facebook par publish karo`.
-* Verify exactly ONE approval action is created.
-* Go to Marketing → Approvals and click Approve.
-* Verify the approval action changes:
-  `pending → approved → executing → completed`
-  or `failed` if Facebook genuinely rejects it.
-* Verify that the Facebook executor actually runs.
-* Verify the Facebook API returns a real success response.
-* Verify the post is actually visible on the connected Facebook Page.
-* Verify Published Posts shows the correct product, Facebook platform, published date/time, and external reference.
-* Verify Review History shows the correct final status.
-* Then return to AI and say:
-  `krdi hay approve ab post kro fb pr`
-* AI must NOT create another approval.
-* AI must find/reuse the existing approved/completed action and report the real current result.
-* Verify the database contains no duplicate active approval for the same publish operation.
+4. Separately, confirm in Meta's own dashboard: go to WhatsApp → 
+   Webhooks section and check if there's a "Recent deliveries" or 
+   similar log showing whether Meta actually attempted to call our 
+   webhook URL when I sent the message, and what response code Meta 
+   received back from our server (200, 401, timeout, etc.) — this 
+   tells us definitively whether the request left Meta's side at all.
 
-Also explicitly verify the three-dot Delete flows still work:
-
-* Marketing draft → ⋮ → Delete → confirmation → draft removed.
-* Marketing → Approvals pending action → ⋮ → Delete → confirmation → pending action removed.
-* Historical completed/failed/rejected records must remain intact.
-
-DATABASE MIGRATIONS:
-Re-check whether this implementation requires any schema/index/RLS/database change. If required, create, apply, and verify the migration. If genuinely not required, explicitly report why no migration is needed.
-
-Final report MUST include:
-
-* commit hash
-* GitHub push result
-* Vercel production deployment result
-* real Facebook publish result
-* Facebook post/reference evidence
-* final approval_actions status
-* confirmation that no duplicate approval was created
-* Published Posts result
-* Review History result
-* delete-flow result
-* migration decision and verification
-* all test/build/typecheck/lint results
-
-Do NOT mark this complete based only on build/typecheck/lint.
+Paste whatever raw evidence you find at each step before concluding 
+anything.

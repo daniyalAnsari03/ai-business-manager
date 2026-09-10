@@ -39,6 +39,16 @@ export async function GET(request: Request): Promise<Response> {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  // Diagnostic: log every incoming request BEFORE any checks so we can tell
+  // whether Meta even reached our server (vs. our own signature check
+  // rejecting it, or Meta never calling us at all).
+  console.log(
+    "[WhatsApp Webhook] POST received — url=%s x-hub-signature-256=%s content-length=%s",
+    request.url,
+    request.headers.get("x-hub-signature-256") ?? "(missing)",
+    request.headers.get("content-length") ?? "(unknown)",
+  );
+
   const raw = await request.arrayBuffer();
   const rawBuffer = Buffer.from(raw);
 
@@ -46,8 +56,15 @@ export async function POST(request: Request): Promise<Response> {
   const signature = request.headers.get("x-hub-signature-256");
   const appSecret = process.env.WHATSAPP_APP_SECRET;
   if (!verifyHubSignature(signature, rawBuffer, appSecret)) {
+    console.error(
+      "[WhatsApp Webhook] Signature verification FAILED — signature=%s appSecret_set=%s",
+      signature ?? "(missing)",
+      Boolean(appSecret),
+    );
     return new NextResponse("Invalid signature", { status: 401 });
   }
+
+  console.log("[WhatsApp Webhook] Signature OK — parsing payload (%d bytes)", rawBuffer.length);
 
   let body: unknown;
   try {
@@ -59,6 +76,7 @@ export async function POST(request: Request): Promise<Response> {
   // Only handle text messages that carry a reply.
   const provider = getWhatsAppProvider();
   if (!provider) {
+    console.error("[WhatsApp Webhook] getWhatsAppProvider() returned null — WHATSAPP_ACCESS_TOKEN or WHATSAPP_PHONE_NUMBER_ID missing");
     return new NextResponse("WhatsApp not configured", { status: 200 });
   }
 
