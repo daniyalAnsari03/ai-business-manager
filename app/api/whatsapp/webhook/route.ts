@@ -64,10 +64,23 @@ export async function POST(request: Request): Promise<Response> {
 
   const messages = await provider.parseInboundWebhook(body);
   if (!messages) {
+    console.log("[WhatsApp Inbound] No messages in payload — skipping");
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
   for (const message of messages) {
+    console.log(
+      `[WhatsApp Inbound] from=${message.from} body="${message.body}" providerMessageId=${message.providerMessageId}`,
+    );
+
+    // Persist the raw inbound event before processing so we always have a
+    // record even if processing fails.
+    persistInboundEvent(message.from, message.body, message.providerMessageId).catch(
+      (err) => {
+        console.error("[WhatsApp Inbound] Failed to persist inbound event:", err);
+      },
+    );
+
     // Never block on a single reply; log + continue.
     const result = await processInboundReply({
       from: message.from,
@@ -75,7 +88,14 @@ export async function POST(request: Request): Promise<Response> {
       providerMessageId: message.providerMessageId,
     });
 
-    if (!result.ok) {
+    if (result.ok) {
+      console.log(
+        `[WhatsApp Inbound] Processed: from=${message.from} decision=${result.data.decision}`,
+      );
+    } else {
+      console.log(
+        `[WhatsApp Inbound] Not processed: from=${message.from} reason=${result.reason}`,
+      );
       switch (result.reason) {
         case "ambiguous": {
           // Ask for a clearer YES / NO (honest — we never guess).
@@ -214,6 +234,39 @@ function shouldAdvanceStatus(currentStatus: string, newStatus: string): boolean 
   const next = order[newStatus] ?? -1;
   // Allow transition to 'failed' from any state, or forward progression.
   return newStatus === "failed" || next > current;
+}
+
+/**
+ * Persists an inbound WhatsApp message to the whatsapp_inbound_events table
+ * for audit and debugging. Fire-and-forget — errors are logged but never
+ * block the webhook response.
+ */
+async function persistInboundEvent(
+  from: string,
+  body: string,
+  providerMessageId: string,
+): Promise<void> {
+  const admin = await getSupabaseAdminClient();
+  if (!admin) return;
+
+  // Resolve business from the sender phone number.
+  const normalisedPhone = from.replace(/\D/g, "");
+  const { data: biz } = await admin
+    .from("businesses")
+    .select("id")
+    .eq("phone", normalisedPhone)
+    .maybeSingle();
+
+  const { error } = await admin.from("whatsapp_inbound_events").insert({
+    business_id: biz?.id ?? null,
+    sender_phone: normalisedPhone,
+    body,
+    provider_message_id: providerMessageId,
+  });
+
+  if (error) {
+    console.error("[WhatsApp Inbound] DB insert failed:", error.message);
+  }
 }
 
 /** Sends a short clarification request when intent cannot be determined. */
