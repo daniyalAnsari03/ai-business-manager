@@ -367,27 +367,27 @@ export function MarketingView({
     <>
       {/* Phase 4 — Approvals + Video sub-navigation */}
       <div className="grid gap-3 sm:grid-cols-2">
-        <Link href="/dashboard/marketing/approvals">
+        <Link href="/dashboard/marketing/approvals" className="block w-full">
           <Card lift className="relative flex items-center gap-3 !p-5">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-accent">
               <ShieldCheckIcon className="size-[18px]" />
             </span>
             <div className="min-w-0">
               <p className="text-sm font-medium">{t.marketing.approvalsNav}</p>
-              <p className="mt-0.5 truncate text-xs text-faint">
+              <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-faint">
                 {t.marketing.approvalsNeedsSubtitle}
               </p>
             </div>
           </Card>
         </Link>
-        <Link href="/dashboard/marketing/video">
+        <Link href="/dashboard/marketing/video" className="block w-full">
           <Card lift className="relative flex items-center gap-3 !p-5">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-accent">
               <ImageIcon className="size-[18px]" />
             </span>
             <div className="min-w-0">
               <p className="text-sm font-medium">{t.marketing.videoNav}</p>
-              <p className="mt-0.5 truncate text-xs text-faint">
+              <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-faint">
                 {t.marketing.videoSubtitle}
               </p>
             </div>
