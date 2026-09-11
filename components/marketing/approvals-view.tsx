@@ -288,9 +288,13 @@ export function ApprovalsView({
           </Button>
         </Card>
       ) : reducedMotion ? (
-        content
+        <div className="space-y-6">{content}</div>
       ) : (
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+        <motion.div
+          className="space-y-6"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
           {content}
         </motion.div>
       )}

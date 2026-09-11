@@ -646,9 +646,10 @@ export function MarketingView({
     <div className="space-y-6">
       <MarketingHeader />
       {reducedMotion ? (
-        content
+        <div className="space-y-6">{content}</div>
       ) : (
         <motion.div
+          className="space-y-6"
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
