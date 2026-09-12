@@ -213,7 +213,7 @@ function validateSettingsInput(
 
   const cleanPhone =
     typeof phone === "string" && phone.trim().length > 0
-      ? phone.trim()
+      ? phone.replace(/\D/g, "")
       : null;
   if (cleanPhone && cleanPhone.length > PHONE_MAX) return null;
 

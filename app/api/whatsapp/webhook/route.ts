@@ -5,6 +5,10 @@ import { NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getWhatsAppProvider } from "@/lib/marketing/whatsapp/provider";
 import { verifyHubSignature } from "@/lib/marketing/whatsapp/signature";
+import {
+  matchesBusinessPhone,
+  normalizePhoneDigits,
+} from "@/lib/marketing/whatsapp/phone";
 import { processInboundReply } from "@/lib/marketing/whatsapp/whatsapp-service";
 
 export const runtime = "nodejs";
@@ -267,13 +271,18 @@ async function persistInboundEvent(
   const admin = await getSupabaseAdminClient();
   if (!admin) return;
 
-  // Resolve business from the sender phone number.
-  const normalisedPhone = from.replace(/\D/g, "");
-  const { data: biz } = await admin
+  // Resolve business from the sender phone number. Stored phone values may
+  // include formatting (+92, spaces, a leading zero), so compare by digits.
+  const normalisedPhone = normalizePhoneDigits(from);
+  const { data: businessRows, error: bizError } = await admin
     .from("businesses")
-    .select("id")
-    .eq("phone", normalisedPhone)
-    .maybeSingle();
+    .select("id, phone")
+    .not("phone", "is", null);
+  const biz = bizError
+    ? null
+    : ((businessRows ?? []) as Array<{ id: string; phone: string | null }>).find(
+        (b) => matchesBusinessPhone(b.phone, normalisedPhone),
+      );
 
   const { error } = await admin.from("whatsapp_inbound_events").insert({
     business_id: biz?.id ?? null,

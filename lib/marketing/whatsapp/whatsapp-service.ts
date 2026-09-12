@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { getWhatsAppProvider } from "@/lib/marketing/whatsapp/provider";
 import { parseApprovalReply } from "@/lib/marketing/whatsapp/reply-parser";
+import { matchesBusinessPhone } from "@/lib/marketing/whatsapp/phone";
 import {
   buildApprovalMessage,
   generateApprovalReference,
@@ -182,12 +183,15 @@ export async function processInboundReply(input: {
   const decision = parseApprovalReply(input.body);
   if (decision === "ambiguous") {
     // Resolve the sender's business to determine the language for clarification.
-    const { data: fromBiz } = await admin
+    const { data: fromBizRows } = await admin
       .from("businesses")
-      .select("language")
-      .eq("phone", normalizePhone(input.from))
-      .maybeSingle();
-    const lang = (fromBiz as { language?: string } | null)?.language === "ur" ? "ur" : "en";
+      .select("language, phone")
+      .not("phone", "is", null);
+    const fromBiz = ((fromBizRows ?? []) as Array<{
+      language: string;
+      phone: string | null;
+    }>).find((b) => matchesBusinessPhone(b.phone, input.from));
+    const lang = fromBiz?.language === "ur" ? "ur" : "en";
     return { ok: false, reason: "ambiguous", language: lang };
   }
 
@@ -206,13 +210,15 @@ export async function processInboundReply(input: {
   // The reply body is just YES/NO; the mapping must come from a stored pending
   // request. We look up the most recent pending action for this business whose
   // external_reference is non-null AND that was sent to this sender's number.
-  const { data: fromBusiness, error: fromBizError } = await admin
+  const { data: fromBusinessRows, error: fromBizError } = await admin
     .from("businesses")
     .select("id, owner_id, phone, language, name")
-    .eq("phone", normalizePhone(input.from))
-    .maybeSingle();
+    .not("phone", "is", null);
   if (fromBizError) return { ok: false, reason: "database_error" };
-  const senderBiz = (fromBusiness ?? null) as BusinessRow | null;
+  const senderBiz =
+    ((fromBusinessRows ?? []) as BusinessRow[]).find((b) =>
+      matchesBusinessPhone(b.phone, input.from),
+    ) ?? null;
 
   // 1) If we can resolve the sender's business, try to match the pending
   //    request we actually sent them (by their phone). This keeps ownership
@@ -356,9 +362,4 @@ async function runExecutorByType(
       error: error instanceof Error ? error.message : "Execution failed",
     };
   }
-}
-
-/** Normalise a phone number to a comparable form (digits only). */
-function normalizePhone(phone: string): string {
-  return phone.replace(/\D/g, "");
 }
