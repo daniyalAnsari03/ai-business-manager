@@ -28,6 +28,8 @@ type MarketingSettingsProps = {
   initialBudgetCap: number | null;
   accountsLoadFailed?: boolean;
   walletLoadFailed?: boolean;
+  /** Server-side check: WhatsApp credentials are configured via env vars. */
+  whatsappConfigured?: boolean;
 };
 
 /**
@@ -44,6 +46,7 @@ export function MarketingSettings({
   initialBudgetCap,
   accountsLoadFailed = false,
   walletLoadFailed = false,
+  whatsappConfigured = false,
 }: MarketingSettingsProps) {
   const { t } = useI18n();
   const router = useRouter();
@@ -182,6 +185,8 @@ export function MarketingSettings({
           {SETTINGS_PLATFORMS.map((platform) => {
             const account = accountsByPlatform.get(platform);
             const connected = account?.status === "connected";
+            // WhatsApp is configured via server-side env vars, not OAuth.
+            const whatsappOk = platform === "whatsapp" && whatsappConfigured;
             // Meta Ads is shown but its real OAuth is pending Meta permission
             // approval — the Connect button honestly reads "Coming soon".
             const metaAdsSoon = platform === "meta_ads" && !connected;
@@ -194,16 +199,19 @@ export function MarketingSettings({
             // Connected accounts that have no OAuth reconnect path (Meta Ads)
             // stay as a readable status row; everything else gets an action
             // button that is never blocked by the connected state.
+            const effectivelyConnected = connected || whatsappOk;
             const buttonDisabled =
               metaAdsSoon ||
-              (connected && !canReconnect) ||
+              (effectivelyConnected && !canReconnect) ||
               connectingPlatform !== null;
             const buttonLabel = isConnecting
               ? t.settings.connectingButton
-              : connected
+              : effectivelyConnected
                 ? canReconnect
                   ? t.settings.reconnectButton
-                  : t.settings.statusConnected
+                  : whatsappOk
+                    ? t.settings.statusConfigured
+                    : t.settings.statusConnected
                 : metaAdsSoon
                   ? t.settings.metaAdsSoonButton
                   : t.settings.connectButton;
@@ -217,14 +225,16 @@ export function MarketingSettings({
                     {platformLabel(t, platform)}
                   </p>
                   <p className="mt-0.5 truncate text-xs text-muted">
-                    {connected
-                      ? account?.accountLabel ?? t.settings.statusConnected
+                    {effectivelyConnected
+                      ? whatsappOk
+                        ? t.settings.statusConfigured
+                        : account?.accountLabel ?? t.settings.statusConnected
                       : t.settings.statusNotConnected}
                   </p>
                 </div>
                 <Button
                   size="md"
-                  variant={connected ? "secondary" : "primary"}
+                  variant={effectivelyConnected ? "secondary" : "primary"}
                   disabled={buttonDisabled}
                   onClick={() => handleConnectClick(platform)}
                   aria-label={`${buttonLabel} — ${platformLabel(t, platform)}`}
@@ -234,9 +244,11 @@ export function MarketingSettings({
                       <Spinner />
                       {t.settings.connectingButton}
                     </>
-                  ) : connected ? (
+                  ) : effectivelyConnected ? (
                     canReconnect ? (
                       t.settings.reconnectButton
+                    ) : whatsappOk ? (
+                      t.settings.statusConfigured
                     ) : (
                       t.settings.statusConnected
                     )
@@ -261,7 +273,9 @@ export function MarketingSettings({
             {platformLabel(t, connectNoteFor)}:{" "}
             {connectNoteFor === "meta_ads"
               ? t.settings.metaAdsPendingNote
-              : t.settings.connectSoonNote}
+              : connectNoteFor === "whatsapp"
+                ? t.settings.whatsappConfiguredNote
+                : t.settings.connectSoonNote}
           </p>
         ) : null}
 

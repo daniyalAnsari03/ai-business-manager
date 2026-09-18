@@ -944,6 +944,7 @@ const en = {
     connectedAccountsTitle: "Connected accounts",
     statusNotConnected: "Not connected",
     statusConnected: "Connected",
+    statusConfigured: "Configured",
     connectButton: "Connect",
     reconnectButton: "Reconnect",
     connectSoonNote: "Connecting accounts is coming in an upcoming update.",
@@ -966,6 +967,8 @@ const en = {
     metaAdsPendingNote:
       "Coming soon — pending Meta Ads permission setup. Real ads start once your Meta Ads account is connected.",
     metaAdsSoonButton: "Coming soon",
+    whatsappConfiguredNote:
+      "WhatsApp is configured server-side using the app owner's test number. Approval requests and replies work through this number.",
     monthlyBudgetLabel: "Monthly ad budget cap",
     monthlyBudgetHint:
       "A safety limit for your monthly ad spending. Adding money comes in a later update.",
@@ -1963,6 +1966,7 @@ const ur: Dictionary = {
     connectedAccountsTitle: "Connected accounts",
     statusNotConnected: "Connect nahi hai",
     statusConnected: "Connected hai",
+    statusConfigured: "Set hai",
     connectButton: "Connect karein",
     reconnectButton: "Dobara connect karein",
     connectSoonNote: "Accounts connect karna aane wale update mein aayega.",
@@ -1985,6 +1989,8 @@ const ur: Dictionary = {
     metaAdsPendingNote:
       "Jald aayega — Meta Ads permission setup ka intezar hai. Asal ads tab shuru honge jab apka Meta Ads account connect ho jayega.",
     metaAdsSoonButton: "Jald aayega",
+    whatsappConfiguredNote:
+      "WhatsApp server-side par set hai — app owner ke test number se messages jaate hain. Approval requests aur replies is number se kaam karti hain.",
     monthlyBudgetLabel: "Mahine ka ad kharcha (cap)",
     monthlyBudgetHint:
       "Mahine ke ads ke liye ek mehfooz limit. Paise add karna baad ke update mein aayega.",

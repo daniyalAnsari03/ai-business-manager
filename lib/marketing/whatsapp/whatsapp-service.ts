@@ -2,24 +2,26 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
-import { getWhatsAppProvider } from "@/lib/marketing/whatsapp/provider";
 import { parseApprovalReply } from "@/lib/marketing/whatsapp/reply-parser";
 import { matchesBusinessPhone } from "@/lib/marketing/whatsapp/phone";
 import {
-  buildApprovalMessage,
-  generateApprovalReference,
-} from "@/lib/marketing/whatsapp/message";
-import {
   configureApprovalExecutors,
+  getApprovalExecutors,
 } from "@/lib/marketing/approval-executors";
-import { registerNotifyOwner } from "@/lib/marketing/approval-service";
+import {
+  type ApprovalAction,
+  type ApprovalActionType,
+} from "@/lib/marketing/approval-types";
+import {
+  type WhatsappServiceResult,
+} from "@/lib/marketing/whatsapp/approval-notify";
+// The approval-request sender now lives in approval-notify.ts and is called
+// directly by the approval engine when an action is parked as pending. It is
+// re-exported here so existing importers keep working.
+export { sendApprovalRequest } from "@/lib/marketing/whatsapp/approval-notify";
 
 /**
- * WhatsApp approval service — sends approval requests and processes replies.
- *
- * Sending happens server-side through the configured WhatsApp provider. It is
- * honest: if no provider is configured, `sendApprovalNotification` returns
- * `not_configured` and nothing is faked.
+ * WhatsApp approval reply service — processes inbound YES/NO replies.
  *
  * Inbound webhook processing uses the service-role client (no user session on
  * a webhook), derives business ownership from the action's stored business and
@@ -27,19 +29,6 @@ import { registerNotifyOwner } from "@/lib/marketing/approval-service";
  * acting. Everything is idempotent: the same provider message id is only ever
  * processed once.
  */
-
-export type WhatsappServiceError =
-  | "not_configured"
-  | "unauthorized"
-  | "not_found"
-  | "ambiguous"
-  | "duplicate"
-  | "invalid_input"
-  | "database_error";
-
-export type WhatsappServiceResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; reason: WhatsappServiceError; language?: "en" | "ur" };
 
 /** Ensure executors are wired once (idempotent). */
 let executorsConfigured = false;
@@ -50,105 +39,12 @@ function ensureExecutors(): void {
   }
 }
 
-// Register the WhatsApp notification callback with the approval service so
-// that when an action is parked as needs_approval, the owner is notified.
-registerNotifyOwner(async (actionId: string) => {
-  try {
-    await sendApprovalRequest({ actionId });
-  } catch {
-    // Best-effort: notification failure must not break the approval flow.
-  }
-});
-
 interface BusinessRow {
   id: string;
   owner_id: string;
   phone: string | null;
   language: string;
   name: string;
-}
-
-/**
- * Sends an approval request for an action via WhatsApp. The action must have
- * an `external_reference` to route replies back to it. Returns the reference
- * so callers can persist it.
- */
-export async function sendApprovalRequest(input: {
-  actionId: string;
-}): Promise<WhatsappServiceResult<{ reference: string; delivered: boolean }>> {
-  ensureExecutors();
-  const provider = getWhatsAppProvider();
-  if (!provider) return { ok: false, reason: "not_configured" };
-
-  const admin = await getSupabaseAdminClient();
-  if (!admin) return { ok: false, reason: "not_configured" };
-
-  // Load the action + its business.
-  const { data: action, error: actionError } = await admin
-    .from("approval_actions")
-    .select("*")
-    .eq("id", input.actionId)
-    .single();
-  if (actionError || !action) return { ok: false, reason: "not_found" };
-
-  const { data: business, error: bizError } = await admin
-    .from("businesses")
-    .select("id, owner_id, phone, language, name")
-    .eq("id", action.business_id)
-    .single();
-  if (bizError || !business) return { ok: false, reason: "not_found" };
-  const biz = business as BusinessRow;
-
-  if (!biz.phone) return { ok: false, reason: "invalid_input" };
-
-  // Ensure the action has a stable external_reference for reply mapping.
-  let reference = action.external_reference as string | null;
-  if (!reference) {
-    reference = generateApprovalReference();
-    await admin
-      .from("approval_actions")
-      .update({ external_reference: reference })
-      .eq("id", action.id);
-  }
-
-  const payload = action.action_payload as Record<string, unknown>;
-  const text = buildApprovalMessage(
-    {
-      summary: action.summary as string,
-      platform: typeof payload.platform === "string" ? payload.platform : null,
-      productName:
-        typeof payload.productName === "string" ? payload.productName : null,
-      scheduledAt:
-        typeof payload.scheduledAt === "string" ? payload.scheduledAt : null,
-      language: biz.language === "ur" ? "ur" : "en",
-    },
-    reference,
-  );
-
-  const sent = await provider.sendText({
-    businessId: biz.id,
-    to: biz.phone,
-    text,
-    messageId: reference,
-  });
-
-  // Store provider message ID → business mapping for status webhook resolution.
-  if (sent.ok && sent.data.providerMessageId) {
-    try {
-      await admin.from("whatsapp_message_id_map").insert({
-        business_id: biz.id,
-        provider_message_id: sent.data.providerMessageId,
-        recipient_phone: biz.phone,
-      });
-    } catch {
-      // Best-effort: mapping failure must not block the approval flow.
-    }
-  }
-
-  return {
-    ok: true,
-    data: { reference, delivered: sent.ok ? sent.data.delivered : false },
-  };
 }
 
 /**
@@ -310,11 +206,9 @@ async function executeFromWebhook(
     return { ok: true, data: { decision: "approve" } };
   }
   const action = claim as Record<string, unknown>;
-  const businessId = action["business_id"] as string;
-  const actionType = action["action_type"] as string;
-  const payload = (action["action_payload"] as Record<string, unknown>) ?? {};
+  const businessId = (action["business_id"] as string) ?? "";
 
-  const outcome = await runExecutorByType(actionType, payload);
+  const outcome = await runExecutorByType(claimToAction(action));
 
   const finalStatus = outcome.ok ? "completed" : "failed";
   await admin
@@ -338,22 +232,48 @@ async function executeFromWebhook(
   return { ok: true, data: { decision: "approve" } };
 }
 
-import { getApprovalExecutors } from "@/lib/marketing/approval-executors";
+/**
+ * Maps a claimed approval_actions row (service-role read) into the
+ * ApprovalAction shape the executor registry expects. The id and business_id
+ * come straight from the claimed row, which is the authoritative server state.
+ */
+function claimToAction(row: Record<string, unknown>): ApprovalAction {
+  const payload = (row["action_payload"] as Record<string, unknown>) ?? {};
+  const actionType = ((row["action_type"] as string) ?? "other") as ApprovalActionType;
+  return {
+    id: (row["id"] as string) ?? "",
+    businessId: (row["business_id"] as string) ?? "",
+    userId: (row["user_id"] as string) ?? null,
+    actionType,
+    actionPayload: payload,
+    summary: (row["summary"] as string) ?? "",
+    approvalMode: row["approval_mode"] === "full_auto" ? "full_auto" : "needs_approval",
+    status: "executing",
+    idempotencyKey: (row["idempotency_key"] as string) ?? null,
+    createdAt: (row["created_at"] as string) ?? new Date().toISOString(),
+    updatedAt: (row["updated_at"] as string) ?? new Date().toISOString(),
+    expiresAt: null,
+    approvedAt: null,
+    rejectedAt: null,
+    approvedBy: null,
+    rejectedBy: null,
+    executedAt: null,
+    executionResult: null,
+    executionError: null,
+    externalReference: (row["external_reference"] as string) ?? null,
+  };
+}
 
-async function runExecutorByType(
-  actionType: string,
-  payload: Record<string, unknown>,
-): Promise<{ ok: boolean; result?: unknown; error?: string }> {
+async function runExecutorByType(action: ApprovalAction): Promise<{
+  ok: boolean;
+  result?: unknown;
+  error?: string;
+}> {
   const registry = getApprovalExecutors();
-  const executor = registry[actionType as keyof typeof registry];
+  const executor = registry[action.actionType];
   if (!executor) {
     return { ok: false, error: "No executor for this action type." };
   }
-  const action = {
-    id: "whatsapp-" + actionType,
-    actionType: actionType,
-    actionPayload: payload,
-  } as never;
   try {
     return await executor(action);
   } catch (error) {

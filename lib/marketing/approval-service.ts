@@ -18,6 +18,7 @@ import {
   type ReviewableAction,
 } from "@/lib/marketing/approval-types";
 import { configureApprovalExecutors } from "@/lib/marketing/approval-executors";
+import { sendApprovalRequest } from "@/lib/marketing/whatsapp/approval-notify";
 
 /**
  * The approval action engine — the ONLY place that talks to Supabase about
@@ -62,21 +63,6 @@ let executorRegistry: ApprovalExecutorRegistry | null = null;
 
 export function registerExecutors(registry: ApprovalExecutorRegistry): void {
   executorRegistry = registry;
-}
-
-/**
- * Optional notification callback — populated by the WhatsApp service when it
- * is available. Called (fire-and-forget) after a pending action is parked so
- * the business owner is notified via WhatsApp.
- *
- * Registered from lib/marketing/whatsapp/whatsapp-service.ts to avoid
- * circular imports.
- */
-export type NotifyOwnerFn = (actionId: string) => Promise<void>;
-let notifyOwnerFn: NotifyOwnerFn | null = null;
-
-export function registerNotifyOwner(fn: NotifyOwnerFn): void {
-  notifyOwnerFn = fn;
 }
 
 async function requireBusinessContext(): Promise<
@@ -237,7 +223,39 @@ export async function createApprovalAction(
   await logEvent(context.supabase, action.id, context.business.id, "created", {
     action_type: action.actionType,
   });
+
+  // Awaited (not fire-and-forget): proactively ask the business owner on
+  // WhatsApp for approval. Waiting guarantees the outbound message is actually
+  // dispatched before this request returns — on serverless runtimes a dangling
+  // promise can be frozen mid-send. Only fires for a freshly-created pending
+  // row — reusing an existing pending action returns earlier and is never
+  // re-notified. Notification failure is logged, never fatal.
+  if (action.status === "pending") {
+    await notifyApprovalRequested(action.id);
+  }
+
   return { ok: true, data: action };
+}
+
+/**
+ * Sends the WhatsApp approval-request notification for a pending action and
+ * awaits completion so it truly reaches Meta before the request finishes.
+ * Never throws — a notification problem must not fail the action itself.
+ */
+async function notifyApprovalRequested(actionId: string): Promise<void> {
+  try {
+    const result = await sendApprovalRequest({ actionId });
+    if (!result.ok) {
+      console.info(
+        `[Approval Notify] action=${actionId} could not be notified: ${result.reason}`,
+      );
+    }
+  } catch (error) {
+    console.error(
+      `[Approval Notify] unexpected error for action=${actionId}`,
+      error,
+    );
+  }
 }
 
 /**
@@ -416,11 +434,10 @@ export async function decideAndRunAction(
   const parked = await createDirectAction(context.supabase, context.business, input, "needs_approval");
   if (!parked.ok) return parked;
 
-  // Fire-and-forget: notify the business owner via WhatsApp if a notifier
-  // is registered. Never block or fail the action on notification errors.
-  if (notifyOwnerFn) {
-    notifyOwnerFn(parked.data.id).catch(() => {});
-  }
+  // Awaited (not fire-and-forget): proactively notify the business owner on
+  // WhatsApp that an approval is waiting. Awaited so the send completes on
+  // serverless runtimes too; the result is logged and never fails the action.
+  await notifyApprovalRequested(parked.data.id);
 
   return { ok: true, data: { outcome: "needs_approval", action: parked.data } };
 }

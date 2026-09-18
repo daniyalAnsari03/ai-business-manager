@@ -69,7 +69,7 @@ const executors: ApprovalExecutorRegistry = {
       return { ok: false, error: "This post could not be identified for publishing." };
     }
 
-    const result = await publishPost(postId);
+    const result = await publishPost(postId, { businessId: action.businessId });
 
     if (result.ok) {
       return {

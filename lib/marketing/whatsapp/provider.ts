@@ -96,6 +96,9 @@ class MetaWhatsAppProvider implements WhatsAppProvider {
   readonly id = "meta_whatsapp";
   readonly displayName = "WhatsApp (Meta)";
 
+  /** Cap on a single send so an awaited notification can never hang a request. */
+  static readonly SEND_TIMEOUT_MS = 30_000;
+
   constructor(
     private readonly token: string,
     private readonly phoneNumberId: string,
@@ -106,6 +109,8 @@ class MetaWhatsAppProvider implements WhatsAppProvider {
   }
 
   async sendText(input: SendMessageInput): Promise<SendMessageOutcome> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), MetaWhatsAppProvider.SEND_TIMEOUT_MS);
     try {
       const url = `https://graph.facebook.com/v25.0/${this.phoneNumberId}/messages`;
       const res = await fetch(url, {
@@ -120,6 +125,7 @@ class MetaWhatsAppProvider implements WhatsAppProvider {
           type: "text",
           text: { body: input.text },
         }),
+        signal: controller.signal,
       });
 
       if (!res.ok) {
@@ -138,10 +144,16 @@ class MetaWhatsAppProvider implements WhatsAppProvider {
         },
       };
     } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "WhatsApp network error";
       return {
         ok: false,
-        reason: error instanceof Error ? error.message : "WhatsApp network error",
+        reason: /abort/i.test(message)
+          ? `WhatsApp send timed out after ${MetaWhatsAppProvider.SEND_TIMEOUT_MS}ms`
+          : message,
       };
+    } finally {
+      clearTimeout(timer);
     }
   }
 

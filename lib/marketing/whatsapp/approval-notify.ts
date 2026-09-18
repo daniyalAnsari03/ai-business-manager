@@ -54,10 +54,16 @@ export async function sendApprovalRequest(input: {
   actionId: string;
 }): Promise<WhatsappServiceResult<{ reference: string; delivered: boolean }>> {
   const provider = getWhatsAppProvider();
-  if (!provider) return { ok: false, reason: "not_configured" };
+  if (!provider) {
+    console.info(`[Approval Notify] skipped action=${input.actionId} reason=not_configured`);
+    return { ok: false, reason: "not_configured" };
+  }
 
   const admin = await getSupabaseAdminClient();
-  if (!admin) return { ok: false, reason: "not_configured" };
+  if (!admin) {
+    console.info(`[Approval Notify] skipped action=${input.actionId} reason=no_admin_client`);
+    return { ok: false, reason: "not_configured" };
+  }
 
   // Load the action + its business.
   const { data: action, error: actionError } = await admin
@@ -65,17 +71,28 @@ export async function sendApprovalRequest(input: {
     .select("*")
     .eq("id", input.actionId)
     .single();
-  if (actionError || !action) return { ok: false, reason: "not_found" };
+  if (actionError || !action) {
+    console.info(`[Approval Notify] skipped action=${input.actionId} reason=not_found`);
+    return { ok: false, reason: "not_found" };
+  }
 
   const { data: business, error: bizError } = await admin
     .from("businesses")
     .select("id, owner_id, phone, language, name")
     .eq("id", action.business_id)
     .single();
-  if (bizError || !business) return { ok: false, reason: "not_found" };
+  if (bizError || !business) {
+    console.info(`[Approval Notify] skipped action=${input.actionId} reason=business_not_found`);
+    return { ok: false, reason: "not_found" };
+  }
   const biz = business as BusinessRow;
 
-  if (!biz.phone) return { ok: false, reason: "invalid_input" };
+  if (!biz.phone) {
+    console.info(
+      `[Approval Notify] skipped action=${input.actionId} business=${biz.id} reason=no_phone_registered`,
+    );
+    return { ok: false, reason: "invalid_input" };
+  }
 
   // Ensure the action has a stable external_reference so a YES/NO reply maps
   // to EXACTLY this action (never "the latest pending one").
@@ -135,6 +152,28 @@ export async function sendApprovalRequest(input: {
       // Best-effort: mapping failure must not block the approval flow.
     }
   }
+
+  // Audit trail: record that the owner was asked so we can prove the request
+  // was actually dispatched (and see the recipient/reference) in QA.
+  try {
+    await admin.from("approval_events").insert({
+      approval_action_id: action.id,
+      business_id: biz.id,
+      event: "notified",
+      detail: {
+        reference,
+        delivered: sent.data.delivered,
+        provider_message_id: sent.data.providerMessageId ?? null,
+        recipient,
+      },
+    });
+  } catch {
+    // Best-effort audit: never break the happy path.
+  }
+
+  console.info(
+    `[Approval Notify] sent action=${input.actionId} business=${biz.id} reference=${reference} delivered=${sent.data.delivered} providerMessageId=${sent.data.providerMessageId ?? "(none)"}`,
+  );
 
   return {
     ok: true,

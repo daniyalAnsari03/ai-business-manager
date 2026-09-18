@@ -6,6 +6,7 @@ import {
   getConnectedAccounts,
   getMarketingWallet,
 } from "@/lib/marketing/service";
+import { getWhatsAppProvider } from "@/lib/marketing/whatsapp/provider";
 import { getServerUser } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -28,6 +29,8 @@ export default async function SettingsPage() {
     return null;
   }
 
+  const whatsappConfigured = getWhatsAppProvider() !== null;
+
   return (
     <div className="space-y-6">
       <SettingsForm business={business} userEmail={user?.email ?? null} />
@@ -37,6 +40,7 @@ export default async function SettingsPage() {
         initialBudgetCap={walletResult.ok ? walletResult.data?.monthlyBudgetCap ?? null : null}
         accountsLoadFailed={!accountsResult.ok}
         walletLoadFailed={!walletResult.ok}
+        whatsappConfigured={whatsappConfigured}
       />
     </div>
   );

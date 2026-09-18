@@ -1,7 +1,11 @@
 import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { getServerUser, getSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  getServerUser,
+  getSupabaseServerClient,
+  getSupabaseAdminClient,
+} from "@/lib/supabase/server";
 import { getUserBusiness } from "@/lib/business/service";
 import { publishSocialPost } from "@/lib/marketing/instagram-publish";
 import { publishFacebookPost } from "@/lib/marketing/facebook-publish";
@@ -64,31 +68,47 @@ type PostAndContext =
 
 async function readPostAndContext(
   postId: string,
+  businessId?: string,
 ): Promise<PostAndContext> {
-  let user;
-  let supabase: SupabaseClient;
-  try {
-    user = await getServerUser();
-    supabase = await getSupabaseServerClient();
-  } catch {
-    return { ok: false, error: "not_configured" };
+  // social_posts.id is a UUID. Reject anything else up front so a malformed
+  // post id from an AI/executor cannot surface as a raw database error.
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(postId)) {
+    return { ok: false, error: "not_found" };
   }
-  if (!user) return { ok: false, error: "unauthenticated" };
 
-  const business = await getUserBusiness();
-  if (!business) return { ok: false, error: "no_business" };
+  let supabase: SupabaseClient;
+  if (businessId) {
+    // Session-less path (e.g. webhook-triggered approval execution). The
+    // business is already server-verified by the approval engine; ownership is
+    // still enforced below by scoping every read/update to this business id.
+    supabase = (await getSupabaseAdminClient())!;
+    if (!supabase) return { ok: false, error: "not_configured" };
+  } else {
+    let user;
+    try {
+      user = await getServerUser();
+      supabase = await getSupabaseServerClient();
+    } catch {
+      return { ok: false, error: "not_configured" };
+    }
+    if (!user) return { ok: false, error: "unauthenticated" };
+
+    const business = await getUserBusiness();
+    if (!business) return { ok: false, error: "no_business" };
+    businessId = business.id;
+  }
 
   const { data, error } = await supabase
     .from("social_posts")
     .select("platform, status")
     .eq("id", postId)
-    .eq("business_id", business.id)
+    .eq("business_id", businessId)
     .maybeSingle();
 
   if (error) return { ok: false, error: "database_error" };
   if (!data) return { ok: false, error: "not_found" };
 
-  return { ok: true, supabase, businessId: business.id };
+  return { ok: true, supabase, businessId };
 }
 
 function isTokenExpired(expiresAt: string | null): boolean {
@@ -142,8 +162,9 @@ async function resolveTargetPlatform(
  */
 export async function publishPost(
   postId: string,
+  options?: { businessId?: string },
 ): Promise<PublishResult> {
-  const postAndContext = await readPostAndContext(postId);
+  const postAndContext = await readPostAndContext(postId, options?.businessId);
   if (!postAndContext.ok) return postAndContext;
 
   const { supabase, businessId } = postAndContext;
@@ -152,7 +173,7 @@ export async function publishPost(
   if (!target) return { ok: false, error: "no_connection" };
 
   if (target === "facebook") {
-    const result = await publishFacebookPost(postId);
+    const result = await publishFacebookPost(postId, { businessId });
     if (!result.ok) return { ...result, platform: "facebook" };
     return {
       ok: true,
@@ -161,7 +182,7 @@ export async function publishPost(
     };
   }
 
-  const result = await publishSocialPost(postId);
+  const result = await publishSocialPost(postId, { businessId });
   if (!result.ok) return { ...result, platform: "instagram" };
   return {
     ok: true,

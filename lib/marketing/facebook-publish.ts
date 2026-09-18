@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   getServerUser,
   getSupabaseServerClient,
+  getSupabaseAdminClient,
 } from "@/lib/supabase/server";
 import { getUserBusiness } from "@/lib/business/service";
 import { getMetaAppConfig } from "@/lib/marketing/meta-config";
@@ -65,24 +66,33 @@ export type FacebookPublishResult =
   | { ok: true; facebookPostId: string }
   | { ok: false; error: FacebookPublishErrorCode; detail?: string };
 
-async function getBusinessContext(): Promise<
+async function getBusinessContext(businessId?: string): Promise<
   | { ok: true; supabase: SupabaseClient; businessId: string }
   | { ok: false; error: FacebookPublishErrorCode }
 > {
-  let user;
   let supabase: SupabaseClient;
-  try {
-    user = await getServerUser();
-    supabase = await getSupabaseServerClient();
-  } catch {
-    return { ok: false, error: "not_configured" };
+  if (businessId) {
+    // Session-less path used by webhook-triggered approval execution. The
+    // business id is server-verified by the approval engine; every read and
+    // update below is scoped to it for ownership.
+    supabase = (await getSupabaseAdminClient())!;
+    if (!supabase) return { ok: false, error: "not_configured" };
+  } else {
+    let user;
+    try {
+      user = await getServerUser();
+      supabase = await getSupabaseServerClient();
+    } catch {
+      return { ok: false, error: "not_configured" };
+    }
+    if (!user) return { ok: false, error: "unauthenticated" };
+
+    const business = await getUserBusiness();
+    if (!business) return { ok: false, error: "no_business" };
+    businessId = business.id;
   }
-  if (!user) return { ok: false, error: "unauthenticated" };
 
-  const business = await getUserBusiness();
-  if (!business) return { ok: false, error: "no_business" };
-
-  return { ok: true, supabase, businessId: business.id };
+  return { ok: true, supabase, businessId };
 }
 
 /**
@@ -228,8 +238,9 @@ async function publishToFacebookPage(
  */
 export async function publishFacebookPost(
   postId: string,
+  options?: { businessId?: string },
 ): Promise<FacebookPublishResult> {
-  const ctx = await getBusinessContext();
+  const ctx = await getBusinessContext(options?.businessId);
   if (!ctx.ok) return ctx;
 
   const { supabase, businessId } = ctx;
