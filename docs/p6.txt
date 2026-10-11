@@ -1,0 +1,27 @@
+TASK: File 3 | Phase 2 | Prompt 6. Two small scoped fixes. Ignore docs/fix.txt.
+
+RULES:
+- Do NOT commit, push, or deploy. Do NOT apply migrations. No new migrations.
+- Do not modify AGENTS.md. Do not touch files outside this scope.
+- Do NOT touch the real database. Offline tests only.
+- business_id always from session / AgentRunContext, never from client or model input.
+- Stock stays WHOLE NUMBERS. Do not add fractional support.
+- Do NOT edit lib/ai/agent.ts or any instruction text (snapshots must stay byte-identical).
+- If ambiguous, STOP and ask. Report honestly what you could not verify.
+
+PART A: whole-number stock wording in tool descriptions (all business types)
+In lib/ai/tools/product-tools.ts, append ONE sentence to the .describe() of: newStock (set_product_stock), delta (adjust_product_stock), stockQuantity (create_product), and the unit description (~line 122). Meaning of the sentence: "Whole numbers only. If the user asks for a fractional amount (e.g. 2.5 kg), do NOT round it; tell the user fractional quantities are not supported yet and ask for a whole number."
+- Description text only. No schema change, no new parameters, no change to z.number().int().
+- Add a test (offline) that checks these descriptions contain the rule, so it cannot be silently removed. Existing 57 agent-instruction checks must stay green.
+
+PART B: missing non-clothing attribute tests
+Parameterize the existing block at tests/products/product-service-extras.mjs (~line 227, "a business type without the fabric_attributes capability rejects attributes by name") over all six non-clothing types: electronics, retail_shop, grocery, services, restaurant_food, other. Add the same per-type check to tests/products/attribute-form.test.mjs (~line 321). Also parameterize the read-hiding and list-hiding assertions (~lines 277 and 325) over the same six types. Report the new counts per script.
+
+PART C: verification
+1. Run build, typecheck, lint and EVERY test:* script. Report a table [script | result | counts]. Any failure: exact error, and whether this prompt caused it.
+2. git diff --stat for ONLY the files changed in this prompt. Confirm AGENTS.md, lib/ai/agent.ts, lib/ai/instructions/*, and any migration are untouched.
+3. Encoding scan (BOM, U+FFFD, mojibake) on files changed in this prompt.
+4. Show the final .describe() text of the four edited parameters, verbatim.
+5. Do NOT answer "should I commit?". The answer is no.
+
+FINAL REPORT: tables, the verbatim descriptions, and a "could not verify" list.

@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/icons";
 import { Modal } from "@/components/ui/modal";
 import { PageHeader } from "@/components/ui/page-header";
+import { RowMenu } from "@/components/ui/row-menu";
 import { SearchInput } from "@/components/ui/search-input";
 import { StatCard } from "@/components/ui/stat-card";
 import { EASE_PREMIUM, fadeUp, staggerContainer } from "@/components/motion/presets";
@@ -82,6 +83,15 @@ export function CustomersView({
     );
   }, [customers, query]);
 
+  const totalPaid = customers.reduce(
+    (sum, customer) => sum + Math.max(customer.totalPaid, 0),
+    0,
+  );
+  const totalDue = customers.reduce(
+    (sum, customer) => sum + Math.max(customer.totalDue, 0),
+    0,
+  );
+
   function showToast(kind: Toast["kind"], text: string) {
     setToast({ id: Date.now(), kind, text });
   }
@@ -89,7 +99,10 @@ export function CustomersView({
   function handleSaved(customer: Customer, mode: "create" | "update") {
     setCustomers((current) => {
       if (mode === "create") {
-        return [{ ...customer, totalOrders: 0, totalSpent: 0 }, ...current];
+        return [
+          { ...customer, totalOrders: 0, totalSpent: 0, totalPaid: 0, totalDue: 0 },
+          ...current,
+        ];
       }
       return current.map((item) =>
         item.id === customer.id ? { ...item, ...customer } : item,
@@ -168,6 +181,17 @@ export function CustomersView({
               icon={<UsersIcon className="size-4" />}
               label={t.customers.summaryTotal}
               value={customers.length.toLocaleString("en-US")}
+            />
+            <StatCard
+              icon={<CheckCircleIcon className="size-4" />}
+              label={t.customers.colPaid}
+              value={formatMoney(totalPaid, business.currency)}
+            />
+            <StatCard
+              icon={<AlertTriangleIcon className="size-4" />}
+              label={t.customers.summaryDue}
+              value={formatMoney(totalDue, business.currency)}
+              tone={totalDue > 0 ? "warning" : undefined}
             />
           </div>
 
@@ -372,6 +396,18 @@ function CustomerRow({
               {formatMoney(customer.totalSpent, currency)}
             </span>
           </span>
+          <span>
+            {t.customers.colPaid}:{" "}
+            <span className="font-medium text-foreground">
+              {formatMoney(customer.totalPaid, currency)}
+            </span>
+          </span>
+          <span>
+            {t.customers.colDue}:{" "}
+            <span className="font-medium text-foreground">
+              {formatMoney(customer.totalDue, currency)}
+            </span>
+          </span>
           <span>{formatDate(customer.createdAt, language)}</span>
         </div>
       </div>
@@ -390,19 +426,25 @@ function CustomerRow({
             <p className="truncate text-xs text-faint">{customer.email}</p>
           ) : null}
         </div>
-        <div className="w-36 shrink-0 truncate text-sm text-muted">
+        <div className="hidden w-32 shrink-0 truncate text-sm text-muted lg:block">
           {customer.phone ?? t.customers.notRecorded}
         </div>
-        <div className="w-20 shrink-0 text-right text-sm tabular-nums">
+        <div className="w-16 shrink-0 text-right text-sm tabular-nums">
           {customer.totalOrders.toLocaleString("en-US")}
         </div>
         <div className="w-28 shrink-0 text-right text-sm font-medium tabular-nums">
           {formatMoney(customer.totalSpent, currency)}
         </div>
-        <div className="w-24 shrink-0 text-right text-xs text-faint">
+        <div className="hidden w-28 shrink-0 text-right text-sm tabular-nums lg:block">
+          {formatMoney(customer.totalPaid, currency)}
+        </div>
+        <div className="hidden w-28 shrink-0 text-right text-sm font-medium tabular-nums lg:block">
+          {formatMoney(customer.totalDue, currency)}
+        </div>
+        <div className="hidden w-24 shrink-0 text-right text-xs text-faint xl:block">
           {formatDate(customer.createdAt, language)}
         </div>
-        <div className="flex w-[7.5rem] shrink-0 justify-end">
+        <div className="flex w-20 shrink-0 justify-end">
           <RowActions
             customer={customer}
             onDetails={onDetails}
@@ -433,16 +475,24 @@ function RowActions({
       <IconAction label={t.common.view} onClick={() => onDetails(customer)}>
         <EyeIcon className="size-4" />
       </IconAction>
-      <IconAction label={t.common.edit} onClick={() => onEdit(customer)}>
-        <PencilIcon className="size-4" />
-      </IconAction>
-      <IconAction
-        label={t.common.delete}
-        danger
-        onClick={() => onDelete(customer)}
-      >
-        <TrashIcon className="size-4" />
-      </IconAction>
+      <RowMenu
+        label={customer.name}
+        items={[
+          {
+            key: "edit",
+            label: t.common.edit,
+            icon: <PencilIcon className="size-4" />,
+            onSelect: () => onEdit(customer),
+          },
+          {
+            key: "delete",
+            label: t.common.delete,
+            icon: <TrashIcon className="size-4" />,
+            danger: true,
+            onSelect: () => onDelete(customer),
+          },
+        ]}
+      />
     </div>
   );
 }

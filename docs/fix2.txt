@@ -1,0 +1,9 @@
+TASK: Fix a bug in tests/qa/audit-logs-rls-probe.mjs. Only this file. Ignore docs/fix.txt.
+
+Problem: at the business lookup step the script prints "business lookup failed 200: [{"id":"...","name":"DINS"}]" and exits, even though the HTTP status is 200 and a valid business row was returned. The success check is wrong (probably a status or shape check that treats this response as a failure).
+
+1. Find the check and fix it so a 200 response with one business row is treated as success.
+2. Look at the rest of the script for the same kind of mistake (status checks, array-vs-object handling) and fix it.
+3. Do NOT change the migration or any other file. Do NOT print keys or tokens.
+4. Run the probe: node --env-file=.env.local tests/qa/audit-logs-rls-probe.mjs
+   Paste the full output. If it fails for a different reason, show exactly where and why.

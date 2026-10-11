@@ -1,0 +1,40 @@
+TASK: File 3 | Phase 2 | Prompt 2 of 5. Fix two stale tests, then wire clothing attributes, unit and cost_price into the product service and product AI tools. Only what is listed here.
+
+PRECONDITION: the migration 20260930140000_add_unit_and_cost_price_to_products.sql has been applied by me. Do not apply anything yourself.
+
+RULES (apply to the whole task):
+- Ignore docs/fix.txt. Do NOT commit, push, or deploy. Do NOT apply any migration. No new migrations in this prompt.
+- Do not modify AGENTS.md. Do not touch files outside this scope.
+- business_id always comes from the authenticated session / AgentRunContext, never from client or model input. The business type used for validation must also come from the server side (AgentRunContext.businessType or the business record), never from model input.
+- Never print secrets. Never invent business data (no default attributes, no guessed prices, no guessed units).
+- Do not change tool names or existing behavior for existing parameters. New parameters are optional and additive.
+- Stock quantities stay WHOLE NUMBERS. Unit is a label only. Do not change any quantity column or arithmetic.
+- If something is ambiguous, STOP and ask instead of guessing. Report honestly what you could not verify.
+
+PART A: fix the two stale tests in tests/ai/business-tools.mjs (tests only, do NOT change lib/ai/agent.ts instructions or any tool)
+1. Registry test (around line 92): update the expected tool list (around lines 40-79) to include the 4 approval tools that legitimately exist: get_automation_mode, publish_social_post, find_approval_action, execute_approved_action. The registry has 35 tools; the expected list must match the real registry exactly. Do not loosen the check (keep it an exact-match check so accidental extra tools are still caught).
+2. Instructions test (around line 337): it looks for a literal "BUSINESS SETTINGS" heading that does not exist. Rewrite the assertion so it checks what the instructions really say at lib/ai/agent.ts:108-110 (the PRIVACY & SCOPE section that says the settings capabilities exist and to read the current profile with a tool). Do not add a heading to agent.ts. Keep the test strict enough that it fails if that text is removed.
+3. Run npm run test:tools and report the result. Expected: all pass. If anything else fails, show the exact error and stop; do not hide it.
+
+PART B: product service (lib/products/service.ts and its types)
+1. Add attributes (object), unit (string) and costPrice (number | null) to the product type and the row mapping. Existing rows without values map to attributes {}, unit "Piece", costPrice null. Create and update inputs accept them (all optional).
+2. On write: validate attributes with normalizeProductAttributes(businessType, input) from lib/business/product-attributes.ts and unit with normalizeUnit from lib/business/product-units.ts. Invalid input returns a clear error result (same style as existing validation errors), never a silent drop.
+3. For business types without the 'fabric_attributes' capability: attributes must be empty on write (existing validator rule). Existing stored attributes are left untouched and still returned on read.
+4. Update semantics: attributes are MERGED into the existing attributes (only the keys provided change). To remove a key, the caller passes it in a clear_attributes list. Do not wipe other keys.
+5. cost_price: optional, >= 0, max 2 decimals; null means "not set". Selling price behavior stays exactly as it is today.
+
+PART C: AI tools (lib/ai/tools/product-tools.ts)
+1. create_product and update_product: add optional parameters product_type, fabric, color, design, size, unit, cost_price (flat parameters, not a free JSON blob). For update also clear_attributes (array limited to the 5 attribute keys). Descriptions must say that custom values are allowed and that nothing may be guessed: if the user did not say a value, leave it out.
+2. find_product, list_products, low_stock_products: include attributes, unit, cost_price in the returned data so the AI can state them truthfully. Stock messages should include the unit (for example "50 Meter"). Additive change only.
+3. Keep the disambiguation behavior (search first, confirm exact id) unchanged.
+4. For a business type without the capability, an attribute parameter must produce a clear, honest failure message (via the existing toolFail / toolClarify helpers), not a silent ignore.
+
+PART D: audit (existing recordAgentAudit helper)
+product.create "after" includes attributes, unit and cost_price. product.update records only the changed fields, including attribute keys (these are business data, not personal data). No row when nothing changed. Keep all existing audit rules (row only after confirmed success, ids from context, insert failure never breaks the tool).
+
+PART E: tests
+Extend the offline suites (tests/ai/audit-log-tools.mjs style; do not break existing checks) with checks for: create with clothing fields stores normalized values; custom value accepted; invalid value rejected with a clear message; update merges and does not wipe other keys; clear_attributes removes only the named key; non-clothing business type rejects attributes; unit canonicalised; negative cost_price rejected; find/list return the new fields; audit rows contain the new fields and no row on no-op; a hostile business_id in the input is never used.
+
+Run: npm run test:tools, test:audit, test:product-attributes, test:product-units, test:type-config, typecheck, lint. Report results in a table.
+
+FINAL REPORT: files changed, test output, behavior decisions you made (for example what happens to existing attributes if the business type changes), anything you could not verify (no live DB write is done in this task).

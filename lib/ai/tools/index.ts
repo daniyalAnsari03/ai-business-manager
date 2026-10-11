@@ -51,6 +51,22 @@ import {
   findApprovalActionTool,
   executeApprovedActionTool,
 } from "@/lib/ai/tools/approval-tools";
+import {
+  createSupplierTool,
+  deleteSupplierTool,
+  findSupplierTool,
+  listSuppliersTool,
+  updateSupplierTool,
+} from "@/lib/ai/tools/supplier-tools";
+import {
+  createSupplierBillTool,
+  listSupplierBillsTool,
+} from "@/lib/ai/tools/supplier-bill-tools";
+import {
+  getCustomerBalanceTool,
+  requestPaymentTool,
+  requestPaymentReversalTool,
+} from "@/lib/ai/tools/payment-tools";
 
 /**
  * The complete controlled tool surface of the AI Business Manager. Every
@@ -102,4 +118,15 @@ export const businessTools: Tool<AgentRunContext>[] = [
   publishSocialPostTool,
   findApprovalActionTool,
   executeApprovedActionTool,
+  // Suppliers, bills & payments (Phase 3)
+  listSuppliersTool,
+  findSupplierTool,
+  createSupplierTool,
+  updateSupplierTool,
+  deleteSupplierTool,
+  listSupplierBillsTool,
+  createSupplierBillTool,
+  getCustomerBalanceTool,
+  requestPaymentTool,
+  requestPaymentReversalTool,
 ];

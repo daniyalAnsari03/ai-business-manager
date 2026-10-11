@@ -1,0 +1,28 @@
+TASK: File 3 | Step 1c: Connect audit_logs to the second group of AI tools. Only this group, nothing else. Ignore docs/fix.txt.
+
+Tools in scope: create_product, update_product, create_customer, update_customer, delete_customer, create_expense, update_expense, delete_expense, update_business_profile.
+
+Reuse the existing helper lib/audit/write-audit-log.ts (recordAgentAudit) exactly as done for the first group (set_product_stock, adjust_product_stock, create_order, update_order_status, delete_product). Do not create a new helper.
+
+Rules (same as group 1):
+- Write the audit row only AFTER the action has actually succeeded. No row for failures, rejections, clarifications, awaiting-confirmation, or no-op.
+- businessId, userId, correlationId come only from the server-side AgentRunContext, never from model input.
+- If the audit insert fails, the tool must still succeed; log the error on the server; never tell the model/user that an audit was written when it was not.
+- Do not change tool names, descriptions, schemas, model-visible outputs, or any migration. No new tables.
+
+Actions and data:
+- create_product: action 'product.create', entity 'product', before null, after = name, sku, category, price, stock_quantity.
+- update_product: action 'product.update', before/after = ONLY the fields that changed.
+- create_customer: action 'customer.create', entity 'customer', before null, after = id and name ONLY. Do NOT store phone, email, address, or notes.
+- update_customer: action 'customer.update', store only the names of the fields that changed (not their values) if they include phone/email/address/notes; name changes may store old/new name.
+- delete_customer: action 'customer.delete', before = id and name ONLY, after null. No phone/email/address/notes.
+- create_expense: action 'expense.create', entity 'expense', before null, after = title, amount, category, expense_date.
+- update_expense: action 'expense.update', before/after = ONLY the changed fields.
+- delete_expense: action 'expense.delete', before = title, amount, category, expense_date, after null.
+- update_business_profile: action 'business.update', entity 'business', before/after = ONLY the changed fields. Never store phone or address values; for those, store only that the field changed. Business name and business_type may be stored.
+
+Tests (same offline stub approach as tests/ai/audit-log-tools.mjs; extend that suite, do not break the existing 32 checks): for each of the 9 tools verify (a) success writes exactly one row with correct action/entity/before/after, (b) failure / not found / clarification / awaiting confirmation / no-op writes none, (c) audit insert failure does not break the tool, (d) business_id equals the context business, never a model-supplied value, (e) no personal fields (phone, email, address, notes) appear in any row.
+
+Then run: npm run test:audit, npm run typecheck, npm run lint. Report results. Do NOT fix npm run test:tools (report its status only). Do NOT deploy. Do NOT commit.
+
+Report: files changed, test output, and anything you could not verify.

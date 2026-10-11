@@ -3,6 +3,11 @@ import "server-only";
 import type { ApprovalAction, ApprovalActionType } from "@/lib/marketing/approval-types";
 import { registerExecutors } from "@/lib/marketing/approval-service";
 import { publishPost } from "@/lib/marketing/publish";
+import {
+  recordPaymentForBusinessServiceRole,
+  reversePaymentForBusinessServiceRole,
+} from "@/lib/payments/service-role";
+import { writeAuditLog } from "@/lib/audit/write-audit-log";
 
 /**
  * Real executors for each approval action type.
@@ -126,10 +131,152 @@ const executors: ApprovalExecutorRegistry = {
     };
   },
 
+  // Money movements. These run ONLY after the owner approved the action (or,
+  // for money, always via approval even in full-auto). They call the
+  // service-role `*_for_business` RPCs with the business id already verified
+  // server-side when the action was created, and use the action id itself as
+  // the idempotency key so a retry can never double-pay. No browser session is
+  // required, so the in-app approval, the WhatsApp reply and a cron sweep all
+  // work identically.
+  record_payment: async (action) => {
+    const payload = action.actionPayload as Record<string, unknown>;
+    const actorId = action.approvedBy ?? action.userId;
+    if (!actorId) {
+      return { ok: false, error: "The approver could not be identified, so the payment was not recorded." };
+    }
+
+    const result = await recordPaymentForBusinessServiceRole({
+      businessId: action.businessId,
+      actorId,
+      payload: {
+        orderId: payload.orderId ?? undefined,
+        supplierBillId: payload.supplierBillId ?? undefined,
+        amount: payload.amount,
+        method: payload.method,
+        paidAt: payload.paidAt ?? undefined,
+        reference: payload.reference ?? undefined,
+        notes: payload.notes ?? undefined,
+        idempotencyKey: action.id,
+      },
+    });
+
+    if (!result.ok) {
+      return { ok: false, error: moneyError(result.reason) };
+    }
+
+    const data = result.data as Record<string, unknown>;
+    const payment = data.payment as { id?: string } | undefined;
+    const replayed = data.idempotent_replay === true;
+
+    // Audit only a genuinely new, confirmed payment (a replay already logged).
+    if (!replayed) {
+      await writeAuditLog({
+        businessId: action.businessId,
+        actorType: "ai",
+        actorId,
+        action: "payment.create",
+        entity: "payment",
+        entityId: payment?.id ?? null,
+        after: {
+          orderId: (data.orderId as string | null) ?? (payload.orderId as string | null) ?? null,
+          supplierBillId: (data.supplierBillId as string | null) ?? (payload.supplierBillId as string | null) ?? null,
+          amount: payload.amount,
+          method: payload.method,
+        },
+      });
+    }
+
+    return {
+      ok: true,
+      result: {
+        paymentId: payment?.id ?? null,
+        orderId: data.orderId ?? payload.orderId ?? null,
+        supplierBillId: data.supplierBillId ?? payload.supplierBillId ?? null,
+        paid: data.paid ?? null,
+        due: data.due ?? null,
+        paidAmount: data.paidAmount ?? null,
+        idempotentReplay: replayed,
+      },
+    };
+  },
+
+  reverse_payment: async (action) => {
+    const payload = action.actionPayload as Record<string, unknown>;
+    const actorId = action.approvedBy ?? action.userId;
+    if (!actorId) {
+      return { ok: false, error: "The approver could not be identified, so the payment was not cancelled." };
+    }
+    const paymentId = typeof payload.paymentId === "string" ? payload.paymentId : null;
+    const reason = typeof payload.reason === "string" ? payload.reason : "";
+    if (!paymentId || !reason.trim()) {
+      return { ok: false, error: "The payment or reason could not be identified, so it was not cancelled." };
+    }
+
+    const result = await reversePaymentForBusinessServiceRole({
+      businessId: action.businessId,
+      actorId,
+      paymentId,
+      reason,
+      idempotencyKey: action.id,
+    });
+
+    if (!result.ok) {
+      return { ok: false, error: moneyError(result.reason) };
+    }
+
+    const data = result.data as Record<string, unknown>;
+    const payment = data.payment as { id?: string } | undefined;
+    const replayed = data.idempotent_replay === true;
+
+    if (!replayed) {
+      await writeAuditLog({
+        businessId: action.businessId,
+        actorType: "ai",
+        actorId,
+        action: "payment.reverse",
+        entity: "payment",
+        entityId: (data.reversedPaymentId as string | null) ?? paymentId,
+        reason,
+        after: { reversalPaymentId: payment?.id ?? null },
+      });
+    }
+
+    return {
+      ok: true,
+      result: {
+        reversalPaymentId: payment?.id ?? null,
+        reversedPaymentId: data.reversedPaymentId ?? paymentId,
+        orderId: data.orderId ?? null,
+        supplierBillId: data.supplierBillId ?? null,
+        paid: data.paid ?? null,
+        due: data.due ?? null,
+        idempotentReplay: replayed,
+      },
+    };
+  },
+
   other: async () => {
     return { ok: false, error: "This action type has no executor yet." };
   },
 };
+
+/** Turns a money-service error reason into a clear owner-facing sentence. */
+function moneyError(reason: string): string {
+  const messages: Record<string, string> = {
+    order_cancelled: "This order is cancelled, so the payment was not recorded.",
+    no_due: "There is nothing left to pay on this target.",
+    overpayment: "The amount is more than the outstanding due, so the payment was not recorded.",
+    not_found: "The target could not be found. It may have been deleted.",
+    not_reversible: "This payment cannot be cancelled.",
+    already_reversed: "This payment was already cancelled.",
+    negative_paid: "Cancelling this payment would make the paid amount negative, so it was not done.",
+    idempotency_conflict: "This request conflicts with an earlier payment. It was not recorded twice.",
+    invalid_amount: "The amount is not valid.",
+    invalid_method: "The payment method is not valid.",
+    actor_required: "The approver could not be identified.",
+  };
+  return messages[reason] ?? "The payment action could not be completed.";
+}
 
 /**
  * Wire the registry into the approval service. Called once on module load

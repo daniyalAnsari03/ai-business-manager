@@ -17,6 +17,8 @@ import {
 } from "@/components/orders/order-status-badge";
 import { OrderStatusModal } from "@/components/orders/order-status-modal";
 import { useI18n } from "@/components/i18n/language-provider";
+import { PaymentStatusChip } from "@/components/payments/payment-status-chip";
+import { RecordPaymentModal } from "@/components/payments/record-payment-modal";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -25,8 +27,11 @@ import {
   CheckCircleIcon,
   PackageIcon,
   PlusIcon,
+  ReceiptIcon,
+  TrashIcon,
 } from "@/components/ui/icons";
 import { PageHeader } from "@/components/ui/page-header";
+import { RowMenu } from "@/components/ui/row-menu";
 import { SearchInput } from "@/components/ui/search-input";
 import { StatCard } from "@/components/ui/stat-card";
 import { EASE_PREMIUM, fadeUp, staggerContainer } from "@/components/motion/presets";
@@ -40,6 +45,10 @@ import type {
   OrderWithItems,
 } from "@/lib/orders/types";
 import { ORDER_STATUSES } from "@/lib/orders/types";
+import {
+  orderPaymentStatus,
+  type RecordPaymentResult,
+} from "@/lib/payments/types";
 import type { Product } from "@/lib/products/types";
 import { cn } from "@/lib/utils";
 
@@ -57,6 +66,7 @@ type ActiveModal =
   | { kind: "create" }
   | { kind: "details"; order: OrderListItem }
   | { kind: "status"; order: OrderListItem }
+  | { kind: "pay"; order: OrderListItem }
   | { kind: "delete"; order: OrderListItem }
   | null;
 
@@ -129,6 +139,9 @@ export function OrdersView({
       customerName: created.customerId
         ? customerNameById.get(created.customerId) ?? null
         : null,
+      paid: 0,
+      due: created.total,
+      paymentStatus: "unpaid",
     };
     setOrders((current) => [listItem, ...current]);
     setModal(null);
@@ -159,6 +172,27 @@ export function OrdersView({
       "success",
       t.orders.toasts.deleted.replace("{number}", deleted?.orderNumber ?? ""),
     );
+  }
+
+  function handlePaymentRecorded(
+    orderId: string,
+    result: RecordPaymentResult,
+  ) {
+    setOrders((current) =>
+      current.map((order) => {
+        if (order.id !== orderId) return order;
+        const paid = result.paid ?? order.paid;
+        const due = result.due ?? order.due;
+        return {
+          ...order,
+          paid,
+          due,
+          paymentStatus: orderPaymentStatus({ total: order.total, paid }),
+        };
+      }),
+    );
+    setModal(null);
+    showToast("success", t.payments.toasts.recorded);
   }
 
   const hasProducts = products.length > 0;
@@ -294,6 +328,8 @@ export function OrdersView({
                     currency={business.currency}
                     language={language}
                     onOpen={(o) => setModal({ kind: "details", order: o })}
+                    onRecordPayment={(o) => setModal({ kind: "pay", order: o })}
+                    onDelete={(o) => setModal({ kind: "delete", order: o })}
                   />
                 ))}
               </OrderListBlock>
@@ -307,6 +343,10 @@ export function OrdersView({
                         currency={business.currency}
                         language={language}
                         onOpen={(o) => setModal({ kind: "details", order: o })}
+                        onRecordPayment={(o) =>
+                          setModal({ kind: "pay", order: o })
+                        }
+                        onDelete={(o) => setModal({ kind: "delete", order: o })}
                       />
                     </motion.div>
                   ))}
@@ -368,9 +408,28 @@ export function OrdersView({
           order={modal.order}
           customerName={modal.order.customerName}
           currency={business.currency}
+          paid={modal.order.paid}
+          due={modal.order.due}
           onClose={() => setModal(null)}
           onChangeStatus={() => setModal({ kind: "status", order: modal.order })}
-          onDelete={() => setModal({ kind: "delete", order: modal.order })}
+        />
+      ) : null}
+      {modal?.kind === "pay" ? (
+        <RecordPaymentModal
+          key={`pay-${modal.order.id}`}
+          currency={business.currency}
+          target={{
+            kind: "order",
+            id: modal.order.id,
+            label: modal.order.orderNumber,
+            total: modal.order.total,
+            paid: modal.order.paid,
+            due: modal.order.due,
+          }}
+          onClose={() => setModal(null)}
+          onRecorded={(result) =>
+            handlePaymentRecorded(modal.order.id, result)
+          }
         />
       ) : null}
       {modal?.kind === "status" ? (
@@ -480,11 +539,15 @@ function OrderRow({
   currency,
   language,
   onOpen,
+  onRecordPayment,
+  onDelete,
 }: {
   order: OrderListItem;
   currency: Business["currency"];
   language: string;
   onOpen: (order: OrderListItem) => void;
+  onRecordPayment: (order: OrderListItem) => void;
+  onDelete: (order: OrderListItem) => void;
 }) {
   const { t } = useI18n();
   const itemCount =
@@ -492,61 +555,109 @@ function OrderRow({
       ? order.items.reduce((sum, item) => sum + item.quantity, 0)
       : 0;
 
+  const payDisabled = order.status === "cancelled" || order.due <= 0;
+  const payReason =
+    order.status === "cancelled"
+      ? t.orders.payDisabledCancelled
+      : t.orders.payDisabledPaid;
+  const deleteDisabled = order.status === "completed";
+  const deleteReason = t.orders.deleteDisabledCompleted;
+
   return (
-    <button
-      type="button"
-      onClick={() => onOpen(order)}
-      className="block w-full border-b border-line text-left transition-colors last:border-b-0 hover:bg-surface-raised/60"
-    >
-      {/* Mobile */}
-      <div className="p-4 md:hidden">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="truncate text-[15px] font-medium tabular-nums">
+    <div className="flex items-stretch border-b border-line transition-colors last:border-b-0 hover:bg-surface-raised/60">
+      <button
+        type="button"
+        onClick={() => onOpen(order)}
+        className="block flex-1 text-left"
+      >
+        {/* Mobile */}
+        <div className="p-4 md:hidden">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-[15px] font-medium tabular-nums">
+                {order.orderNumber}
+              </p>
+              <p className="mt-0.5 truncate text-xs text-muted">
+                {order.customerName ?? t.orders.walkIn}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="font-medium tabular-nums">
+                {formatMoney(order.total, currency)}
+              </p>
+              <p className="mt-0.5 text-xs text-faint">
+                {formatDate(order.orderedAt, language)}
+              </p>
+            </div>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <OrderStatusBadge status={order.status} />
+            <PaymentStatusChip status={order.paymentStatus} />
+            <span className="text-xs text-faint">
+              {t.orders.colPaid}: {formatMoney(order.paid, currency)}
+            </span>
+            <span className="text-xs text-faint">
+              {t.orders.colDue}: {formatMoney(order.due, currency)}
+            </span>
+          </div>
+        </div>
+
+        {/* Desktop */}
+        <div className="hidden items-center gap-4 px-5 py-3.5 md:flex">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium tabular-nums">
               {order.orderNumber}
             </p>
-            <p className="mt-0.5 truncate text-xs text-muted">
-              {order.customerName ?? t.orders.walkIn}
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="font-medium tabular-nums">
-              {formatMoney(order.total, currency)}
-            </p>
-            <p className="mt-0.5 text-xs text-faint">
+            <p className="truncate text-xs text-faint">
+              {order.customerName ?? t.orders.walkIn} ·{" "}
               {formatDate(order.orderedAt, language)}
             </p>
           </div>
-        </div>
-        <div className="mt-3 flex items-center justify-between gap-3">
-          <OrderStatusBadge status={order.status} />
-          <span className="text-xs text-faint">
+          <div className="w-14 shrink-0 text-right text-xs text-faint tabular-nums">
             {itemCount.toLocaleString("en-US")}
-          </span>
+          </div>
+          <div className="w-28 shrink-0 text-right text-sm font-medium tabular-nums">
+            {formatMoney(order.total, currency)}
+          </div>
+          <div className="hidden w-28 shrink-0 text-right text-sm tabular-nums lg:block">
+            {formatMoney(order.paid, currency)}
+          </div>
+          <div className="hidden w-28 shrink-0 text-right text-sm tabular-nums lg:block">
+            {formatMoney(order.due, currency)}
+          </div>
+          <div className="flex w-24 shrink-0 justify-end">
+            <PaymentStatusChip status={order.paymentStatus} />
+          </div>
+          <div className="flex w-28 shrink-0 justify-end">
+            <OrderStatusBadge status={order.status} />
+          </div>
         </div>
-      </div>
+      </button>
 
-      {/* Desktop */}
-      <div className="hidden items-center gap-4 px-5 py-3.5 md:flex">
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium tabular-nums">
-            {order.orderNumber}
-          </p>
-          <p className="truncate text-xs text-faint">
-            {order.customerName ?? t.orders.walkIn} ·{" "}
-            {formatDate(order.orderedAt, language)}
-          </p>
-        </div>
-        <div className="w-16 shrink-0 text-right text-xs text-faint tabular-nums">
-          {itemCount.toLocaleString("en-US")}
-        </div>
-        <div className="w-32 shrink-0 text-right text-sm font-medium tabular-nums">
-          {formatMoney(order.total, currency)}
-        </div>
-        <div className="flex w-28 shrink-0 justify-end">
-          <OrderStatusBadge status={order.status} />
-        </div>
+      <div className="flex items-center pr-3">
+        <RowMenu
+          label={order.orderNumber}
+          items={[
+            {
+              key: "pay",
+              label: t.orders.recordPaymentButton,
+              icon: <ReceiptIcon className="size-4" />,
+              disabled: payDisabled,
+              disabledReason: payReason,
+              onSelect: () => onRecordPayment(order),
+            },
+            {
+              key: "delete",
+              label: t.common.delete,
+              icon: <TrashIcon className="size-4" />,
+              danger: true,
+              disabled: deleteDisabled,
+              disabledReason: deleteReason,
+              onSelect: () => onDelete(order),
+            },
+          ]}
+        />
       </div>
-    </button>
+    </div>
   );
 }

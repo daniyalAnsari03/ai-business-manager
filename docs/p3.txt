@@ -1,0 +1,40 @@
+TASK: File 3 | Phase 2 | Prompt 3 of 5. Make the AI agent understand clothing products, driven by the business type capability. Only what is listed here.
+
+RULES (apply to the whole task):
+- Ignore docs/fix.txt. Do NOT commit, push, or deploy. Do NOT apply migrations. No new migrations.
+- Do not modify AGENTS.md. Do not touch files outside this scope.
+- Never print secrets. Never invent business data.
+- Do not change tool names, schemas, or existing instruction text that is not part of this task.
+- Stock quantities stay WHOLE NUMBERS; unit is a label only.
+- If something is ambiguous, STOP and ask instead of guessing. Report honestly what you could not verify.
+
+PART A: report on Prompt 2 (read-only, before changing anything)
+Run git status and git diff --stat. List every file that Prompt 2 changed or added (lib/products/service.ts, lib/ai/tools/product-tools.ts, tests, etc.) with one line on what changed in each. State the exact new tool parameters of create_product / update_product, how attribute merging and clear_attributes work, and what happens to existing attributes if the business type changes. Do not fix anything in this part.
+
+PART B: clothing instruction section
+1. Read lib/ai/agent.ts (buildBusinessManagerInstructions). BEFORE changing it, generate a snapshot of the exact instruction text for every business type (clothing_fashion, electronics, retail_shop, grocery, services, restaurant_food, other) in both languages (en, ur) and store it in the new test.
+2. Create a small module (for example lib/ai/instructions/clothing.ts) that returns a clothing instruction section per language ("en" and "ur"). agent.ts appends it only when hasCapability(context.businessType, 'fabric_attributes') is true. Every other business type must get exactly the same instructions as today (byte-identical to the snapshot).
+3. The clothing section must tell the agent (short: max about 25 lines per language):
+   - Clothing products can have: product type, fabric, color, design, size, unit, cost price. List the predefined options compactly, imported from lib/business/product-attributes.ts and lib/business/product-units.ts so the text can never drift from the code. Custom values are allowed.
+   - Use the real tool parameters from Prompt 2 (product_type, fabric, color, design, size, unit, cost_price, clear_attributes).
+   - Only save attributes the user actually stated. Never guess fabric, design, size, color, unit, cost price or availability. If the user does not mention them, leave them out. Do not ask a long questionnaire: name and selling price are enough to create a product.
+   - Map a user's word to a listed option only when it is unambiguous; otherwise ask once or store the user's own word as a custom value. Never silently swap a different meaning.
+   - Cost price is a private purchase cost, separate from the selling price; never present cost price as selling price. Sales/revenue is still not profit.
+   - Unit: state quantities with the unit (for example "50 Meter"). Stock is whole numbers only; if the user asks for half or fractional quantities (2.5 meter), say honestly that fractional quantities are not supported yet and do not round silently.
+   - When reporting a created or updated product, state exactly which attributes were saved, as returned by the tool.
+   - Roman Urdu version: simple, natural Roman Urdu as AGENTS.md requires.
+4. Do not touch the existing PRIVACY & SCOPE text or any existing section, so the existing tests keep passing.
+
+PART C: tests (offline, no model calls)
+Add tests/ai/agent-instructions.mjs and npm script test:agent-instructions:
+- clothing en and ur contain the clothing section and the option lists exactly as in the code;
+- for every non-clothing business type and both languages, the instructions are byte-identical to the stored pre-change snapshot;
+- the clothing section stays within the line budget;
+- the section mentions every new tool parameter name.
+
+PART D: manual live-check list
+At the end of your report give 5 example chat messages (English and Roman Urdu) I can try on a TEST product, and what the correct AI behavior is for each. Do not run live model calls yourself.
+
+Run: test:agent-instructions, test:tools, test:audit, test:product-service, typecheck, lint. Report results in a table.
+
+FINAL REPORT: Part A list, files changed, test output, the manual live-check list, anything you could not verify.

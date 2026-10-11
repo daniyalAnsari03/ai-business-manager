@@ -6,6 +6,7 @@ import {
   getSupabaseServerClient,
 } from "@/lib/supabase/server";
 import { validateCustomerInput } from "@/lib/customers/validation";
+import { listOrderPaymentSummaries } from "@/lib/payments/service";
 import type {
   Customer,
   CustomerWithStats,
@@ -83,7 +84,8 @@ export interface GetCustomersOptions {
 
 /**
  * Customers of the caller's business, newest first, each enriched with real
- * order aggregates (order count excluding cancelled, completed spending).
+ * order aggregates (order count excluding cancelled, completed spending) and
+ * money they have paid vs still owe (from the append-only payments ledger).
  */
 export async function getCustomers(
   options: GetCustomersOptions = {},
@@ -108,15 +110,18 @@ export async function getCustomers(
     }
   }
 
-  const [{ data: customerRows, error }, ordersResult] = await Promise.all([
-    query,
-    context.supabase
-      .from("orders")
-      .select("customer_id, status, total")
-      .eq("business_id", context.business.id),
-  ]);
+  const [{ data: customerRows, error }, ordersResult, moneyResult] =
+    await Promise.all([
+      query,
+      context.supabase
+        .from("orders")
+        .select("customer_id, status, total")
+        .eq("business_id", context.business.id),
+      listOrderPaymentSummaries(),
+    ]);
 
   if (error || ordersResult.error) return { ok: false, reason: "database_error" };
+  if (!moneyResult.ok) return { ok: false, reason: "database_error" };
 
   // Aggregate real order history per customer.
   type OrderStatRow = {
@@ -124,28 +129,50 @@ export async function getCustomers(
     status: string;
     total: string | number;
   };
-  const statsByCustomer = new Map<string, { totalOrders: number; totalSpent: number }>();
+  const totalsByCustomer = new Map<
+    string,
+    { totalOrders: number; totalSpent: number; totalPaid: number; totalDue: number }
+  >();
   for (const raw of (ordersResult.data ?? []) as OrderStatRow[]) {
     if (!raw.customer_id) continue;
     if (raw.status === "cancelled") continue;
-    const entry = statsByCustomer.get(raw.customer_id) ?? {
+    const entry = totalsByCustomer.get(raw.customer_id) ?? {
       totalOrders: 0,
       totalSpent: 0,
+      totalPaid: 0,
+      totalDue: 0,
     };
     entry.totalOrders += 1;
     if (raw.status === "completed") {
       entry.totalSpent +=
         typeof raw.total === "number" ? raw.total : Number.parseFloat(raw.total) || 0;
     }
-    statsByCustomer.set(raw.customer_id, entry);
+    totalsByCustomer.set(raw.customer_id, entry);
+  }
+
+  // Customer money: paid/due derived by the database from the ledger. Orders
+  // that were cancelled are excluded — money owed is only about live orders.
+  for (const summary of moneyResult.data) {
+    if (summary.status === "cancelled") continue;
+    const entry = totalsByCustomer.get(summary.customerId);
+    if (!entry) continue;
+    entry.totalPaid += summary.paid;
+    entry.totalDue += summary.due;
   }
 
   const customers = ((customerRows ?? []) as CustomerRow[]).map((row) => {
-    const stats = statsByCustomer.get(row.id);
+    const stats = totalsByCustomer.get(row.id) ?? {
+      totalOrders: 0,
+      totalSpent: 0,
+      totalPaid: 0,
+      totalDue: 0,
+    };
     return {
       ...mapCustomer(row),
-      totalOrders: stats?.totalOrders ?? 0,
-      totalSpent: stats?.totalSpent ?? 0,
+      totalOrders: stats.totalOrders,
+      totalSpent: stats.totalSpent,
+      totalPaid: stats.totalPaid,
+      totalDue: stats.totalDue,
     };
   });
 

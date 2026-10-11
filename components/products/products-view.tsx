@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/icons";
 import type { Business, } from "@/lib/business/types";
 import type { CurrencyCode } from "@/lib/business/constants";
+import { hasCapability } from "@/lib/business/type-config";
 import { EASE_PREMIUM, fadeUp, staggerContainer } from "@/components/motion/presets";
 import { computeProductStats, type Product } from "@/lib/products/types";
 import { cn } from "@/lib/utils";
@@ -71,6 +72,10 @@ export function ProductsView({ business, initialProducts, loadFailed = false }: 
   const [query, setQuery] = useState("");
   const [modal, setModal] = useState<ActiveModal>(null);
   const [toast, setToast] = useState<Toast | null>(null);
+
+  // The business's own vocabulary decides whether the clothing details are
+  // shown here — the same check the form and the server use.
+  const hasClothing = hasCapability(business.businessType, "fabric_attributes");
 
   // Auto-dismiss toasts.
   useEffect(() => {
@@ -251,6 +256,7 @@ export function ProductsView({ business, initialProducts, loadFailed = false }: 
                     key={product.id}
                     product={product}
                     currency={business.currency}
+                    showAttributes={hasClothing}
                     onEdit={(p) => setModal({ kind: "edit", product: p })}
                     onStock={(p) => setModal({ kind: "stock", product: p })}
                     onDelete={(p) => setModal({ kind: "delete", product: p })}
@@ -269,6 +275,7 @@ export function ProductsView({ business, initialProducts, loadFailed = false }: 
                     <GridItem
                       product={product}
                       currency={business.currency}
+                      showAttributes={hasClothing}
                       onEdit={(p) => setModal({ kind: "edit", product: p })}
                       onStock={(p) => setModal({ kind: "stock", product: p })}
                       onDelete={(p) => setModal({ kind: "delete", product: p })}
@@ -322,6 +329,7 @@ export function ProductsView({ business, initialProducts, loadFailed = false }: 
         <ProductFormModal
           key="add"
           businessId={business.id}
+          businessType={business.businessType}
           categories={categories}
           onClose={() => setModal(null)}
           onSaved={handleSaved}
@@ -331,6 +339,7 @@ export function ProductsView({ business, initialProducts, loadFailed = false }: 
         <ProductFormModal
           key={`edit-${modal.product.id}`}
           businessId={business.id}
+          businessType={business.businessType}
           product={modal.product}
           categories={categories}
           onClose={() => setModal(null)}
@@ -388,12 +397,14 @@ export function ProductsView({ business, initialProducts, loadFailed = false }: 
 function GridItem({
   product,
   currency,
+  showAttributes,
   onEdit,
   onStock,
   onDelete,
 }: {
   product: Product;
   currency: CurrencyCode;
+  showAttributes: boolean;
   onEdit: (product: Product) => void;
   onStock: (product: Product) => void;
   onDelete: (product: Product) => void;
@@ -402,6 +413,7 @@ function GridItem({
     <ProductCard
       product={product}
       currency={currency}
+      showAttributes={showAttributes}
       onEdit={onEdit}
       onStock={onStock}
       onDelete={onDelete}

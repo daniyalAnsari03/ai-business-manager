@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/icons";
 import { Modal } from "@/components/ui/modal";
 import { PageHeader } from "@/components/ui/page-header";
+import { formatMoney } from "@/lib/format/currency";
+import type { CurrencyCode } from "@/lib/business/constants";
 import type {
   ApprovalAction,
   ReviewableAction,
@@ -33,8 +35,31 @@ import { cn } from "@/lib/utils";
 type ApprovalsViewProps = {
   initialPending: ReviewableAction[];
   initialHistory: ApprovalAction[];
+  currency?: CurrencyCode;
   loadFailed?: boolean;
 };
+
+/**
+ * Payment-approval rows carry `targetLabel` / `amount` / `method` in their
+ * payload. These are rendered as neutral data chips (the language-aware
+ * summary above them already says what the action is, in en or ur).
+ */
+function paymentDetailChips(
+  payload: Record<string, unknown>,
+  currency: CurrencyCode,
+): string[] {
+  const chips: string[] = [];
+  if (typeof payload.targetLabel === "string" && payload.targetLabel.trim()) {
+    chips.push(payload.targetLabel);
+  }
+  if (typeof payload.amount === "number") {
+    chips.push(formatMoney(payload.amount, currency));
+  }
+  if (typeof payload.method === "string" && payload.method.trim()) {
+    chips.push(payload.method);
+  }
+  return chips;
+}
 
 type Feedback =
   | { kind: "info"; text: string }
@@ -49,6 +74,7 @@ type Feedback =
 export function ApprovalsView({
   initialPending,
   initialHistory,
+  currency = "PKR",
   loadFailed = false,
 }: ApprovalsViewProps) {
   const { t } = useI18n();
@@ -241,6 +267,7 @@ export function ApprovalsView({
                     key={item.id}
                     item={item}
                     tKey={t.marketing}
+                    currency={currency}
                     onDelete={() => handleDeleteHistory(item)}
                     deleting={deletingHistoryId === item.id}
                   />
@@ -310,10 +337,12 @@ export function ApprovalsView({
             size="lg"
           >
             <dl className="space-y-4 text-sm">
-              <ReviewDetail
-                label={t.marketing.reviewPlatform}
-                value={selected.platform ?? "—"}
-              />
+              {selected.platform ? (
+                <ReviewDetail
+                  label={t.marketing.reviewPlatform}
+                  value={selected.platform}
+                />
+              ) : null}
               {selected.productName ? (
                 <ReviewDetail
                   label={t.marketing.reviewContent}
@@ -341,6 +370,19 @@ export function ApprovalsView({
                 </p>
               ) : null}
             </dl>
+
+            {paymentDetailChips(selected.payload, currency).length > 0 ? (
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-faint">
+                {paymentDetailChips(selected.payload, currency).map((chip) => (
+                  <span
+                    key={chip}
+                    className="rounded-full border border-line px-2 py-0.5 capitalize"
+                  >
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            ) : null}
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Button
@@ -487,11 +529,13 @@ function PendingCard({
 function HistoryRow({
   item,
   tKey,
+  currency,
   onDelete,
   deleting,
 }: {
   item: ApprovalAction;
   tKey: { [k: string]: string };
+  currency: CurrencyCode;
   onDelete: () => void;
   deleting: boolean;
 }) {
@@ -500,6 +544,7 @@ function HistoryRow({
   const payload = item.actionPayload as Record<string, unknown>;
   const productName = typeof payload.productName === "string" ? payload.productName : null;
   const platform = typeof payload.platform === "string" ? payload.platform : null;
+  const detailChips = paymentDetailChips(payload, currency);
   const failureReason = item.executionError ?? null;
 
   return (
@@ -513,6 +558,14 @@ function HistoryRow({
           {platform ? (
             <span className="rounded-full border border-line px-2 py-0.5 capitalize">{platform}</span>
           ) : null}
+          {detailChips.map((chip) => (
+            <span
+              key={chip}
+              className="rounded-full border border-line px-2 py-0.5 capitalize"
+            >
+              {chip}
+            </span>
+          ))}
           <span>{formatTime(item.createdAt)}</span>
         </div>
         {failureReason && (item.status === "failed" || item.status === "rejected") ? (

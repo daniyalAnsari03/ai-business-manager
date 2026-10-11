@@ -1,0 +1,37 @@
+TASK: File 3 | Phase 2 | Prompt 1 of 5. Baseline fix + unit/cost_price storage. Only what is listed here.
+
+RULES (apply to the whole task):
+- Ignore docs/fix.txt. Do NOT commit, push, or deploy. Do NOT apply any migration.
+- Never edit an existing migration. Add a new migration file only where this prompt says so.
+- Do not modify AGENTS.md. Do not touch files outside this scope.
+- Follow existing repo patterns. business_id always comes from the authenticated session / server context, never from client or model input.
+- Never print secrets. Never invent business data.
+- If something is ambiguous or a file is not where expected, STOP and ask instead of guessing.
+- Report honestly what you could not verify.
+
+PART A: make the existing test suites runnable under Node 24
+1. Find every TypeScript parameter property in the repo (constructor parameters with private / public / protected / readonly modifiers), starting with lib/marketing/whatsapp/provider.ts:103. Rewrite each one as an explicit field declaration plus an assignment in the constructor body. Behavior must stay identical. Do not change anything else in those files.
+2. Run these and report a table [script | pass/fail | counts]: npm run test:tools, test:failover (if the terminal truncates the final summary, write the output to a temp file and report the FINAL aggregate line), test:audit, test:budget-planner, test:meta-oauth, test:type-config, test:product-attributes, typecheck, lint.
+3. If test:tools still fails after the fix, show the exact error and stop Part A (do not rewrite tests to hide failures). If a test fails because of a real bug in existing code, report it, do not fix it silently.
+
+PART B: migration for unit and cost_price (products)
+1. Check supabase/migrations first. Confirm products has no unit and no cost_price column. If either exists, stop and tell me.
+2. Create ONE new migration, timestamp higher than every existing one, named ..._add_unit_and_cost_price_to_products.sql:
+   - unit text not null default 'Piece', with a check constraint: char_length(btrim(unit)) between 1 and 30. Custom units are allowed (FILE 3: predefined + custom), so no enum.
+   - cost_price numeric(12,2) null, check (cost_price is null or cost_price >= 0). Use the same numeric style as the existing price column; read that migration and match it.
+   - Do not change RLS or grants (policies are row-level, so new columns are covered). Say so in your report after reading the policies.
+   - Existing rows must get unit = 'Piece' automatically and cost_price = NULL. Never fabricate a cost price.
+3. Do NOT apply it. Give me the exact apply command (npx supabase db push --linked) and a read-only verification SQL that shows both new columns (name, type, nullable, default) and the two check constraints.
+4. Be honest that the SQL was not executed by a Postgres engine if that is the case.
+
+PART C: pure units module
+1. Create lib/business/product-units.ts (pure TypeScript, no DB, no server-only imports).
+   - UNIT_OPTIONS (FILE 3 clothing units, exact spelling and order): "Piece", "Meter", "Yard", "Set", "Dozen", "Other".
+   - normalizeUnit(input): returns { ok: true, unit } or { ok: false, error }. Trim, collapse repeated whitespace, match case-insensitively to a list value and store the canonical spelling; otherwise accept as a custom value (max 30 chars, checked after normalization). Empty or non-string input is an error (the caller decides what "not provided" means).
+   - DEFAULT_UNIT = "Piece".
+2. Offline tests (same style as tests/business/product-attributes.test.mjs) with npm script test:product-units: exact list equality, round trip, case variants ("meter", "YARD"), custom value kept as typed, 30 ok / 31 rejected, whitespace-only rejected, non-string rejected.
+3. Do not import this module anywhere yet.
+
+DECISION FOR CONTEXT: stock quantities stay WHOLE NUMBERS. Do not change any quantity column or arithmetic. Unit is a label only.
+
+FINAL: run typecheck and lint and all test scripts again. Report: files changed, the Part A table, the migration name, the apply command and verification SQL, tests output, anything you could not verify.

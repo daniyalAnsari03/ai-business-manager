@@ -7,12 +7,14 @@ import {
   findById,
   limitSchema,
   orKeep,
+  readAgentContext,
   resolveCustomer,
   toolClarify,
   toolFail,
   toolNeedsConfirmation,
   toolOk,
 } from "@/lib/ai/tools/shared";
+import { recordAgentAudit } from "@/lib/audit/write-audit-log";
 import {
   createCustomer,
   deleteCustomer,
@@ -20,7 +22,7 @@ import {
   updateCustomer,
 } from "@/lib/customers/service";
 import { getOrdersByCustomer } from "@/lib/orders/service";
-import type { CustomerWithStats } from "@/lib/customers/types";
+import type { Customer, CustomerWithStats } from "@/lib/customers/types";
 
 /**
  * Customer tools — controlled wrappers over the customer service. Entity
@@ -44,6 +46,45 @@ function customerSummary(customer: CustomerWithStats) {
 async function loadCustomers(): Promise<CustomerWithStats[] | null> {
   const result = await getCustomers();
   return result.ok ? result.data : null;
+}
+
+/**
+ * Customer fields that must NEVER have their value written to history. A
+ * customer's phone, email, address and free-text notes are personal data; for
+ * these we record only WHICH field changed, so the log answers "the customer
+ * record changed" without becoming a second copy of someone's contact details.
+ */
+const CUSTOMER_PRIVATE_FIELDS = ["phone", "email", "address", "notes"] as const;
+
+/** The customer fields this tool's history is concerned about. `getCustomers`
+ *  returns records with order stats, the write service returns a plain
+ *  Customer; both satisfy this shape. */
+type CustomerHistoryFields = Pick<Customer, "name" | "phone" | "email" | "address" | "notes">;
+
+/**
+ * Builds the before/after pair for a customer edit. A name change stores the
+ * old and new name; any private field that changed is recorded as a field NAME
+ * in `changed_fields` and its value is deliberately dropped. Returns null when
+ * the save changed nothing, so a no-op update writes no row.
+ */
+function customerChangeAudit(
+  previous: CustomerHistoryFields,
+  next: CustomerHistoryFields,
+): { before: Record<string, unknown>; after: Record<string, unknown> } | null {
+  const before: Record<string, unknown> = {};
+  const after: Record<string, unknown> = {};
+  if (next.name !== previous.name) {
+    before.name = previous.name;
+    after.name = next.name;
+  }
+  const privateChanged = CUSTOMER_PRIVATE_FIELDS.filter(
+    (field) => (next[field] ?? null) !== (previous[field] ?? null),
+  );
+  if (privateChanged.length > 0) {
+    before.changed_fields = [...privateChanged];
+    after.changed_fields = [...privateChanged];
+  }
+  return Object.keys(after).length > 0 ? { before, after } : null;
 }
 
 /**
@@ -173,7 +214,7 @@ export const createCustomerTool = tool({
     address: z.string().trim().max(500).optional().nullable(),
     notes: z.string().trim().max(500).optional().nullable(),
   }),
-  execute: async (input) => {
+  execute: async (input, ctx) => {
     // Follow-up safety: when a user adds a customer and then, in a later turn,
     // provides the rest of the details ("us ka phone/email/address ...") the
     // model often calls create_customer again instead of update_customer,
@@ -200,12 +241,27 @@ export const createCustomerTool = tool({
             "[customer-tools] create_customer -> existing same-name customer found; UPDATED instead of duplicated:",
             existing.id,
           );
+          // No customer was created on this path — the existing record was
+          // edited — so history says customer.update, never customer.create
+          // (docs/1c.txt).
+          const updated = customerChangeAudit(existing, updateResult.data);
+          if (updated) {
+            await recordAgentAudit(readAgentContext(ctx), {
+              action: "customer.update",
+              entity: "customer",
+              entityId: existing.id,
+              before: updated.before,
+              after: updated.after,
+            });
+          }
           return toolOk({
             updated_existing: true,
             customer: customerSummary({
               ...updateResult.data,
               totalOrders: existing.totalOrders,
               totalSpent: existing.totalSpent,
+              totalPaid: existing.totalPaid,
+              totalDue: existing.totalDue,
             }),
           });
         }
@@ -222,7 +278,16 @@ export const createCustomerTool = tool({
           : "Could not save the customer. Do not claim success.",
       );
     }
-    return toolOk({ created: true, customer: customerSummary({ ...result.data, totalOrders: 0, totalSpent: 0 }) });
+    // History for the change the backend just confirmed (docs/1c.txt). A
+    // creation has no prior state, so `before` stays null. Only the record's
+    // identity is stored: contact details are personal and never enter history.
+    await recordAgentAudit(readAgentContext(ctx), {
+      action: "customer.create",
+      entity: "customer",
+      entityId: result.data.id,
+      after: { id: result.data.id, name: result.data.name },
+    });
+    return toolOk({ created: true, customer: customerSummary({ ...result.data, totalOrders: 0, totalSpent: 0, totalPaid: 0, totalDue: 0 }) });
   },
 });
 
@@ -239,7 +304,7 @@ export const updateCustomerTool = tool({
     address: z.string().trim().max(500).optional().nullable(),
     notes: z.string().trim().max(500).optional().nullable(),
   }),
-  execute: async ({ customerName, customerId, ...changes }) => {
+  execute: async ({ customerName, customerId, ...changes }, ctx) => {
     const customers = await loadCustomers();
     if (!customers) {
       return toolFail("database_error", "Could not read customers. Ask the user to try again.");
@@ -278,6 +343,19 @@ export const updateCustomerTool = tool({
           : "Update failed. Do not claim success.",
       );
     }
+    // Only the confirmed change is recorded, and only the changed fields: a
+    // name change carries old/new name, while phone/email/address/notes are
+    // recorded as changed field NAMES only (docs/1c.txt).
+    const changed = customerChangeAudit(current, result.data);
+    if (changed) {
+      await recordAgentAudit(readAgentContext(ctx), {
+        action: "customer.update",
+        entity: "customer",
+        entityId: current.id,
+        before: changed.before,
+        after: changed.after,
+      });
+    }
     return toolOk({
       updated: true,
       customer: customerSummary({
@@ -297,7 +375,7 @@ export const deleteCustomerTool = tool({
     customerId: z.string().trim().min(1).max(60).optional().nullable().describe("Exact customer ID from a previous tool result when the user picked a specific candidate. Bypasses name search."),
     confirmed: z.boolean().default(false),
   }),
-  execute: async ({ customerName, customerId, confirmed }) => {
+  execute: async ({ customerName, customerId, confirmed }, ctx) => {
     const customers = await loadCustomers();
     if (!customers) {
       return toolFail("database_error", "Could not read customers. Ask the user to try again.");
@@ -325,6 +403,15 @@ export const deleteCustomerTool = tool({
     if (!result.ok) {
       return toolFail(result.reason, "Deletion failed. Do not claim success.");
     }
+    // The row no longer exists, so the "before" state is captured from what was
+    // resolved above — the record's identity only. A customer's phone, email,
+    // address and notes are personal and never enter history (docs/1c.txt).
+    await recordAgentAudit(readAgentContext(ctx), {
+      action: "customer.delete",
+      entity: "customer",
+      entityId: target.id,
+      before: { id: target.id, name: target.name },
+    });
     return toolOk({ removed: true, name: target.name });
   },
 });

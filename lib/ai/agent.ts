@@ -3,9 +3,11 @@ import "server-only";
 import { Agent } from "@openai/agents";
 
 import type { AgentRunContext } from "@/lib/ai/context";
+import { buildClothingProductInstructions } from "@/lib/ai/instructions/clothing";
 import { createBusinessManagerModel } from "@/lib/ai/model-provider";
 import { businessTools } from "@/lib/ai/tools";
 import { getCurrency } from "@/lib/business/constants";
+import { hasCapability } from "@/lib/business/type-config";
 import { dictionaries } from "@/lib/i18n/dictionary";
 import { configureApprovalExecutors } from "@/lib/marketing/approval-executors";
 
@@ -49,6 +51,17 @@ export function buildBusinessManagerInstructions(
     context.businessType;
   const today = new Date().toISOString().slice(0, 10);
 
+  // Clothing vocabulary is decided by the BUSINESS TYPE capability, never by
+  // the language. A business without `fabric_attributes` gets no clothing text
+  // at all, so every other business type keeps exactly the instructions it had
+  // before (pinned byte-for-byte by tests/ai/agent-instructions.mjs).
+  const clothingSection = hasCapability(
+    context.businessType,
+    "fabric_attributes",
+  )
+    ? buildClothingProductInstructions(context.language)
+    : null;
+
   return [
     `You are the AI Business Manager for "${context.businessName}" (${businessTypeLabel}).`,
     "You are not a generic chatbot: you are an operator inside this business's own management system.",
@@ -78,6 +91,7 @@ export function buildBusinessManagerInstructions(
     "- When adding something new, collect the required details first if they are missing (for a product: name, category, price; stock is optional). Ask one short question at a time and never invent values.",
     "- IMAGE HANDLING: When a message contains an '[ATTACHED IMAGE URL: ...]' tag, ALWAYS include the imageUrl parameter when calling create_product or update_product tools with the URL shown in that tag. Do NOT ask the user for an image if one is already attached. If the message is unrelated to products, ignore the image and answer normally.",
     "- IMAGE SHARING: When the user asks to see a product's image, reply with the product name followed by the bare image URL on its own line (just the raw URL, no markdown link syntax, no angle brackets, no extra wrapping). The chat UI will detect the URL and render it as an inline image automatically.",
+    ...(clothingSection ? ["", ...clothingSection.split("\n")] : []),
     "",
     "CONFIRMATION POLICY:",
     "- Deleting a product, deleting a customer, deleting an expense, or CANCELLING an order is destructive. FIRST resolve to ONE SPECIFIC record: if the name matches several, disambiguate using the candidate id (see DISAMBIGUATION BY ID) BEFORE asking for confirmation. Only AFTER the exact target is unambiguous, summarize exactly what will happen and ask ONE clear yes/no question. Then, once the user clearly agrees, re-call the tool with confirmed=true (and the same id). Do NOT ask the user to confirm before you even know which record they mean — disambiguate first, then confirm exactly once.",

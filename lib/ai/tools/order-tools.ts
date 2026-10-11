@@ -6,6 +6,7 @@ import { z } from "zod";
 import {
   findById,
   limitSchema,
+  readAgentContext,
   resolveCustomer,
   resolveProduct,
   toolClarify,
@@ -14,6 +15,7 @@ import {
   toolOk,
   type ResolutionResult,
 } from "@/lib/ai/tools/shared";
+import { recordAgentAudit } from "@/lib/audit/write-audit-log";
 import { getCustomers } from "@/lib/customers/service";
 import type { Product } from "@/lib/products/types";
 import {
@@ -215,7 +217,7 @@ export const createOrderTool = tool({
       "Could not record the order because of an internal error. Do not claim success; ask the user to try again.",
     );
   },
-  execute: async ({ items, customerName, customerId, status, discount, notes }) => {
+  execute: async ({ items, customerName, customerId, status, discount, notes }, ctx) => {
     const [productsResult, customersResult] = await Promise.all([
       getProducts(),
       getCustomers(),
@@ -312,6 +314,27 @@ export const createOrderTool = tool({
           : "Could not create the order. Do not claim success.",
       );
     }
+    // A creation has no prior state: `before` stays null. The snapshot is the
+    // commercial summary only — ids, status, totals and quantities. Customer
+    // phone/address/notes are deliberately NOT stored in history (docs/1b.txt).
+    await recordAgentAudit(readAgentContext(ctx), {
+      action: "order.create",
+      entity: "order",
+      entityId: result.data.id,
+      after: {
+        order_number: result.data.orderNumber,
+        order_status: result.data.status,
+        customer_id: result.data.customerId,
+        subtotal: result.data.subtotal,
+        discount: result.data.discount,
+        total: result.data.total,
+        items: result.data.items.map((item) => ({
+          product_id: item.productId,
+          quantity: item.quantity,
+          unit_price: item.unitPrice,
+        })),
+      },
+    });
     return toolOk({
       created: true,
       orderNumber: result.data.orderNumber,
@@ -349,7 +372,7 @@ export const updateOrderStatusTool = tool({
       "Could not update the order status because of an internal error. Do not claim success; ask the user to try again.",
     );
   },
-  execute: async ({ orderNumber, orderId, status, confirmed }) => {
+  execute: async ({ orderNumber, orderId, status, confirmed }, ctx) => {
     const result = await getOrders({ search: orderNumber ?? undefined });
     if (!result.ok) {
       return toolFail(result.reason, "Could not read orders. Ask the user to try again.");
@@ -378,6 +401,15 @@ export const updateOrderStatusTool = tool({
     if (!update.ok) {
       return toolFail(update.reason, "Status change failed. Do not claim success.");
     }
+    // Only the confirmed transition is recorded — the idempotent no-op above
+    // and the awaiting-confirmation branch above both return before this point.
+    await recordAgentAudit(readAgentContext(ctx), {
+      action: "order.status_update",
+      entity: "order",
+      entityId: target.id,
+      before: { order_status: target.status },
+      after: { order_status: update.data.status },
+    });
     return toolOk({ updated: true, orderNumber: update.data.orderNumber, newStatus: update.data.status });
   },
 });

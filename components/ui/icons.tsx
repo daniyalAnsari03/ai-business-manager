@@ -454,6 +454,42 @@ export function StoreIcon(props: IconProps) {
   );
 }
 
+/* Suppliers + payments */
+
+export function TruckIcon(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M14 18V6a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h1" />
+      <path d="M14 9h4l4 4v5a1 1 0 0 1-1 1h-1" />
+      <circle cx="7" cy="18" r="2" />
+      <circle cx="17" cy="18" r="2" />
+      <path d="M9 18h6" />
+    </Base>
+  );
+}
+
+export function ArrowsUpDownIcon(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="m21 12-4 4-4-4" />
+      <path d="m11 12-4 4-4-4" />
+      <path d="M17 4v12" />
+      <path d="M7 4v12" />
+    </Base>
+  );
+}
+
+export function ReceiptIcon(props: IconProps) {
+  return (
+    <Base {...props}>
+      <path d="M5 3v18l2-1.5L9 21l2-1.5L13 21l2-1.5L17 21l2-1.5L19 3l-2 1.5L15 3l-2 1.5L11 3 9 4.5 7 3 5 3z" />
+      <path d="M8 8h8" />
+      <path d="M8 12h8" />
+      <path d="M8 16h5" />
+    </Base>
+  );
+}
+
 export function ChevronDownIcon(props: IconProps) {
   return (
     <Base {...props}>

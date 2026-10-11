@@ -6,6 +6,12 @@ import {
   getSupabaseServerClient,
 } from "@/lib/supabase/server";
 import { validateOrderInput, validateOrderStatus } from "@/lib/orders/validation";
+import { listOrderPaymentSummaries } from "@/lib/payments/service";
+import {
+  orderPaymentStatus,
+  type OrderPaymentSummary,
+  type OrderPaymentStatus as PaymentStatusValue,
+} from "@/lib/payments/types";
 import {
   isOrderStatus,
   toNumber,
@@ -95,6 +101,7 @@ export type OrderServiceError =
   | "insufficient_stock"
   | "invalid_status"
   | "delete_not_allowed"
+  | "order_has_payments"
   | "database_error";
 
 export type OrderServiceResult<T> =
@@ -169,6 +176,31 @@ async function getCustomerNameMap(
   return map;
 }
 
+/**
+ * The whole business's per-order money in one call: paid = opening_paid +
+ * net_paid (from the append-only ledger), due = total - paid. When this fails
+ * we degrade to zero-paid rather than failing the whole order list.
+ */
+async function loadPaymentSummaryMap(): Promise<Map<string, OrderPaymentSummary>> {
+  const result = await listOrderPaymentSummaries();
+  if (!result.ok) return new Map();
+  return new Map(result.data.map((summary) => [summary.orderId, summary]));
+}
+
+function attachPayment<T extends Order>(
+  order: T,
+  summary: OrderPaymentSummary | undefined,
+): T & { paid: number; due: number; paymentStatus: PaymentStatusValue } {
+  const paid = summary?.paid ?? 0;
+  const due = summary?.due ?? order.total - paid;
+  return {
+    ...order,
+    paid,
+    due,
+    paymentStatus: orderPaymentStatus({ total: order.total, paid }),
+  };
+}
+
 export interface GetOrdersOptions {
   /** Case-insensitive match on order number / item product name. */
   search?: string;
@@ -179,11 +211,24 @@ export interface GetOrdersOptions {
 /** Order enriched with the customer's display name — no line items. */
 export interface OrderSummary extends Order {
   customerName: string | null;
+  /** Money received against this order (opening_paid + ledger net paid). */
+  paid: number;
+  /** Money still owed (total - paid). */
+  due: number;
+  paymentStatus: PaymentStatusValue;
 }
 
 /** Full list row: summary plus its line items, as the Orders module uses. */
 export interface OrderListItem extends OrderSummary {
   items: OrderItem[];
+}
+
+/** Single-order detail: line items, customer name and derived money. */
+export interface OrderDetail extends OrderWithItems {
+  customerName: string | null;
+  paid: number;
+  due: number;
+  paymentStatus: PaymentStatusValue;
 }
 
 /**
@@ -207,21 +252,26 @@ export async function getOrders(
     query = query.eq("status", options.status);
   }
 
-  const [{ data, error }, customerNames] = await Promise.all([
+  const [{ data, error }, customerNames, paymentSummaries] = await Promise.all([
     query,
     getCustomerNameMap(context.supabase, context.business.id),
+    loadPaymentSummaryMap(),
   ]);
 
   if (error) return { ok: false, reason: "database_error" };
 
   let orders = ((data ?? []) as Array<OrderRow & { order_items: OrderItemRow[] | null }>).map(
-    (row) => ({
-      ...mapOrder(row),
-      items: (row.order_items ?? []).map(mapOrderItem),
-      customerName: row.customer_id
-        ? customerNames.get(row.customer_id) ?? null
-        : null,
-    }),
+    (row) =>
+      attachPayment(
+        {
+          ...mapOrder(row),
+          items: (row.order_items ?? []).map(mapOrderItem),
+          customerName: row.customer_id
+            ? customerNames.get(row.customer_id) ?? null
+            : null,
+        },
+        paymentSummaries.get(row.id),
+      ),
   );
 
   const search = options.search?.trim().toLowerCase();
@@ -243,26 +293,36 @@ export async function getOrders(
 
 export async function getOrder(
   orderId: string,
-): Promise<OrderServiceResult<OrderWithItems>> {
+): Promise<OrderServiceResult<OrderDetail>> {
   const context = await requireBusinessContext();
   if (!context.ok) return context;
 
-  const { data, error } = await context.supabase
-    .from("orders")
-    .select("*, order_items(*)")
-    .eq("id", orderId)
-    .eq("business_id", context.business.id)
-    .maybeSingle();
+  const [{ data, error }, customerNames, paymentSummaries] = await Promise.all([
+    context.supabase
+      .from("orders")
+      .select("*, order_items(*)")
+      .eq("id", orderId)
+      .eq("business_id", context.business.id)
+      .maybeSingle(),
+    getCustomerNameMap(context.supabase, context.business.id),
+    loadPaymentSummaryMap(),
+  ]);
 
   if (error) return { ok: false, reason: "database_error" };
   if (!data) return { ok: false, reason: "not_found" };
 
   const row = data as OrderRow & { order_items: OrderItemRow[] | null };
+  const base: OrderWithItems = {
+    ...mapOrder(row),
+    items: (row.order_items ?? []).map(mapOrderItem),
+  };
   return {
     ok: true,
     data: {
-      ...mapOrder(row),
-      items: (row.order_items ?? []).map(mapOrderItem),
+      ...attachPayment(base, paymentSummaries.get(orderId)),
+      customerName: row.customer_id
+        ? customerNames.get(row.customer_id) ?? null
+        : null,
     },
   };
 }
@@ -278,7 +338,7 @@ export async function getOrdersByCustomer(
   const context = await requireBusinessContext();
   if (!context.ok) return context;
 
-  const [{ data, error }, customerNames] = await Promise.all([
+  const [{ data, error }, customerNames, paymentSummaries] = await Promise.all([
     context.supabase
       .from("orders")
       .select("*, order_items(*)")
@@ -287,6 +347,7 @@ export async function getOrdersByCustomer(
       .order("ordered_at", { ascending: false })
       .limit(Math.min(Math.max(Math.floor(limit) || 10, 1), 25)),
     getCustomerNameMap(context.supabase, context.business.id),
+    loadPaymentSummaryMap(),
   ]);
 
   if (error) return { ok: false, reason: "database_error" };
@@ -294,13 +355,17 @@ export async function getOrdersByCustomer(
   return {
     ok: true,
     data: ((data ?? []) as Array<OrderRow & { order_items: OrderItemRow[] | null }>).map(
-      (row) => ({
-        ...mapOrder(row),
-        items: (row.order_items ?? []).map(mapOrderItem),
-        customerName: row.customer_id
-          ? customerNames.get(row.customer_id) ?? null
-          : null,
-      }),
+      (row) =>
+        attachPayment(
+          {
+            ...mapOrder(row),
+            items: (row.order_items ?? []).map(mapOrderItem),
+            customerName: row.customer_id
+              ? customerNames.get(row.customer_id) ?? null
+              : null,
+          },
+          paymentSummaries.get(row.id),
+        ),
     ),
   };
 }
@@ -312,7 +377,7 @@ export async function getRecentOrders(
   const context = await requireBusinessContext();
   if (!context.ok) return context;
 
-  const [{ data, error }, customerNames] = await Promise.all([
+  const [{ data, error }, customerNames, paymentSummaries] = await Promise.all([
     context.supabase
       .from("orders")
       .select("*")
@@ -320,18 +385,24 @@ export async function getRecentOrders(
       .order("ordered_at", { ascending: false })
       .limit(limit),
     getCustomerNameMap(context.supabase, context.business.id),
+    loadPaymentSummaryMap(),
   ]);
 
   if (error) return { ok: false, reason: "database_error" };
 
   return {
     ok: true,
-    data: ((data ?? []) as OrderRow[]).map((row) => ({
-      ...mapOrder(row),
-      customerName: row.customer_id
-        ? customerNames.get(row.customer_id) ?? null
-        : null,
-    })),
+    data: ((data ?? []) as OrderRow[]).map((row) =>
+      attachPayment(
+        {
+          ...mapOrder(row),
+          customerName: row.customer_id
+            ? customerNames.get(row.customer_id) ?? null
+            : null,
+        },
+        paymentSummaries.get(row.id),
+      ),
+    ),
   };
 }
 
@@ -443,13 +514,26 @@ export async function updateOrderStatus(
 /**
  * Hard-deletes an order. Only reachable for orders that were never
  * completed — the database refuses otherwise so financial history stays
- * protected; cancellations are the supported path instead.
+ * protected; cancellations are the supported path instead. An order that has
+ * money recorded against it is financial history too and is refused up front
+ * (`order_has_payments`); the owner must cancel the payments first.
  */
 export async function deleteOrder(
   orderId: string,
 ): Promise<OrderServiceResult<{ id: string }>> {
   const context = await requireBusinessContext();
   if (!context.ok) return context;
+
+  // Refuse before even touching the RPC: an order with payment rows is money
+  // history (payments.order_id -> orders RESTRICT). The owner settles the
+  // ledger first, then deletes.
+  const { count, error: countError } = await context.supabase
+    .from("payments")
+    .select("*", { count: "exact", head: true })
+    .eq("business_id", context.business.id)
+    .eq("order_id", orderId);
+  if (countError) return { ok: false, reason: "database_error" };
+  if ((count ?? 0) > 0) return { ok: false, reason: "order_has_payments" };
 
   const { data, error } = await context.supabase.rpc("delete_business_order", {
     p_order_id: orderId,

@@ -10,7 +10,8 @@ import {
 } from "@/lib/business/constants";
 import { isLanguage } from "@/lib/business/types";
 import { getUserBusiness, updateBusinessProfile } from "@/lib/business/service";
-import { toolFail, toolOk } from "@/lib/ai/tools/shared";
+import { readAgentContext, toolFail, toolOk } from "@/lib/ai/tools/shared";
+import { recordAgentAudit } from "@/lib/audit/write-audit-log";
 
 /**
  * Business settings tools — controlled wrappers over the SAME business
@@ -158,6 +159,52 @@ function profileSummary(business: {
   };
 }
 
+/** Business fields whose value may be written to history, and the snapshot key
+ *  each is stored under. Phone and address are NOT here: they are the owner's
+ *  own contact details and never enter the log. */
+const BUSINESS_AUDIT_FIELDS: ReadonlyArray<[keyof MergedBusinessProfile, string]> = [
+  ["name", "name"],
+  ["businessType", "business_type"],
+  ["currency", "currency"],
+  ["language", "language"],
+];
+
+/** Contact fields recorded as a changed field NAME only, never as a value. */
+const BUSINESS_PRIVATE_FIELDS = ["phone", "address"] as const;
+
+/**
+ * Builds the before/after pair for a profile edit from ONLY the fields the save
+ * changed. A changed phone or address is recorded as a field name in
+ * `changed_fields` with no value attached. Returns null when nothing changed,
+ * so a no-op save writes no row.
+ */
+function businessChangeAudit(
+  previous: MergedBusinessProfile,
+  next: MergedBusinessProfile,
+): { before: Record<string, unknown>; after: Record<string, unknown> } | null {
+  const before: Record<string, unknown> = {};
+  const after: Record<string, unknown> = {};
+  for (const [field, key] of BUSINESS_AUDIT_FIELDS) {
+    const oldValue = previous[field] ?? null;
+    const newValue = next[field] ?? null;
+    if (oldValue === newValue) continue;
+    before[key] = oldValue;
+    after[key] = newValue;
+  }
+  const privateChanged = BUSINESS_PRIVATE_FIELDS.filter((field) => {
+    // Phone is stored digits-only, so an unchanged number resubmitted with new
+    // formatting must not look like a change.
+    const read = (value: string | null) =>
+      field === "phone" ? (value ?? "").replace(/\D/g, "") : (value ?? "").trim();
+    return read(next[field]) !== read(previous[field]);
+  });
+  if (privateChanged.length > 0) {
+    before.changed_fields = [...privateChanged];
+    after.changed_fields = [...privateChanged];
+  }
+  return Object.keys(after).length > 0 ? { before, after } : null;
+}
+
 export const getBusinessInfoTool = tool({
   name: "get_business_info",
   description:
@@ -195,7 +242,7 @@ export const updateBusinessProfileTool = tool({
     phone: z.string().trim().max(30).optional().nullable(),
     address: z.string().trim().max(400).optional().nullable(),
   }),
-  execute: async (changes) => {
+  execute: async (changes, ctx) => {
     const current = await getUserBusiness();
     if (!current) {
       return toolFail("database_error", "Could not read the business profile.");
@@ -215,6 +262,20 @@ export const updateBusinessProfileTool = tool({
         result.reason ?? "database_error",
         "The business profile could not be saved. Do not claim success.",
       );
+    }
+    // Only the fields the save actually changed are recorded: the stored
+    // profile from BEFORE the save against the one the backend confirmed
+    // afterwards. Phone and address are recorded as changed field NAMES only —
+    // never their values (docs/1c.txt).
+    const changed = businessChangeAudit(current, result.business);
+    if (changed) {
+      await recordAgentAudit(readAgentContext(ctx), {
+        action: "business.update",
+        entity: "business",
+        entityId: result.business.id,
+        before: changed.before,
+        after: changed.after,
+      });
     }
     return toolOk({
       updated: true,

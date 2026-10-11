@@ -24,6 +24,10 @@ export interface CustomerInput {
 export interface CustomerOrderStats {
   totalOrders: number;
   totalSpent: number;
+  /** Sum of paid across the customer's non-cancelled orders (from the ledger). */
+  totalPaid: number;
+  /** Sum of due across the customer's non-cancelled orders (from the ledger). */
+  totalDue: number;
 }
 
 export type CustomerWithStats = Customer & CustomerOrderStats;

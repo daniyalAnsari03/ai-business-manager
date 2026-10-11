@@ -159,6 +159,9 @@ function mapBackfillProduct(row: BackfillProductRow): Product {
     imageUrl: row.image_url,
     createdAt: "",
     updatedAt: "",
+    attributes: {},
+    unit: "Piece",
+    costPrice: null,
   };
 }
 

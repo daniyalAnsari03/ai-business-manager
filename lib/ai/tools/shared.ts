@@ -9,6 +9,7 @@ import type {
 } from "@/lib/customers/types";
 import type { Expense } from "@/lib/expenses/types";
 import type { Product } from "@/lib/products/types";
+import type { SupplierWithOwing } from "@/lib/suppliers/types";
 
 /**
  * Shared plumbing for the AI Business Manager's controlled tools.
@@ -27,6 +28,22 @@ export function agentCtx(runContext: RunContext<AgentRunContext> | undefined): A
     throw new Error("agent_context_missing");
   }
   return context;
+}
+
+/**
+ * Non-throwing variant of {@link agentCtx} for best-effort side work such as
+ * audit logging: a missing context must skip that work, never fail the tool's
+ * actual business action. Returns null when the server-side context is absent.
+ */
+export function readAgentContext(
+  runContext: RunContext<unknown> | undefined,
+): AgentRunContext | null {
+  const context = runContext?.context;
+  if (!context || typeof context !== "object") return null;
+  const candidate = context as Partial<AgentRunContext>;
+  return typeof candidate.businessId === "string" && candidate.businessId.trim()
+    ? (candidate as AgentRunContext)
+    : null;
 }
 
 /* ---------------------------------------------------------------------------
@@ -173,6 +190,16 @@ export function resolveCustomer(
   customers: CustomerWithStats[],
 ): ResolutionResult<CustomerWithStats> {
   return resolveByQuery(query, customers, CUSTOMER_KEYS);
+}
+
+const SUPPLIER_KEYS = (supplier: SupplierWithOwing) =>
+  [supplier.name, supplier.phone ?? "", supplier.email ?? ""];
+
+export function resolveSupplier(
+  query: string,
+  suppliers: SupplierWithOwing[],
+): ResolutionResult<SupplierWithOwing> {
+  return resolveByQuery(query, suppliers, SUPPLIER_KEYS);
 }
 
 const EXPENSE_KEYS = (expense: Expense) => [expense.title];

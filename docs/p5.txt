@@ -1,0 +1,31 @@
+TASK: File 3 | Phase 2 | Prompt 5 of 5. Small cost-price fix, then final verification of Phase 2. Do not add other features. Ignore docs/fix.txt.
+
+RULES (apply to the whole task):
+- Do NOT commit, push, or deploy. Do NOT apply migrations. No new migrations.
+- Do not modify AGENTS.md. Do not touch files outside this scope.
+- business_id always from the authenticated session / AgentRunContext, never from client or model input.
+- Never print secrets. Never invent business data.
+- Do NOT write to the real database (no creating or editing real products). Offline tests only.
+- Stock quantities stay WHOLE NUMBERS; unit is a label only.
+- If something is ambiguous, STOP and ask instead of guessing. Report honestly what you could not verify.
+
+PART A: let the user remove a recorded cost price
+Today the service treats costPrice: null as "not supplied", so a recorded cost price cannot be erased from the form. Fix this minimally and explicitly:
+1. Service layer (lib/products/service.ts, validation, types): add an explicit clearCostPrice flag on update. When true, cost_price is set to NULL. Omitted costPrice still means "leave unchanged". If both a new costPrice value and clearCostPrice are sent, return a clear validation error (never guess).
+2. Form (components/products/product-form-modal.tsx): when the product already has a cost price, add a small "Remove cost price" control (accessible, keyboard usable). Emptying the field must NOT silently erase it; only the explicit control does. Add en and ur strings to lib/i18n/dictionary.ts. Follow AGENTS.md design rules.
+3. AI tool (update_product): add an optional boolean parameter clear_cost_price, additive only; description says to use it only when the user explicitly asks to remove or reset the cost price.
+4. Audit: product.update records cost_price before/after when cleared. Keep all existing audit rules (row only after confirmed success, no row on no-op).
+5. Offline tests for: clear works; omitted leaves unchanged; value plus clear is rejected; clear on a product with no cost price is a no-op with no audit row; business-type independence (works for every type); hostile business_id in input is never used.
+
+PART B: final verification (no new features; fix only real bugs in Phase 2 code and report each fix)
+1. Run and report a table [script | result | counts]: npm run build, typecheck, lint, and EVERY test:* script in package.json. Any failure: show the exact error and whether Phase 2 code caused it or it was pre-existing.
+2. Scope check: git status and git diff --stat, grouped by purpose (Phase 1 audit/type-config/attributes, Phase 2 prompts 1-5, other earlier work). Flag any file that should not have changed: docs/fix.txt, dev-server.log, supabase/.temp, any .env file, AGENTS.md, any existing migration edited after creation. Confirm the migrations created since Phase 1 are only: 20260930000000_lock_down_whatsapp_write_policies, 20260930120000_create_audit_logs, 20260930130000_add_attributes_to_products, 20260930140000_add_unit_and_cost_price_to_products, and that none was edited after creation.
+3. Multi-tenant check (code review plus offline tests): every new or changed read/write path in products service, product tools, product server actions and audit writer takes business id from the session or AgentRunContext; no model-supplied or client-supplied business id reaches a query; attribute validation uses the server-side business type. Show the exact lines per path.
+4. Regression: non-clothing types (electronics, retail_shop, grocery, services, restaurant_food, other) see no attribute fields, get byte-identical AI instructions, and their product create/update still works. Show the test evidence.
+5. Honesty check: confirm no tool or screen invents attributes, prices, units or availability; confirm stock stays whole-number and the AI says so for fractional requests.
+6. Audit check: product.create and product.update rows contain the new fields, no personal data, and no row on failure or no-op (offline evidence).
+7. Encoding check: scan every changed or new file for BOM, mojibake and replacement characters (especially lib/i18n/dictionary.ts Urdu strings) and report.
+8. Give me a read-only SQL for the Supabase SQL Editor that (a) shows products has attributes, unit, cost_price with the right types and defaults, and (b) counts products with unit = 'Piece' and attributes = '{}' and cost_price is null. Reads only.
+9. A manual check list for me (max 8 steps, English and Roman Urdu wording, on a TEST product I create and then delete): create via the form with clothing fields, edit one field, remove the cost price, create via AI chat, ask the AI about the product, change stock and check the unit shows, look at audit_logs rows in SQL Editor, check on a phone-width screen.
+
+FINAL REPORT: all tables above, bugs found and fixed, anything you could not verify, and a plain-language 10-line summary of what Phase 2 delivers.

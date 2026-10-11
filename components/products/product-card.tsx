@@ -12,7 +12,8 @@ import {
   XCircleIcon,
 } from "@/components/ui/icons";
 import type { CurrencyCode } from "@/lib/business/constants";
-import { formatMoney } from "@/lib/format/currency";
+import { formatMoney, formatStockQuantity } from "@/lib/format/currency";
+import { attributeChipValues } from "@/lib/products/attribute-form";
 import type { Product } from "@/lib/products/types";
 import { getStockStatus } from "@/lib/products/types";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,8 @@ import { cn } from "@/lib/utils";
 type ProductCardProps = {
   product: Product;
   currency: CurrencyCode;
+  /** Show the clothing attribute chips (only where the business has them). */
+  showAttributes?: boolean;
   onEdit: (product: Product) => void;
   onStock: (product: Product) => void;
   onDelete: (product: Product) => void;
@@ -29,12 +32,15 @@ type ProductCardProps = {
 export function ProductCard({
   product,
   currency,
+  showAttributes = false,
   onEdit,
   onStock,
   onDelete,
 }: ProductCardProps) {
   const { t } = useI18n();
   const status = getStockStatus(product.stockQuantity, product.lowStockThreshold);
+  // Only values the owner actually saved — no empty chips for a plain product.
+  const chips = showAttributes ? attributeChipValues(product.attributes) : [];
 
   const statusConfig = {
     in_stock: {
@@ -107,9 +113,27 @@ export function ProductCard({
           {formatMoney(product.price, currency)}
         </p>
 
+        {/* Clothing details as quiet chips — values only, in the fixed order,
+            and nothing at all when the owner has not filled them in. */}
+        {chips.length > 0 ? (
+          <ul
+            aria-label={t.products.attributesLabel}
+            className="mt-3 flex flex-wrap gap-1.5"
+          >
+            {chips.map((value, index) => (
+              <li
+                key={`${value}-${index}`}
+                className="max-w-full truncate rounded-md border border-line bg-surface-raised px-2 py-0.5 text-[11px] text-muted"
+              >
+                {value}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
         <p className="mt-auto pt-3 text-sm text-muted">
-          {product.stockQuantity.toLocaleString("en-US")}{" "}
-          {t.products.pcsUnit}
+          {/* Whole quantity + the owner's own unit label, e.g. "50 Meter". */}
+          {formatStockQuantity(product.stockQuantity, product.unit)}
         </p>
       </div>
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ApprovalsView } from "@/components/marketing/approvals-view";
+import { getUserBusiness } from "@/lib/business/service";
 import {
   listApprovalHistory,
   listReviewableActions,
@@ -17,15 +18,17 @@ export const dynamic = "force-dynamic";
  * data is fabricated.
  */
 export default async function ApprovalsPage() {
-  const [reviewableResult, historyResult] = await Promise.all([
+  const [reviewableResult, historyResult, business] = await Promise.all([
     listReviewableActions(),
     listApprovalHistory(20),
+    getUserBusiness(),
   ]);
 
   return (
     <ApprovalsView
       initialPending={reviewableResult.ok ? reviewableResult.data : []}
       initialHistory={historyResult.ok ? historyResult.data : []}
+      currency={business?.currency ?? "PKR"}
       loadFailed={!reviewableResult.ok || !historyResult.ok}
     />
   );

@@ -1,0 +1,31 @@
+TASK: File 3 | Phase 2 | Prompt 4 of 5. Show and edit clothing attributes, unit and cost price in the product screens, and hide stale attributes for business types without the capability. Only what is listed here.
+
+RULES (apply to the whole task):
+- Ignore docs/fix.txt. Do NOT commit, push, or deploy. Do NOT apply migrations. No new migrations.
+- AGENTS.md is the locked design and behavior rulebook: read it fully first and comply (Obsidian/emerald palette, Ferly only for display headings, Inter for UI, cards with depth, dark and light mode, English + Roman Urdu for every new string, responsive with no horizontal overflow, accessibility, loading / success / error states, reduced motion). Do NOT modify AGENTS.md.
+- business_id always from the authenticated session on the server; never trust a client-sent business id.
+- Do NOT write to the real database during this task (no creating or editing real products). Verify with typecheck, lint, build and offline tests only.
+- Stock quantities stay WHOLE NUMBERS; unit is a label only.
+- Never invent data. Do not change unrelated screens.
+- If something is ambiguous, STOP and ask instead of guessing. Report honestly what you could not verify.
+
+PART A: hide stale attributes on read (decision made: data is kept in the database, only shown when the business type has the 'fabric_attributes' capability)
+1. In the AI tool read output (productSummary in lib/ai/tools/product-tools.ts) and in any server function that feeds the product screens, return attributes only when hasCapability(businessType, 'fabric_attributes') is true; otherwise return an empty object. Stored data is never modified or deleted. unit and cost_price are NOT gated.
+2. Add offline tests: a business with stored attributes that is not a clothing type gets {} on read; the same product read as clothing returns them; nothing is written.
+
+PART B: screens
+1. Find the product add/edit form, the products list and any product detail view (search components/ and app/dashboard/). Report the paths you found at the start of your final report.
+2. Show the clothing section ONLY when the business type has the 'fabric_attributes' capability (hasCapability from lib/business/type-config.ts). Other business types see no new attribute fields and their forms behave exactly as today, except that Unit and Cost price appear for every type.
+   - Clothing fields: Product type, Fabric, Color, Design, Size. Each is a select of the predefined options plus a "Custom" choice that reveals a text input (max 60 chars).
+   - Unit (all types): select from UNIT_OPTIONS plus custom (max 30 chars), default Piece.
+   - Cost price (all types): optional number, >= 0, max 2 decimals, clearly labelled as a private cost that is never shown to customers.
+   - Option lists must be imported from lib/business/product-attributes.ts and lib/business/product-units.ts (single source of truth).
+   - Purchase / supplier / payment information must NOT appear in the product-details area (FILE 3 rule).
+   - Editing an existing product preloads its current values; a value cleared in the form is sent as a clear (clear_attributes), and other keys are untouched.
+3. Server side: the product create/update server action must call the same service functions from Prompt 2 (validation lives in the service layer, not only in the form). Show validation errors next to the field in the selected language.
+4. Products list and detail: show attributes as small chips or a compact line (only values that exist and only for clothing business types), and show stock with its unit (for example "50 Meter"). Nothing invented for products without attributes.
+5. Translations: add every new label, placeholder, help text and error to lib/i18n/dictionary.ts in both en and ur. Predefined option NAMES stay in their canonical English form (they are product data); only field labels and messages are translated.
+6. Tests: offline tests for any pure helpers you create (option-to-form-value mapping, custom value handling, building the clear list). Run: npm run build, typecheck, lint, and every test:* script in package.json. Report results in a table.
+7. If a logged-in Playwright QA path already exists in tests/qa, describe how I could screenshot the form at mobile and desktop width. Do not run anything that writes real data.
+
+FINAL REPORT: paths of every file changed, what a clothing business sees versus other business types, build/typecheck/lint/test output, and a manual check list for me (what to click on a TEST product, English and Roman Urdu, mobile and desktop). Say clearly what you could not verify.

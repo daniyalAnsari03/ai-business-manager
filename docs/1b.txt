@@ -1,0 +1,23 @@
+TASK: Connect audit_logs to the first group of AI tools. Only this group, nothing else. Ignore docs/fix.txt.
+
+Tools in scope: set_product_stock, adjust_product_stock, create_order, update_order_status, delete_product.
+
+1. Create a small server-only helper (e.g. lib/audit/write-audit-log.ts) that inserts one row into audit_logs using the service-role client (getSupabaseAdminClient). Inputs: businessId, actorType ('ai'), actorId (the user id if available), action, entity, entityId, before, after, reason (optional), correlationId.
+   - businessId must come from the server-side AgentRunContext, never from model input.
+   - Never store secrets, tokens, or unnecessary personal data in before/after (for orders store ids, status, totals, item quantities; not phone/address).
+   - If the audit insert fails: do NOT fail or roll back the business action, but log a clear server error (no secrets) so it is visible. Never let the tool tell the user an audit was written when it was not.
+
+2. In each of the 5 tools, after the business action has actually succeeded (backend confirmed), read/keep the before value and write the audit row:
+   - stock tools: entity 'product', before/after stock_quantity, action 'stock.set' / 'stock.adjust'
+   - create_order: entity 'order', before null, after summary, action 'order.create'
+   - update_order_status: entity 'order', before/after status, action 'order.status_update'
+   - delete_product: entity 'product', before = safe snapshot (name, sku, category, price, stock), after null, action 'product.delete'
+   Do NOT write an audit row when the action failed, was rejected, or is still waiting for confirmation.
+
+3. correlation_id: use the chat request id if one exists (if none exists, generate one per chat request and reuse it for all tool calls in that request).
+
+4. Do not change tool behavior, tool names, tool outputs seen by the model, or any existing migration. No new tables.
+
+5. Test with the existing test approach (tests/ai style stubs): for each of the 5 tools verify (a) success writes exactly one audit row with correct before/after, (b) failure or unconfirmed action writes none, (c) an audit insert failure does not break the tool, (d) business_id in the row equals the context business, never a model-supplied value. Run typecheck and lint. Also run npm run test:tools and report whether it works (it was blocked earlier by Node 24 and parameter properties; if it is still blocked, report only, do not fix).
+
+6. Do NOT deploy. Report files changed, test output, and anything you could not verify.

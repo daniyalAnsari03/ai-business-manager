@@ -99,10 +99,16 @@ class MetaWhatsAppProvider implements WhatsAppProvider {
   /** Cap on a single send so an awaited notification can never hang a request. */
   static readonly SEND_TIMEOUT_MS = 30_000;
 
-  constructor(
-    private readonly token: string,
-    private readonly phoneNumberId: string,
-  ) {}
+  // Declared as explicit fields (not constructor parameter properties) so the
+  // file stays valid under Node's native type-stripping, which erases types but
+  // cannot run the emit that parameter properties require.
+  private readonly token: string;
+  private readonly phoneNumberId: string;
+
+  constructor(token: string, phoneNumberId: string) {
+    this.token = token;
+    this.phoneNumberId = phoneNumberId;
+  }
 
   isConfigured(): boolean {
     return true;

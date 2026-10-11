@@ -1,32 +1,25 @@
-The whatsapp_inbound_events table has 0 rows even after I sent "YES" 
-from my phone to the test number. Investigate why the webhook request 
-never got recorded:
+TASK: Is project ka jo bhi local code abhi GitHub par push nahi hua, usko safely GitHub par push karo. Sirf push karna hai. Vercel deploy MAT karna, aur code mein koi change MAT karna.
 
-1. Check Vercel's Runtime Logs (or reproduce the exact check) around 
-   the time I sent the message, specifically for the 
-   /api/whatsapp/webhook route. Was there ANY incoming request logged 
-   at all — even one that got rejected? Paste whatever you find.
+Step 1: Pehle sirf check karo, abhi kuch push mat karo
+- git status, git branch, git remote -v, aur git log --oneline -5 chalao.
+- Batao: current branch kaunsi hai, remote kaunsa hai (daniyalAnsari03/ai-business-manager hona chahiye), kitni files modified/untracked hain, aur kitne commits local mein hain jo remote par nahi.
+- Agar remote kuch aur dikhe ya git repo hi na ho, to ruk jao aur mujhe batao.
 
-2. Check the route's code flow: does persistInboundEvent() run BEFORE 
-   or AFTER the HMAC signature verification (verifyHubSignature)? If 
-   signature verification happens first and the event is REJECTED 
-   there (e.g. returns 401/403 immediately), the event would never 
-   reach persistInboundEvent() at all — meaning we'd see 0 rows even 
-   if Meta genuinely sent the webhook. Check this order in the code and 
-   tell me which happens first.
+Step 2: Secrets ka safety check (sabse zaroori)
+- Check karo ke .gitignore mein .env, .env.local, .env.*.local, node_modules, .next, aur deploy_*.json jaisi scratch files ignore hain.
+- Jo files commit hone wali hain unmein dhoondo: API keys, OPENAI_API_KEY, Supabase service-role key, passwords, tokens, hardcoded URLs ke saath keys.
+- Agar koi secret kisi tracked ya commit hone wali file mein mila, to push MAT karo. Mujhe file ka naam aur line batao (secret ki value mat likho) aur ruk jao.
 
-3. If signature verification runs first: temporarily add a log line 
-   RIGHT BEFORE the signature check that logs "webhook request 
-   received" regardless of outcome (so we can tell if Meta even 
-   reached the server at all vs. rejected by our own signature check) 
-   — then have me resend a test "YES" message and check again.
+Step 3: Commit aur push
+- Sirf wahi files add karo jo safe hain (git add -A se pehle git status dobara dekho aur .env/secret files na hon).
+- Commit message saaf likho, jaise "chore: sync latest local work".
+- git push karo us branch par jahan se remote track hota hai. Force push (--force) kabhi mat karna.
+- Agar push reject ho (remote par aisi cheezen hain jo local mein nahi), to pull/merge mat karo, mujhe batao.
 
-4. Separately, confirm in Meta's own dashboard: go to WhatsApp → 
-   Webhooks section and check if there's a "Recent deliveries" or 
-   similar log showing whether Meta actually attempted to call our 
-   webhook URL when I sent the message, and what response code Meta 
-   received back from our server (200, 401, timeout, etc.) — this 
-   tells us definitively whether the request left Meta's side at all.
+Step 4: Verify
+- Push ke baad git status aur git log origin/<branch> -1 chalao aur confirm karo ke local aur remote ek jaise hain.
+- Report do: kitni files push hui, commit hash, branch ka naam, aur kya kuch skip hua (aur kyun).
 
-Paste whatever raw evidence you find at each step before concluding 
-anything.
+Rules:
+- Kuch bhi delete ya rewrite mat karo (git reset --hard, git clean, rebase, force push mana hain).
+- Sirf wohi bolo jo tum ne actually dekha, andaza mat likho.

@@ -76,6 +76,22 @@ const EXPECTED_TOOLS = [
   // Business settings (same capabilities as the Settings page)
   "get_business_info",
   "update_business_profile",
+  // Approval-aware marketing (Phase 4)
+  "get_automation_mode",
+  "publish_social_post",
+  "find_approval_action",
+  "execute_approved_action",
+  // Suppliers, bills & receivables/payables (Phase 3)
+  "list_suppliers",
+  "find_supplier",
+  "create_supplier",
+  "update_supplier",
+  "delete_supplier",
+  "list_supplier_bills",
+  "create_supplier_bill",
+  "get_customer_balance",
+  "request_payment",
+  "request_payment_reversal",
 ];
 const toolNames = businessTools.map((tool) => tool.name);
 const uniqueNames = new Set(toolNames);
@@ -88,9 +104,12 @@ record(
 );
 
 record(
-  "Registry: no accidental duplicate tools beyond the approved surface",
-  toolNames.length === EXPECTED_TOOLS.length,
-  `registry=${toolNames.length}, expected=${EXPECTED_TOOLS.length}`,
+  "Registry: the expected list matches the real registry EXACTLY (no extra, no missing tool)",
+  toolNames.length === EXPECTED_TOOLS.length &&
+    [...toolNames].sort().join("|") === [...EXPECTED_TOOLS].sort().join("|"),
+  `registry=${toolNames.length}, expected=${EXPECTED_TOOLS.length}, ` +
+    `unexpected=[${toolNames.filter((n) => !EXPECTED_TOOLS.includes(n)).join(",")}], ` +
+    `missing=[${EXPECTED_TOOLS.filter((n) => !toolNames.includes(n)).join(",")}]`,
 );
 
 record(
@@ -112,7 +131,7 @@ record(
 /* ---------------------------------------------------------------------------
  * 2. Confirmation gate on destructive tools
  * ------------------------------------------------------------------------ */
-const DESTRUCTIVE = ["delete_product", "delete_customer", "delete_expense"];
+const DESTRUCTIVE = ["delete_product", "delete_customer", "delete_expense", "delete_supplier"];
 for (const name of [...DESTRUCTIVE, "update_order_status"]) {
   const target = businessTools.find((tool) => tool.name === name);
   const schema = /** @type {any} */ (target?.parameters ?? {});
@@ -333,11 +352,23 @@ record(
   "Instructions: never claim success on failed/unconfirmed actions",
   /NEVER claim an action succeeded/.test(enInstructions),
 );
+/* The instruction text is matched on what the PRIVACY & SCOPE block actually
+ * says (lib/ai/agent.ts:108-111): the settings capabilities DO exist, the
+ * current profile is read with a tool, and a change is performed with the
+ * settings tool. Asserted on each sentence separately so deleting or rewording
+ * any one of them fails here instead of silently dropping the capability. */
 record(
   "Instructions: settings capabilities are declared as existing (docs/check.txt §5)",
-  /BUSINESS SETTINGS/.test(enInstructions) &&
-    /capabilities DO exist/i.test(enInstructions) &&
-    /read the current profile with a tool/i.test(enInstructions),
+  /readable AND editable through your tools/i.test(enInstructions) &&
+    /capabilities DO exist/i.test(enInstructions),
+);
+record(
+  "Instructions: the current business profile must be read with a tool, not memory",
+  /read the current profile with a tool/i.test(enInstructions),
+);
+record(
+  "Instructions: a business-details change is performed with the settings tool",
+  /perform the update with the settings tool/i.test(enInstructions),
 );
 
 const urInstructions = buildBusinessManagerInstructions({
@@ -464,6 +495,57 @@ record(
     "create_order: status schema accepts natural 'complete' (no parse-time throw)",
     Array.isArray(statusEnum) && statusEnum.includes("complete"),
     JSON.stringify(statusEnum ?? null),
+  );
+}
+
+/* 8. Stock quantities stay WHOLE numbers, and the model is told so in the
+ *    parameter descriptions (docs/p6.txt — Part A).
+ *
+ *    A quantity is only ever sent to the database as an integer, so a request
+ *    for "2.5 kg" cannot be recorded. The only correct answer is an honest
+ *    "not supported yet, give me a whole number" — a silent round to 3 would
+ *    report a stock figure the owner never said. That behaviour is only possible
+ *    if the rule reaches the model where it actually reads parameter
+ *    descriptions, so the sentence is pinned here: deleting or rewording it on
+ *    any one of these four parameters fails this suite. */
+const WHOLE_NUMBER_RULE =
+  /Whole numbers only\.[^\u0000]*?do NOT round it[^\u0000]*?not supported yet[^\u0000]*?whole number\./s;
+
+/** The parameters that carry a quantity, and the shared `unit` description. */
+const WHOLE_NUMBER_PARAMETERS = [
+  ["create_product", "stockQuantity"],
+  ["create_product", "unit"],
+  ["update_product", "unit"],
+  ["set_product_stock", "newStock"],
+  ["adjust_product_stock", "delta"],
+];
+
+for (const [toolName, parameter] of WHOLE_NUMBER_PARAMETERS) {
+  const target = businessTools.find((tool) => tool.name === toolName);
+  const schema = /** @type {any} */ (target?.parameters ?? {});
+  const description = schema?.properties?.[parameter]?.description ?? "";
+  record(
+    `Stock rule: ${toolName}.${parameter} tells the model whole numbers only (never round silently)`,
+    typeof description === "string" && WHOLE_NUMBER_RULE.test(description),
+    description
+      ? `tail=${JSON.stringify(description.slice(-100))}`
+      : JSON.stringify(description ?? null),
+  );
+}
+
+/* The wording is a promise about the schema, so the schema must still back it:
+ * no fractional value can even be expressed for a quantity parameter. `unit` is
+ * a text label and is deliberately not covered. */
+for (const [toolName, parameter] of WHOLE_NUMBER_PARAMETERS.filter(
+  ([, key]) => key !== "unit",
+)) {
+  const target = businessTools.find((tool) => tool.name === toolName);
+  const schema = /** @type {any} */ (target?.parameters ?? {});
+  const type = schema?.properties?.[parameter]?.type;
+  record(
+    `Stock rule: ${toolName}.${parameter} is still an integer type (no fractional support)`,
+    type === "integer",
+    JSON.stringify(schema?.properties?.[parameter] ?? null),
   );
 }
 

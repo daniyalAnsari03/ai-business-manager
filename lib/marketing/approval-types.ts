@@ -28,6 +28,8 @@ export type ApprovalActionType =
   | "create_ad_campaign"
   | "spend_wallet"
   | "publish_video"
+  | "record_payment"
+  | "reverse_payment"
   | "other";
 
 export interface ApprovalAction {
@@ -108,6 +110,10 @@ export const APPROVAL_ACTION_SENSITIVITY: Record<
   publish_video: "safe",
   create_ad_campaign: "sensitive",
   spend_wallet: "sensitive",
+  // Money movement always requires the owner's approval, even in full-auto
+  // (docs/fix.txt: EVERY AI-requested payment/reversal needs approval).
+  record_payment: "sensitive",
+  reverse_payment: "sensitive",
   other: "safe",
 };
 

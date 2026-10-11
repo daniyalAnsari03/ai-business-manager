@@ -289,6 +289,24 @@ function sseChunk(event: ChatStreamEvent | "[DONE]"): Uint8Array {
  * Route handler
  * ------------------------------------------------------------------------ */
 
+/** Mirrors the audit_logs.correlation_id length limit. */
+const MAX_CORRELATION_ID_CHARS = 160;
+
+/**
+ * Trace id for ONE chat request, reused by every tool call it makes so all
+ * audit rows produced by this turn can be found together. An upstream
+ * `x-request-id` is preferred when the platform provides one; otherwise a fresh
+ * id is generated per request (never shared across requests, and never taken
+ * from the client body).
+ */
+function resolveCorrelationId(request: Request): string {
+  const incoming = request.headers.get("x-request-id")?.trim();
+  if (incoming && incoming.length <= MAX_CORRELATION_ID_CHARS) {
+    return incoming;
+  }
+  return crypto.randomUUID();
+}
+
 export async function POST(request: Request): Promise<Response> {
   // 1) Authentication + business ownership come ONLY from the session.
   const user = await getServerUser();
@@ -390,6 +408,8 @@ export async function POST(request: Request): Promise<Response> {
     currencySymbol: getCurrency(business.currency)?.symbol ?? business.currency,
     language: parsed.language,
     imageUrl: parsed.imageUrl,
+    userId: user.id,
+    correlationId: resolveCorrelationId(request),
   };
 
   const agent = createBusinessManagerAgent(context);

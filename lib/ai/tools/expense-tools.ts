@@ -16,12 +16,14 @@ import {
   limitSchema,
   optionalText,
   orKeep,
+  readAgentContext,
   resolveExpense,
   toolClarify,
   toolFail,
   toolNeedsConfirmation,
   toolOk,
 } from "@/lib/ai/tools/shared";
+import { recordAgentAudit } from "@/lib/audit/write-audit-log";
 import type { Expense } from "@/lib/expenses/types";
 
 /**
@@ -50,6 +52,51 @@ function expenseSummary(expense: Expense) {
 async function loadExpenses(): Promise<Expense[] | null> {
   const result = await getExpenses();
   return result.ok ? result.data : null;
+}
+
+/** The commercial facts kept in expense history, and the snapshot key each is
+ *  stored under. Free-text `notes` is deliberately not here. */
+const EXPENSE_AUDIT_FIELDS: ReadonlyArray<[keyof Expense, string]> = [
+  ["title", "title"],
+  ["amount", "amount"],
+  ["category", "category"],
+  ["expenseDate", "expense_date"],
+];
+
+/**
+ * Builds the before/after pair for an expense edit from ONLY the fields the
+ * save changed. A changed `notes` value is never stored — only the field name
+ * is recorded, matching how customer contact details are treated. Returns null
+ * when nothing changed, so a no-op update writes no row.
+ */
+function expenseChangeAudit(
+  previous: Expense,
+  next: Expense,
+): { before: Record<string, unknown>; after: Record<string, unknown> } | null {
+  const before: Record<string, unknown> = {};
+  const after: Record<string, unknown> = {};
+  for (const [field, key] of EXPENSE_AUDIT_FIELDS) {
+    const oldValue = previous[field] ?? null;
+    const newValue = next[field] ?? null;
+    if (oldValue === newValue) continue;
+    before[key] = oldValue;
+    after[key] = newValue;
+  }
+  if ((next.notes ?? null) !== (previous.notes ?? null)) {
+    before.changed_fields = ["notes"];
+    after.changed_fields = ["notes"];
+  }
+  return Object.keys(after).length > 0 ? { before, after } : null;
+}
+
+/** The history snapshot for a stored expense: title, amount, category, date. */
+function expenseAuditSnapshot(expense: Expense): Record<string, unknown> {
+  return {
+    title: expense.title,
+    amount: expense.amount,
+    category: expense.category,
+    expense_date: expense.expenseDate,
+  };
 }
 
 /**
@@ -110,7 +157,7 @@ export const createExpenseTool = tool({
       .nullable(),
     notes: z.string().trim().max(500).optional().nullable(),
   }),
-  execute: async ({ title, amount, category, expenseDate, notes }) => {
+  execute: async ({ title, amount, category, expenseDate, notes }, ctx) => {
     const result = await createExpense({
       title,
       amount,
@@ -126,6 +173,14 @@ export const createExpenseTool = tool({
           : "Could not record the expense. Do not claim success.",
       );
     }
+    // History for the change the backend just confirmed (docs/1c.txt). A
+    // creation has no prior state, so `before` stays null.
+    await recordAgentAudit(readAgentContext(ctx), {
+      action: "expense.create",
+      entity: "expense",
+      entityId: result.data.id,
+      after: expenseAuditSnapshot(result.data),
+    });
     return toolOk({
       created: true,
       expense: {
@@ -155,7 +210,7 @@ export const updateExpenseTool = tool({
       .nullable(),
     notes: optionalText(500),
   }),
-  execute: async ({ expenseTitle, expenseId, ...changes }) => {
+  execute: async ({ expenseTitle, expenseId, ...changes }, ctx) => {
     const expenses = await loadExpenses();
     if (!expenses) {
       return toolFail("database_error", "Could not read expenses. Ask the user to try again.");
@@ -194,6 +249,18 @@ export const updateExpenseTool = tool({
           : "Expense update failed. Do not claim success.",
       );
     }
+    // Only the fields the save actually changed are recorded; an edit that
+    // changed nothing writes no row at all (docs/1c.txt).
+    const changed = expenseChangeAudit(current, result.data);
+    if (changed) {
+      await recordAgentAudit(readAgentContext(ctx), {
+        action: "expense.update",
+        entity: "expense",
+        entityId: current.id,
+        before: changed.before,
+        after: changed.after,
+      });
+    }
     return toolOk({ updated: true, expense: expenseSummary(result.data) });
   },
 });
@@ -207,7 +274,7 @@ export const deleteExpenseTool = tool({
     expenseId: z.string().trim().min(1).max(60).optional().nullable().describe("Exact expense ID from a previous tool result when the user picked a specific candidate. Bypasses title search."),
     confirmed: z.boolean().default(false),
   }),
-  execute: async ({ expenseTitle, expenseId, confirmed }) => {
+  execute: async ({ expenseTitle, expenseId, confirmed }, ctx) => {
     const expenses = await loadExpenses();
     if (!expenses) {
       return toolFail("database_error", "Could not read expenses. Ask the user to try again.");
@@ -235,6 +302,15 @@ export const deleteExpenseTool = tool({
     if (!result.ok) {
       return toolFail(result.reason, "Deletion failed. Do not claim success.");
     }
+    // The row no longer exists, so the "before" state is captured from what was
+    // resolved above — the expense's commercial facts only, never its free-text
+    // notes (docs/1c.txt).
+    await recordAgentAudit(readAgentContext(ctx), {
+      action: "expense.delete",
+      entity: "expense",
+      entityId: target.id,
+      before: expenseAuditSnapshot(target),
+    });
     return toolOk({ removed: true, title: target.title });
   },
 });

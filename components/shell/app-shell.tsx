@@ -9,6 +9,7 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { UserMenu } from "@/components/shell/user-menu";
 import {
   ArchiveIcon,
+  ArrowsUpDownIcon,
   BrandMark,
   BrandWordmark,
   CartIcon,
@@ -19,6 +20,7 @@ import {
   MessageCircleIcon,
   PackageIcon,
   SettingsIcon,
+  TruckIcon,
   UsersIcon,
   WalletIcon,
   XIcon,
@@ -45,6 +47,8 @@ const MANAGE_ITEMS: NavItem[] = [
   { labelKey: "inventory", icon: ArchiveIcon, href: "/dashboard/inventory" },
   { labelKey: "sales", icon: ChartIcon, href: "/dashboard/sales" },
   { labelKey: "expenses", icon: WalletIcon, href: "/dashboard/expenses" },
+  { labelKey: "suppliers", icon: TruckIcon, href: "/dashboard/suppliers" },
+  { labelKey: "payments", icon: ArrowsUpDownIcon, href: "/dashboard/payments" },
   { labelKey: "marketing", icon: MegaPhoneIcon, href: "/dashboard/marketing" },
   { labelKey: "settings", icon: SettingsIcon, href: "/dashboard/settings" },
 ];
